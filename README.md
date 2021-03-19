@@ -1,96 +1,53 @@
-# vue-admin-template
+<!--
+ * @Descripttion: your project
+ * @version: 1.0
+ * @Author: Rex Joush
+ * @Date: 2021-03-10 15:03:17
+ * @LastEditors: Rex Joush
+ * @LastEditTime: 2021-03-19 16:28:45
+-->
+# 中国国家博物馆云平台项目网页端
+本项目参考与 Panjiachen 的后端模板 vue-admin-template，因此有问题可以参考原项目，链接附后
 
-English | [简体中文](./README-zh.md)
-
-> A minimal vue admin template with Element UI & axios & iconfont & permission control & lint
-
-**Live demo:** http://panjiachen.github.io/vue-admin-template
-
-
-**The current version is `v4.0+` build on `vue-cli`. If you want to use the old version , you can switch branch to [tag/3.11.0](https://github.com/PanJiaChen/vue-admin-template/tree/tag/3.11.0), it does not rely on `vue-cli`**
-
-
-## GitAds
-
-[<img src="https://images.gitads.io/PanJiaChen/vue-admin-template" alt="GitAds" />](https://tracking.gitads.io/?repo=PanJiaChen/vue-admin-template)
-
-## Build Setup
-
+## 安装
 
 ```bash
-# clone the project
-git clone https://github.com/PanJiaChen/vue-admin-template.git
+# 拉取代码
+git clone https://github.com/RexJoush/MuseumByCloud.git
 
-# enter the project directory
-cd vue-admin-template
+# 进入目录
+cd MuseumByCloud
 
-# install dependency
+# 安装依赖
 npm install
 
-# develop
+# 启动项目
 npm run dev
 ```
 
-This will automatically open http://localhost:9528
+会自动打开项目 http://localhost:9528
 
-## Build
+## 编译打包
 
 ```bash
-# build for test environment
+# 测试环境
 npm run build:stage
 
-# build for production environment
+# 生产环境
 npm run build:prod
 ```
 
-## Advanced
+## 文档
 
-```bash
-# preview the release environment effect
-npm run preview
+- [Vue](https://cn.vuejs.org/v2/guide/)
 
-# preview the release environment effect + static resource analysis
-npm run preview -- --report
+- [Element UI](https://element.eleme.cn/#/zh-CN/component/installation)
 
-# code format check
-npm run lint
+- [vue-admin-template 文档](https://panjiachen.github.io/vue-element-admin-site/zh/guide/)
 
-# code format check and auto fix
-npm run lint -- --fix
-```
+- [vue-admin-template 二次开发教程](https://juejin.cn/post/6844903476661583880)
 
-Refer to [Documentation](https://panjiachen.github.io/vue-element-admin-site/guide/essentials/deploy.html) for more information
+- [vue-admin-template 源码](https://github.com/PanJiaChen/vue-admin-template)
 
-## Demo
 
-![demo](https://github.com/PanJiaChen/PanJiaChen.github.io/blob/master/images/demo.gif)
-
-## Extra
-
-If you want router permission && generate menu by user roles , you can use this branch [permission-control](https://github.com/PanJiaChen/vue-admin-template/tree/permission-control)
-
-For `typescript` version, you can use [vue-typescript-admin-template](https://github.com/Armour/vue-typescript-admin-template) (Credits: [@Armour](https://github.com/Armour))
-
-## Related Project
-
-- [vue-element-admin](https://github.com/PanJiaChen/vue-element-admin)
-
-- [electron-vue-admin](https://github.com/PanJiaChen/electron-vue-admin)
-
-- [vue-typescript-admin-template](https://github.com/Armour/vue-typescript-admin-template)
-
-- [awesome-project](https://github.com/PanJiaChen/vue-element-admin/issues/2312)
-
-## Browsers support
-
-Modern browsers and Internet Explorer 10+.
-
-| [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/edge/edge_48x48.png" alt="IE / Edge" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>IE / Edge | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/firefox/firefox_48x48.png" alt="Firefox" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Firefox | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/chrome/chrome_48x48.png" alt="Chrome" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Chrome | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/safari/safari_48x48.png" alt="Safari" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Safari |
-| --------- | --------- | --------- | --------- |
-| IE10, IE11, Edge| last 2 versions| last 2 versions| last 2 versions
-
-## License
-
-[MIT](https://github.com/PanJiaChen/vue-admin-template/blob/master/LICENSE) license.
-
-Copyright (c) 2017-present PanJiaChen
+Copyright (c) 2021 Rex Joush
