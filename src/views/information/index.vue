@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-03-19 16:07:11
+ * @LastEditTime: 2021-03-20 17:35:40
 -->
 <template>
   <div>
@@ -39,24 +39,13 @@ export default {
   methods: {
     // 就在这发起请求就行
     getUser() {
-      let id = 1;
-      let param = {
-          id:1,
-          name: "joush",
-          info: {
-              a: "a",
-              b: 1
-          }
-      }
-      this.$api
-        .getUser(param)
+      this.$store
+        .dispatch("user/getUsers","")
         .then((res) => {
-          const data = res.data.data;
-          this.tableData = data;
-          console.log("user", data);
+          console.log(res);
         })
-        .catch((err) => {
-          console.log("err", err);
+        .catch((error) => {
+          console.log(error);
         });
     },
     test() {},

@@ -1,16 +1,27 @@
+/*
+ * @Descripttion: your project
+ * @version: 1.0
+ * @Author: Rex Joush
+ * @Date: 2021-03-19 16:14:56
+ * @LastEditors: Rex Joush
+ * @LastEditTime: 2021-03-22 15:42:02
+ */
 import request from '@/utils/request'
+import axios from "axios"
+import { get } from './httpconfig'
+let baseUrl = "http://localhost:8081"
 
 export function login(data) {
   return request({
-    url: '/vue-admin-template/user/login',
-    method: 'post',
-    data
+    url: baseUrl + '/user/login',
+    method: 'get',
+    params: data,
   })
 }
 
 export function getInfo(token) {
   return request({
-    url: '/vue-admin-template/user/info',
+    url: baseUrl + '/user/info',
     method: 'get',
     params: { token }
   })
@@ -18,7 +29,25 @@ export function getInfo(token) {
 
 export function logout() {
   return request({
-    url: '/vue-admin-template/user/logout',
+    url: baseUrl + '/user/logout',
     method: 'post'
+  })
+}
+
+export function getUsers(queryInfo) {
+  let query = {
+    queryInfo: queryInfo.queryInfo,
+    pageStart: queryInfo.pageStart,
+    pageSize: queryInfo.pageSize
+  }
+  
+  return request({
+    url: baseUrl + '/user/getUsers',
+    method: 'get',
+    params: {
+      queryInfo: queryInfo.queryInfo,
+      pageStart: queryInfo.pageStart,
+      pageSize: queryInfo.pageSize
+    }
   })
 }

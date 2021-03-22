@@ -1,10 +1,10 @@
 <!--
- * @Descripttion: your project
+ * @Descripttion: 自定义资源页面
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-03-19 16:06:50
+ * @LastEditTime: 2021-03-22 09:43:34
 -->
 <template>
   <h1>自定义资源</h1>

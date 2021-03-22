@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-10 15:03:17
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-03-19 16:10:38
+ * @LastEditTime: 2021-03-22 09:48:50
  */
 import Vue from 'vue'
 import Router from 'vue-router'
@@ -224,6 +224,18 @@ export const constantRoutes = [
       name: '创建资源',
       component: () => import('@/views/establish/index'),
       meta: { title: '创建资源', icon: 'establish' }
+    }]
+  },
+  // 用户管理
+  {
+    path: '/account',
+    component: Layout,
+    redirect: '/account',
+    children: [{
+      path: 'account',
+      name: '用户管理',
+      component: () => import('@/views/account/index'),
+      meta: { title: '用户管理', icon: 'account' }
     }]
   },
   // 个人信息

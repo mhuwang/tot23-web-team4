@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-18 11:11:57
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-03-19 16:09:56
+ * @LastEditTime: 2021-03-20 17:22:48
  */
 
 import { post, get } from './httpconfig'
@@ -16,6 +16,9 @@ export default {
   // 登录接口，判断用户名和密码
   login(params) {
     return get(`${baseurl}/user/login`,params)
+  },
+  getUsers(params) {
+    return get(`${baseurl}/user/getUsers`,params)
   },
   delSwiper(params) {
     return get(`${baseurl}/home/delSwiper`, params)

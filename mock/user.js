@@ -1,3 +1,11 @@
+/*
+ * @Descripttion: your project
+ * @version: 1.0
+ * @Author: Rex Joush
+ * @Date: 2021-03-19 16:13:48
+ * @LastEditors: Rex Joush
+ * @LastEditTime: 2021-03-20 16:38:17
+ */
 
 const tokens = {
   admin: {
@@ -26,7 +34,7 @@ const users = {
 module.exports = [
   // user login
   {
-    url: '/vue-admin-template/user/login',
+    url: '/user/login',
     type: 'post',
     response: config => {
       const { username } = config.body
@@ -49,7 +57,7 @@ module.exports = [
 
   // get user info
   {
-    url: '/vue-admin-template/user/info\.*',
+    url: '/user/info\.*',
     type: 'get',
     response: config => {
       const { token } = config.query

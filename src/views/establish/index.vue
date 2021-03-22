@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-03-19 16:08:43
+ * @LastEditTime: 2021-03-21 15:57:56
 -->
 <template>
   <div>
@@ -18,6 +18,7 @@
             <el-card
               class="box-card"
               style="width: 120px; height: 120px; background-color: #eee"
+              shadow="hover"
             >
               <div>
                 <el-avatar :size="50" :src="circleUrl"></el-avatar><br />

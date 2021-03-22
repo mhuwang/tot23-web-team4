@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-10 15:03:17
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-03-19 16:06:29
+ * @LastEditTime: 2021-03-22 17:27:37
 -->
 <template>
   <div class="login-container">
@@ -84,20 +84,6 @@ import { validUsername } from "@/utils/validate";
 export default {
   name: "Login",
   data() {
-    const validateUsername = (rule, value, callback) => {
-      if (!validUsername(value)) {
-        callback(new Error("Please enter the correct user name"));
-      } else {
-        callback();
-      }
-    };
-    const validatePassword = (rule, value, callback) => {
-      if (value.length < 6) {
-        callback(new Error("The password can not be less than 6 digits"));
-      } else {
-        callback();
-      }
-    };
     return {
       loginForm: {
         username: "admin",
@@ -105,10 +91,10 @@ export default {
       },
       loginRules: {
         username: [
-          { required: true, trigger: "blur", validator: validateUsername },
+          { required: true, trigger: "blur", min: 5, max: 12 },
         ],
         password: [
-          { required: true, trigger: "blur", validator: validatePassword },
+          { required: true, trigger: "blur", min: 5, max: 12 },
         ],
       },
       loading: false,
@@ -135,44 +121,76 @@ export default {
         this.$refs.password.focus();
       });
     },
-    handleLogin() {
-      this.$refs.loginForm.validate((valid) => {
-        if (valid) {
-          this.loading = true;
-          this.$store
-            .dispatch("user/login", this.loginForm)
-            .then(() => {
-              this.$api.login(this.loginForm).then((res) => {
-                // console.log(res.data.responseCode === 1200);
-                if (res.data.responseCode === 1200) {
-                  //this.$message.success(res.data.responseMessage);
-                  this.$message({
-                    duration: 1500,
-                    message: res.data.responseMessage,
-                    type: "success"
-                    });
-                  this.$router.push({ path: this.redirect || '/' })
-                  this.loading = false
-                } else {
-                  this.$message({
-                    duration: 1500,
-                    message: res.data.responseMessage,
-                    type: "error"
-                    });
-                  this.loading = false
-                }
 
-              });
+    handleLogin() {
+      this.$refs.loginForm.validate(valid => {
+        if (valid) {
+          this.loading = true
+          this.$store.dispatch('user/login', this.loginForm)
+            .then((res) => {
+              console.log("Aaaa");
+              console.log(res);
+              this.$router.push({ path: this.redirect || '/' })
+              // window.sessionStorage.setItem('Token', res.data.token);
+              //     this.$message({
+              //       duration: 1500,
+              //       message: res.data.responseMessage,
+              //       type: "success"
+              //       });
+              //     this.$router.push({ path: this.redirect || '/' })
+              //     this.loading = false
             })
-            .catch(() => {
-              this.loading = false;
-            });
+            .catch((err) => {
+              throw err;
+              console.log("Bbbb");
+              this.loading = false
+            })
         } else {
-          console.log("error submit!!");
-          return false;
+          console.log('error submit!!')
+          return false
         }
-      });
+      })
     },
+
+    // handleLogin() {
+    //   this.$refs.loginForm.validate((valid) => {
+    //     if (valid) {
+    //       this.loading = true;
+    //       this.$store
+    //         .dispatch("user/login", this.loginForm)
+    //         .then(() => {
+    //           this.$api.login(this.loginForm).then((res) => {
+    //             // console.log(res.data.responseCode === 1200);
+    //             if (res.data.responseCode === 1200) {
+    //               // 存储 token
+    //               window.sessionStorage.setItem('Token', res.data.token);
+    //               this.$message({
+    //                 duration: 1500,
+    //                 message: res.data.responseMessage,
+    //                 type: "success"
+    //                 });
+    //               this.$router.push({ path: this.redirect || '/' })
+    //               this.loading = false
+    //             } else {
+    //               this.$message({
+    //                 duration: 1500,
+    //                 message: res.data.responseMessage,
+    //                 type: "error"
+    //                 });
+    //               this.loading = false
+    //             }
+
+    //           });
+    //         })
+    //         .catch(() => {
+    //           this.loading = false;
+    //         });
+    //     } else {
+    //       console.log("error submit!!");
+    //       return false;
+    //     }
+    //   });
+    // },
   },
 };
 </script>

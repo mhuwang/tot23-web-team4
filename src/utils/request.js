@@ -1,3 +1,11 @@
+/*
+ * @Descripttion: your project
+ * @version: 1.0
+ * @Author: Rex Joush
+ * @Date: 2021-03-19 16:14:56
+ * @LastEditors: Rex Joush
+ * @LastEditTime: 2021-03-21 13:35:35
+ */
 import axios from 'axios'
 import { MessageBox, Message } from 'element-ui'
 import store from '@/store'
@@ -19,7 +27,7 @@ service.interceptors.request.use(
       // let each request carry token
       // ['X-Token'] is a custom headers key
       // please modify it according to the actual situation
-      config.headers['X-Token'] = getToken()
+      config.headers['token'] = getToken()
     }
     return config
   },
@@ -37,40 +45,41 @@ service.interceptors.response.use(
    * Please return  response => response
   */
 
+   response => response,
   /**
    * Determine the request status by custom code
    * Here is just an example
    * You can also judge the status by HTTP Status Code
    */
-  response => {
-    const res = response.data
+  // response => {
+  //   const res = response.data
 
-    // if the custom code is not 20000, it is judged as an error.
-    if (res.code !== 20000) {
-      Message({
-        message: res.message || 'Error',
-        type: 'error',
-        duration: 5 * 1000
-      })
+  //   // if the custom code is not 20000, it is judged as an error.
+  //   if (res.code !== 1200) {
+  //     Message({
+  //       message: res.message || 'Error',
+  //       type: 'error',
+  //       duration: 5 * 1000
+  //     })
 
-      // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
-      if (res.code === 50008 || res.code === 50012 || res.code === 50014) {
-        // to re-login
-        MessageBox.confirm('You have been logged out, you can cancel to stay on this page, or log in again', 'Confirm logout', {
-          confirmButtonText: 'Re-Login',
-          cancelButtonText: 'Cancel',
-          type: 'warning'
-        }).then(() => {
-          store.dispatch('user/resetToken').then(() => {
-            location.reload()
-          })
-        })
-      }
-      return Promise.reject(new Error(res.message || 'Error'))
-    } else {
-      return res
-    }
-  },
+  //     // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
+  //     if (res.code === 50008 || res.code === 50012 || res.code === 50014) {
+  //       // to re-login
+  //       MessageBox.confirm('You have been logged out, you can cancel to stay on this page, or log in again', 'Confirm logout', {
+  //         confirmButtonText: 'Re-Login',
+  //         cancelButtonText: 'Cancel',
+  //         type: 'warning'
+  //       }).then(() => {
+  //         store.dispatch('user/resetToken').then(() => {
+  //           location.reload()
+  //         })
+  //       })
+  //     }
+  //     return Promise.reject(new Error(res.message || 'Error'))
+  //   } else {
+  //     return res
+  //   }
+  // },
   error => {
     console.log('err' + error) // for debug
     Message({

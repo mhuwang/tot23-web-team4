@@ -1,4 +1,12 @@
-import { login, logout, getInfo } from '@/api/user'
+/*
+ * @Descripttion: your project
+ * @version: 1.0
+ * @Author: Rex Joush
+ * @Date: 2021-03-19 16:14:56
+ * @LastEditors: Rex Joush
+ * @LastEditTime: 2021-03-22 10:38:13
+ */
+import { login, logout, getInfo, getUsers } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import { resetRouter } from '@/router'
 
@@ -34,9 +42,11 @@ const actions = {
     return new Promise((resolve, reject) => {
       login({ username: username.trim(), password: password }).then(response => {
         const { data } = response
+        console.log("actions");
+        console.log(data);
         commit('SET_TOKEN', data.token)
         setToken(data.token)
-        resolve()
+        resolve(data);
       }).catch(error => {
         reject(error)
       })
@@ -72,6 +82,23 @@ const actions = {
         resetRouter()
         commit('RESET_STATE')
         resolve()
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
+  
+  // getUsers
+  getUsers({commit},queryInfo) {
+    return new Promise((resolve, reject) => {
+      getUsers(queryInfo).then(response => {
+        const { data } = response
+
+        if (!data) {
+          return reject('Verification failed, please Login again.')
+        }
+
+        resolve(data)
       }).catch(error => {
         reject(error)
       })
