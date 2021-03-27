@@ -16,6 +16,8 @@ import nodes from './modules/cluster/nodes'
 import namespaces from './modules/cluster/namespaces'
 import pods from './modules/workload/pods'
 import deployments from './modules/workload/deployments'
+import services from './modules/ExploreBalancing/services'
+import ingresses from './modules/ExploreBalancing/ingresses'
 
 Vue.use(Vuex)
 
@@ -27,7 +29,9 @@ const store = new Vuex.Store({
     pods,
     nodes,
     namespaces,
-    deployments
+    deployments,
+    services,
+    ingresses
   },
   getters
 })
