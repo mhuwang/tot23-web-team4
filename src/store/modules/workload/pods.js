@@ -1,14 +1,13 @@
 /*
- * @Descripttion: your project
+ * @Description: your project
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-03-22 17:20:12
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-03-22 17:33:37
+ * @LastEditTime: 2021-03-27 14:37:00
  */
-import { getAllPods } from '@/api/pods'
-import { getToken, setToken, removeToken } from '@/utils/auth'
-import { resetRouter } from '@/router'
+import { getAllPods } from '@/api/workload/pods'
+import { getToken } from '@/utils/auth'
 
 const getDefaultState = () => {
   return {
@@ -21,18 +20,7 @@ const getDefaultState = () => {
 const state = getDefaultState()
 
 const mutations = {
-  RESET_STATE: (state) => {
-    Object.assign(state, getDefaultState())
-  },
-  SET_TOKEN: (state, token) => {
-    state.token = token
-  },
-  SET_NAME: (state, name) => {
-    state.name = name
-  },
-  SET_AVATAR: (state, avatar) => {
-    state.avatar = avatar
-  }
+  
 }
 
 const actions = {
