@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-19 16:14:56
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-03-22 17:27:25
+ * @LastEditTime: 2021-03-26 13:25:14
  */
 import Vue from 'vue'
 import Vuex from 'vuex'
@@ -13,6 +13,8 @@ import app from './modules/app'
 import settings from './modules/settings'
 import user from './modules/user'
 import pods from './modules/pods'
+import nodes from './modules/cluster/nodes'
+import namespaces from './modules/cluster/namespaces'
 
 Vue.use(Vuex)
 
@@ -21,7 +23,9 @@ const store = new Vuex.Store({
     app,
     settings,
     user,
-    pods
+    pods,
+    nodes,
+    namespaces
   },
   getters
 })

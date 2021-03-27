@@ -4,10 +4,10 @@
  * @Author: Rex Joush
  * @Date: 2021-03-19 16:14:56
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-03-21 13:35:35
+ * @LastEditTime: 2021-03-24 19:46:56
  */
 import axios from 'axios'
-import { MessageBox, Message } from 'element-ui'
+import { Message } from 'element-ui'
 import store from '@/store'
 import { getToken } from '@/utils/auth'
 
@@ -63,7 +63,7 @@ service.interceptors.response.use(
   //     })
 
   //     // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
-  //     if (res.code === 50008 || res.code === 50012 || res.code === 50014) {
+  //     if (res.code === 1252 || res.code === 50012 || res.code === 50014) {
   //       // to re-login
   //       MessageBox.confirm('You have been logged out, you can cancel to stay on this page, or log in again', 'Confirm logout', {
   //         confirmButtonText: 'Re-Login',

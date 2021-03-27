@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-10 15:03:17
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-03-19 16:10:26
+ * @LastEditTime: 2021-03-26 16:33:32
  */
 import Vue from 'vue'
 
@@ -24,6 +24,13 @@ import router from './router'
 
 import axios from 'axios'
 import api from './api/api' 
+
+// 引入 Echarts
+import * as echarts from 'echarts'
+
+// 引入 View UI
+import ViewUI from 'view-design';
+import 'view-design/dist/styles/iview.css';
 
 import '@/icons' // icon
 // 引入 iconfont
@@ -46,11 +53,16 @@ if (process.env.NODE_ENV === 'production') {
 
 // set ElementUI lang to EN
 Vue.use(ElementUI, { locale })
+
 // 如果想要中文版 element-ui，按如下方式声明
 // Vue.use(ElementUI)
 Vue.prototype.axios = axios
 Vue.prototype.$api = api
+Vue.prototype.$echarts = echarts
 Vue.config.productionTip = false
+
+// 使用 ViewUI 
+Vue.use(ViewUI);
 
 new Vue({
   el: '#app',

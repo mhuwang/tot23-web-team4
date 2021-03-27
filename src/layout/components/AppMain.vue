@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-10 15:03:17
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-03-19 16:10:55
+ * @LastEditTime: 2021-03-26 13:51:46
 -->
 <template>
   <section class="app-main">
@@ -34,6 +34,7 @@ export default {
   position: relative;
   overflow: hidden;
   z-index: 9;
+  padding-bottom: 150px;
 }
 .fixed-header + .app-main {
   padding-top: 50px;

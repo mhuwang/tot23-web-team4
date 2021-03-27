@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-10 15:03:17
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-03-22 09:48:50
+ * @LastEditTime: 2021-03-26 13:41:30
  */
 import Vue from 'vue'
 import Router from 'vue-router'
@@ -54,17 +54,33 @@ export const constantRoutes = [
     hidden: true
   },
 
-  // 概况
+  // 集群信息
   {
     path: '/',
     component: Layout,
     redirect: '/summary',
-    children: [{
+    children: [
+      {
       path: 'summary',
-      name: '概况',
+      name: '集群信息',
       component: () => import('@/views/summary/index'),
-      meta: { title: '概况', icon: 'summary' }
-    }]
+      meta: { title: '集群信息', icon: 'summary' }
+      },
+      {
+        path: 'summary/nodes/:name([a-z0-9-]+)',
+        component: () => import('@/views/summary/details/Node/index'),
+        name: 'Node 详情',
+        meta: { title: 'Node Details', noCache: true, activeMenu: '/summary'},
+        hidden: true
+      },
+      {
+        path: 'summary/namespaces/:name([a-z0-9-]+)',
+        component: () => import('@/views/summary/details/Namespace/index'),
+        name: 'Namespace 详情',
+        meta: { title: 'Namespace Details', noCache: true, activeMenu: '/summary'},
+        hidden: true
+      }
+    ]
   },
 
   // 工作量
