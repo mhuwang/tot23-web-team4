@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-19 16:14:56
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-03-27 14:36:00
+ * @LastEditTime: 2021-03-28 19:30:02
  */
 import Vue from 'vue'
 import Vuex from 'vuex'
@@ -14,10 +14,13 @@ import settings from './modules/settings'
 import user from './modules/user'
 import nodes from './modules/cluster/nodes'
 import namespaces from './modules/cluster/namespaces'
+import clusterRoles from './modules/cluster/clusterRoles'
+
 import pods from './modules/workload/pods'
 import deployments from './modules/workload/deployments'
 import services from './modules/ExploreBalancing/services'
 import ingresses from './modules/ExploreBalancing/ingresses'
+
 
 Vue.use(Vuex)
 
@@ -31,7 +34,8 @@ const store = new Vuex.Store({
     namespaces,
     deployments,
     services,
-    ingresses
+    ingresses,
+    clusterRoles
   },
   getters
 })
