@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-25 22:13:37
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-03-28 19:07:12
+ * @LastEditTime: 2021-03-28 22:04:29
 -->
 <template>
   <div>
@@ -141,29 +141,116 @@
       <List item-layout="horizontal" :split="false">
         <div class="metadata-item">
           <p>名字</p>
-          <span>{{node.metadata.name}}</span>
+          <span>{{ node.metadata.name }}</span>
         </div>
         <div class="metadata-item">
           <p>创建时间</p>
-          <span>{{node.metadata.creationTimestamp.replaceAll(/[TZ]/g,' ')}}</span>
+          <span>{{
+            node.metadata.creationTimestamp.replaceAll(/[TZ]/g, " ")
+          }}</span>
         </div>
         <div class="metadata-item">
           <p>UID</p>
-          <span>{{node.metadata.uid}}</span>
+          <span>{{ node.metadata.uid }}</span>
+        </div>
+      </List>
+      <!-- 元数据 标签 注释部分 -->
+      <List item-layout="horizontal" :split="false">
+        <div class="metadata-item">
+          <p>标签</p>
+          <li v-for="label in this.labels">
+            <el-tag
+              class="lebel-tag"
+              effect="dark"
+              size="medium"
+              color="#bedcfa"
+              >{{ label.key }}: {{ label.value }}</el-tag
+            >
+          </li>
+        </div>
+        <div class="metadata-item">
+          <p>注释</p>
+          <li v-for="anno in this.annotations">
+            <el-tag
+              class="lebel-tag"
+              effect="dark"
+              size="medium"
+              color="#bedcfa"
+              >{{ anno.key }}: {{ anno.value }}</el-tag
+            >
+          </li>
+        </div>
+      </List>
+    </el-card>
+    <br /><br />
+    <!-- 资源信息 -->
+    <el-card class="box-card">
+      <div slot="header" class="clearfix">
+        <span style="font-size: 16px">资源信息</span>
+      </div>
+      <List item-layout="horizontal" :split="false">
+        <div class="metadata-item">
+          <p>地址</p>
+          <li v-for="address in this.addressess">
+            <el-tag
+              class="lebel-tag"
+              effect="dark"
+              size="medium"
+              color="#bedcfa"
+              >{{ address.key }}: {{ address.value }}</el-tag
+            >
+          </li>
+        </div>
+      </List>
+    </el-card>
+    <br /><br />
+    <!-- 系统信息 -->
+    <el-card class="box-card">
+      <div slot="header" class="clearfix">
+        <span style="font-size: 16px">系统信息</span>
+      </div>
+      <List item-layout="horizontal" :split="false">
+        <div class="metadata-item">
+          <p>机器 ID</p>
+          <span>{{ node.status.nodeInfo.machineID }}</span>
+        </div>
+        <div class="metadata-item">
+          <p>系统 UUID</p>
+          <span>{{ node.status.nodeInfo.systemUUID }}</span>
+        </div>
+        <div class="metadata-item">
+          <p>启动 ID</p>
+          <span>{{ node.status.nodeInfo.bootID }}</span>
         </div>
       </List>
       <List item-layout="horizontal" :split="false">
         <div class="metadata-item">
-          <p>名字</p>
-          <span>{{node.metadata.name}}</span>
+          <p>内核版本</p>
+          <span>{{ node.status.nodeInfo.kernelVersion }}</span>
         </div>
         <div class="metadata-item">
-          <p>创建时间</p>
-          <span>{{node.metadata.creationTimestamp.replaceAll(/[TZ]/g,' ')}}</span>
+          <p>操作系统镜像</p>
+          <span>{{ node.status.nodeInfo.osImage }}</span>
         </div>
         <div class="metadata-item">
-          <p>UID</p>
-          <span>{{node.metadata.uid}}</span>
+          <p>容器运行时版本</p>
+          <span>{{ node.status.nodeInfo.containerRuntimeVersion }}</span>
+        </div>
+        <div class="metadata-item">
+          <p>kubelet 版本</p>
+          <span>{{ node.status.nodeInfo.kubeletVersion }}</span>
+        </div>
+        <div class="metadata-item">
+          <p>kube-proxy 版本</p>
+          <span>{{ node.status.nodeInfo.kubeProxyVersion }}</span>
+        </div>
+        <div class="metadata-item">
+          <p>操作系统</p>
+          <span>{{ node.status.nodeInfo.operatingSystem }}</span>
+        </div>
+        <div class="metadata-item">
+          <p>架构</p>
+          <span>{{ node.status.nodeInfo.architecture }}</span>
         </div>
       </List>
     </el-card>
@@ -177,63 +264,67 @@ export default {
     return {
       trailWidth: 5,
       strokeWidth: 5,
-      data: [
-        {
-          title: "This is title 1",
-          description:
-            "This is description, this is description, this is description.",
-          avatar:
-            "https://dev-file.iviewui.com/userinfoPDvn9gKWYihR24SpgC319vXY8qniCqj4/avatar",
-          content:
-            "This is the content, this is the content, this is the content, this is the content.",
-        },
-        {
-          title: "This is title 2",
-          description:
-            "This is description, this is description, this is description.",
-          avatar:
-            "https://dev-file.iviewui.com/userinfoPDvn9gKWYihR24SpgC319vXY8qniCqj4/avatar",
-          content:
-            "This is the content, this is the content, this is the content, this is the content.",
-        },
-        {
-          title: "This is title 3",
-          description:
-            "This is description, this is description, this is description.",
-          avatar:
-            "https://dev-file.iviewui.com/userinfoPDvn9gKWYihR24SpgC319vXY8qniCqj4/avatar",
-          content:
-            "This is the content, this is the content, this is the content, this is the content.",
-        },
-      ],
     };
   },
   computed: {
-    node(){
+    node() {
       get: {
         return this.$store.state.nodes.nodeDetails;
       }
-      set:(node)=>{
-        node = sessionStorage.getItem("nodeDetails");
+    },
+
+    // 元数据下的标签
+    labels() {
+      let labelArr = [];
+      for (let pro in this.node.metadata.labels) {
+        labelArr.push({
+          key: pro,
+          value: this.node.metadata.labels[pro],
+        });
       }
+      return labelArr;
+    },
+
+    // 元数据下的注释
+    annotations(){
+      let annoArr = [];
+      for (let anno in this.node.metadata.annotations) {
+        annoArr.push({
+          key: anno,
+          value: this.node.metadata.annotations[anno],
+        });
+      }
+      return annoArr;
+    },
+    // 资源信息下的地址
+    addressess(){
+      let addrArr = [];
+      // console.log(this.node.status.addresses[0].type);
+      for (let addr in this.node.status.addresses) {
+        
+        addrArr.push({
+          key: this.node.status.addresses[addr].type,
+          value: this.node.status.addresses[addr].address,
+        });
+      }
+      return addrArr;
     }
   },
   mounted: function () {
-
-      window.addEventListener('unload', this.saveNodeInfo)
-     
+    window.addEventListener("unload", this.saveNodeInfo);
   },
-  created: function() {
-    
-    if(this.$store.state.nodes.nodeDetails.name == undefined){
-      
+  created: function () {
+    if (this.$store.state.nodes.nodeDetails.name == undefined) {
       this.node = sessionStorage.getItem("nodeDetails");
     }
   },
   methods: {
-    saveNodeInfo(){
-      sessionStorage.setItem("nodeDetails", this.$store.state.nodes.nodeDetails);
-    }
+    saveNodeInfo() {
+      sessionStorage.setItem(
+        "nodeDetails",
+        this.$store.state.nodes.nodeDetails
+      );
+    },
   },
 };
 </script>
@@ -255,18 +346,36 @@ export default {
     }
   }
 }
+
+// 元数据
 .metadata-item {
   margin: 0 30px 0 0;
   display: inline-block;
   padding: 10px 10px;
+
+  // 小标题
   & p {
     font-size: 14px;
     color: #909399;
   }
 
+  // 小标题下的内容
   & span {
     font-size: 20px;
     color: #303133;
+  }
+
+  // 标签列表
+  & li {
+    display: inline-block;
+    // 标签
+    & .lebel-tag {
+      margin-right: 15px;
+      margin-top: 5px;
+      padding: 2px 8px;
+      color: #333;
+      border: none;
+    }
   }
 }
 .demo-Circle-custom {
