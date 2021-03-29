@@ -20,6 +20,9 @@ import pods from './modules/workload/pods'
 import deployments from './modules/workload/deployments'
 import services from './modules/ExploreBalancing/services'
 import ingresses from './modules/ExploreBalancing/ingresses'
+import configMaps from './modules/SettingStorage/configMaps'
+import secrets from './modules/SettingStorage/secrets'
+import persistentVolumeClaims from './modules/SettingStorage/persistentVolumeClaims'
 
 
 Vue.use(Vuex)
@@ -33,6 +36,9 @@ const store = new Vuex.Store({
     nodes,
     namespaces,
     deployments,
+    configMaps,
+    secrets,
+    persistentVolumeClaims,
     services,
     ingresses,
     clusterRoles
