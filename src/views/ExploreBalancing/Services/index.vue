@@ -15,9 +15,9 @@
       </div>
       <el-table :data="services" style="width: 100%" stripe>
         <el-table-column width="40">
-          <template slot-scope="scope">
+          <!-- <template slot-scope="scope">
             <svg-icon :icon-class="scope.row.status.conditions[1].status == 'True'? 'load-success': scope.row.status.conditions[1].status == 'Unknown'?'load-doubt':'load-failed'"/>
-          </template>
+          </template> -->
         </el-table-column>
         <el-table-column prop="metadata.name" label="名字">
           <template slot-scope="scope">
@@ -32,7 +32,7 @@
           <template slot-scope="scope">
             <span>k8s-app: {{scope.row.metadata.labels['k8s-app']}}</span>
             <br>
-            <span>pod-template-hash: {{scope.row.metadata.labels['pod-template-hash']}}</span>
+            <span>service-template-hash: {{scope.row.metadata.labels['service-template-hash']}}</span>
           </template>
         </el-table-column>
         <!-- <el-table-column prop="apiVersion" label="apiVersion"> </el-table-column> -->
@@ -81,7 +81,7 @@ export default {
         .dispatch("services/getAllServices")
         .then((res) => {
           console.log(res.data);
-          this.Services = res.data;
+          this.services = res.data;
         })
         .catch((error) => {
           console.log(error);
