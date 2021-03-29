@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-03-27 13:47:50
+ * @LastEditTime: 2021-03-28 19:15:39
 -->
 <template>
   <div>
@@ -20,7 +20,7 @@
             <svg-icon :icon-class="scope.row.status.conditions[3].status == 'True'? 'load-success': scope.row.status.conditions[3].status == 'Unknown'?'load-doubt':'load-failed'"/>
           </template>
         </el-table-column>
-        <el-table-column label="名字">
+        <el-table-column label="名字" width="120">
           <template slot-scope="scope">
             <router-link :to="'/summary/nodes/'+scope.row.metadata.name" @click.native="goToNodeDetails(scope.row)" class="link-type">
               <span style="color:#409EFF;text-decoration:underline">{{ scope.row.metadata.name }}</span>
@@ -34,11 +34,11 @@
             <span>pod-template-hash: {{scope.row.metadata.labels['pod-template-hash']}}</span>
           </template>
         </el-table-column> -->
-        <el-table-column prop="status.conditions[3].status" label="准备就绪"> </el-table-column>
-        <el-table-column prop="kind" label="CPU 利用率"> </el-table-column>
+        <el-table-column prop="status.conditions[3].status" width="100" label="准备就绪"> </el-table-column>
+        <el-table-column prop="kind" label="CPU 利用率" width="100"> </el-table-column>
         <!-- <el-table-column prop="kind" label="CPU 最高需求"> </el-table-column>
         <el-table-column prop="kind" label="Memory 最低需求"> </el-table-column> -->
-        <el-table-column prop="kind" label="内存利用率"> </el-table-column>
+        <el-table-column prop="kind" label="内存利用率" width="100"> </el-table-column>
         <!-- <el-table-column prop="metadata.uid" label="uid"> </el-table-column>
         <el-table-column prop="spec.nodeName" label="所属节点"> </el-table-column>
         <el-table-column prop="status.podIP" label="主机ip地址"> </el-table-column> -->
@@ -49,7 +49,7 @@
             <span>{{scope.row.metadata.creationTimestamp.replaceAll(/[TZ]/g,' ')}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="是否可调度">
+        <el-table-column label="是否可调度" width="100">
             <!-- 作用域插槽 -->
             <template slot-scope="scope">
                 <!-- {{scope.row}} 每一行封存的数据 -->
@@ -117,7 +117,7 @@
       <div slot="header" class="clearfix">
         <span style="font-size: 20px">集群角色</span>
       </div>
-      <el-table :data="clasterRoles" style="width: 100%" stripe>
+      <el-table :data="clusterRoles" style="width: 100%" stripe>
         <!-- <el-table-column width="40">
           <template slot-scope="scope">
             <svg-icon :icon-class="scope.row.status.phase == 'Active'? 'load-success': 'load-failed'"/>
@@ -149,9 +149,9 @@
         <el-table-column label="操作">
           <template slot-scope="scope">
               <!-- 修改 -->
-              <el-button type="primary" icon="el-icon-edit" size="small" @click="showClasterRolesEditDialog(scope.row)">编辑</el-button>
+              <el-button type="primary" icon="el-icon-edit" size="small" @click="showClusterRolesEditDialog(scope.row)">编辑</el-button>
               <!-- 删除 -->
-              <el-button type="danger" icon="el-icon-delete" size="small" @click="delClasterRoles(scope.row)">删除</el-button>
+              <el-button type="danger" icon="el-icon-delete" size="small" @click="delClusterRoles(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -218,7 +218,7 @@ export default {
     },
 
     // 获取所有集群角色
-    getAllNamespaces: function () {
+    getAllClusterRoles: function () {
       this.$store
         .dispatch("clusterRoles/getAllClusterRoles")
         .then((res) => {
