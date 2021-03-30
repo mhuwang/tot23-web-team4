@@ -13,12 +13,12 @@
       <div slot="header" class="clearfix">
         <span>所有 Services</span>
       </div>
-      <el-table :data="services" style="width: 100%" stripe>
-        <el-table-column width="40">
+       <el-table :data="services" style="width: 100%" stripe>
+        <!--<el-table-column width="40">
           <template slot-scope="scope">
             <svg-icon :icon-class="scope.row.status.conditions[1].status == 'True'? 'load-success': scope.row.status.conditions[1].status == 'Unknown'?'load-doubt':'load-failed'"/>
           </template>
-        </el-table-column>
+        </el-table-column> -->
         <el-table-column prop="metadata.name" label="名字">
           <template slot-scope="scope">
             <router-link :to="'/ExploreBalancing/services/'+scope.row.metadata.name" @click.native="goToServicesDetails(scope.row)" class="link-type">
@@ -28,13 +28,13 @@
         </el-table-column>
         <!-- <el-table-column prop="apiVersion" label="版本"> </el-table-column> -->
         <el-table-column prop="metadata.namespace" label="命名空间"> </el-table-column>
-        <el-table-column label="标签">
+        <!-- <el-table-column label="标签">
           <template slot-scope="scope">
             <span>k8s-app: {{scope.row.metadata.labels['k8s-app']}}</span>
             <br>
-            <span>pod-template-hash: {{scope.row.metadata.labels['pod-template-hash']}}</span>
+            <span>pod-template-hash: {{scope.row.metadata.labels['service-template-hash']}}</span>
           </template>
-        </el-table-column>
+        </el-table-column> -->
         <!-- <el-table-column prop="apiVersion" label="apiVersion"> </el-table-column> -->
         <!-- <el-table-column prop="kind" label="kind"> </el-table-column> -->
         <!-- <el-table-column prop="metadata.uid" label="uid"> </el-table-column> -->
@@ -81,7 +81,7 @@ export default {
         .dispatch("services/getAllServices")
         .then((res) => {
           console.log(res.data);
-          this.Services = res.data;
+          this.services = res.data;
         })
         .catch((error) => {
           console.log(error);

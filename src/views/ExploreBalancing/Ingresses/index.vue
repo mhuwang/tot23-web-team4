@@ -13,11 +13,11 @@
         <span>所有 Ingresses</span>
       </div>
       <el-table :data="ingresses" style="width: 100%" stripe>
-        <el-table-column width="40">
+        <!-- <el-table-column width="40">
           <template slot-scope="scope">
             <svg-icon :icon-class="scope.row.status.conditions[1].status == 'True'? 'load-success': scope.row.status.conditions[1].status == 'Unknown'?'load-doubt':'load-failed'"/>
           </template>
-        </el-table-column>
+        </el-table-column> -->
         <el-table-column prop="metadata.name" label="名字">
           <template slot-scope="scope">
             <router-link :to="'/ExploreBalancing/ingresses/'+scope.row.metadata.name" @click.native="goToIngressesDetails(scope.row)" class="link-type">
@@ -47,9 +47,11 @@
         <el-table-column label="操作">
           <template slot-scope="scope">
               <!-- 修改 -->
-              <el-button type="primary" icon="el-icon-plus" size="small" @click="showIngressesAddDialog(scope.row)">增加</el-button>
+              <el-button style="margin-bottom:5px" type="primary" icon="el-icon-plus" size="small" @click="showIngressesAddDialog(scope.row)">增加</el-button>
+              <br>
               <!-- 编辑 -->
-              <el-button type="warning" icon="el-icon-edit" size="small" @click="editIngressesEditDialog(scope.row)">编辑</el-button>
+              <el-button style="margin-bottom:5px" type="warning" icon="el-icon-edit" size="small" @click="editIngressesEditDialog(scope.row)">编辑</el-button>
+              <br>
               <!-- 删除 -->
               <el-button type="danger" icon="el-icon-delete" size="small" @click="delIngresses(scope.row)">删除</el-button>
           </template>
