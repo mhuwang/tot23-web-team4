@@ -1,10 +1,10 @@
 <!--
- * @Descripttion: your project
+ * @Description: your project
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-03-10 15:03:17
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-03-19 16:11:00
+ * @LastEditTime: 2021-03-30 17:08:01
 -->
 <template>
   <div class="navbar">

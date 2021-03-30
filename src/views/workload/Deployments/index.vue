@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-03-27 14:49:48
+ * @LastEditTime: 2021-03-29 21:03:28
 -->
 <template>
   <div>
@@ -50,9 +50,11 @@
         <el-table-column label="操作">
           <template slot-scope="scope">
               <!-- 修改 -->
-              <el-button type="primary" icon="el-icon-plus" size="small" @click="showDeploymentsAddDialog(scope.row)">增加</el-button>
+              <el-button style="margin-bottom:5px" type="primary" icon="el-icon-plus" size="small" @click="showDeploymentsAddDialog(scope.row)">增加</el-button>
+              <br>
               <!-- 编辑 -->
-              <el-button type="warning" icon="el-icon-edit" size="small" @click="editDeploymentsEditDialog(scope.row)">编辑</el-button>
+              <el-button style="margin-bottom:5px" type="warning" icon="el-icon-edit" size="small" @click="editDeploymentsEditDialog(scope.row)">编辑</el-button>
+              <br>
               <!-- 删除 -->
               <el-button type="danger" icon="el-icon-delete" size="small" @click="delDeployments(scope.row)">删除</el-button>
           </template>

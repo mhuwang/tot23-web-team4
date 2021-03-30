@@ -1,13 +1,12 @@
 /*
- * @Descripttion: your project
+ * @Description: your project
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-03-19 16:14:56
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-03-24 19:46:27
+ * @LastEditTime: 2021-03-30 17:08:39
  */
 import request from '@/utils/request'
-import axios from "axios"
 let baseUrl = "http://localhost:8081"
 
 export function login(data) {
@@ -34,12 +33,7 @@ export function logout() {
 }
 
 export function getUsers(queryInfo) {
-  let query = {
-    queryInfo: queryInfo.queryInfo,
-    pageStart: queryInfo.pageStart,
-    pageSize: queryInfo.pageSize
-  }
-  
+    
   return request({
     url: baseUrl + '/user/getUsers',
     method: 'get',

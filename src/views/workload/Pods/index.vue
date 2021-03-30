@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-03-27 14:00:25
+ * @LastEditTime: 2021-03-30 19:08:46
 -->
 <template>
   <div>
@@ -13,9 +13,10 @@
         <span>所有 Pod</span>
       </div>
       <el-table :data="pods" style="width: 100%" stripe>
-        <el-table-column width="40">
+        <el-table-column width="200">
           <template slot-scope="scope">
-            <svg-icon :icon-class="scope.row.status.conditions[3].status == 'True'? 'load-success': scope.row.status.conditions[3].status == 'Unknown'?'load-doubt':'load-failed'"/>
+            <!-- {{scope.row.status}} -->
+            <svg-icon :icon-class="scope.row.status.containerStatuses[0].ready == false ? 'load-failed': scope.row.status.containerStatuses[0].started == true?'load-success':'load-doubt'"/>
           </template>
         </el-table-column>
         <el-table-column prop="metadata.name" label="名字">
@@ -23,6 +24,11 @@
             <router-link :to="'/workload/pods/'+scope.row.metadata.name" @click.native="goToPodsDetails(scope.row)" class="link-type">
               <span style="color:#409EFF;text-decoration:underline">{{ scope.row.metadata.name }}</span>
             </router-link>
+          </template>
+        </el-table-column>
+        <el-table-column label="命名空间">
+          <template slot-scope="scope">
+            {{scope.row.status}}
           </template>
         </el-table-column>
         <el-table-column prop="metadata.namespace" label="命名空间"> </el-table-column>
@@ -38,11 +44,11 @@
         <!-- <el-table-column prop="metadata.uid" label="uid"> </el-table-column> -->
         <el-table-column prop="spec.nodeName" width="140" label="所属节点"> </el-table-column>
         <el-table-column prop="status.podIP" width="140" label="主机ip地址"> </el-table-column>
-        <el-table-column label="启动时间" width="200">
+        <!-- <el-table-column label="启动时间" width="200">
           <template slot-scope="scope">
             <span>{{scope.row.status.startTime.replaceAll(/[TZ]/g,' ')}}</span>
           </template>
-        </el-table-column>
+        </el-table-column> -->
         <el-table-column label="操作">
           <template slot-scope="scope">
               <!-- 修改 -->

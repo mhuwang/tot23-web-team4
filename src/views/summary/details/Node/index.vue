@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-25 22:13:37
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-03-28 22:04:29
+ * @LastEditTime: 2021-03-30 19:14:49
 -->
 <template>
   <div>
@@ -13,6 +13,25 @@
         node.metadata.name
       }}</span></el-divider
     >
+    <!-- 内存信息 -->
+    <el-card class="box-card">
+      <div slot="header" class="clearfix">
+        <span style="font-size: 16px">资源利用率</span>
+      </div>
+      <div>
+        <el-row>
+          <el-col :span="24">
+            <div id="cpu-usage"></div>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <div id="memory-usage"></div>
+          </el-col>
+        </el-row>
+      </div>
+    </el-card>
+    <br /><br />
     <!-- 分配信息 -->
     <el-card class="box-card">
       <div slot="header" class="clearfix">
@@ -32,7 +51,7 @@
               >
                 <ListItem class="my-list-item">
                   <i-circle
-                    :size="200"
+                    :size="150"
                     :trail-width="trailWidth"
                     :stroke-width="strokeWidth"
                     :percent="6.3"
@@ -42,13 +61,13 @@
                     <div class="demo-Circle-custom">
                       <h2>6.3%</h2>
                       <span> Requests </span>
-                      <p>Cores: 0.25</p>
+                      <p>Cores: {{ node.status.allocatable.cpu.amount }}</p>
                     </div>
                   </i-circle>
                 </ListItem>
                 <ListItem class="my-list-item">
                   <i-circle
-                    :size="200"
+                    :size="150"
                     :trail-width="trailWidth"
                     :stroke-width="strokeWidth"
                     :percent="12.5"
@@ -58,7 +77,7 @@
                     <div class="demo-Circle-custom">
                       <h2>12.5%</h2>
                       <span> Limits </span>
-                      <p>Cores: 0.5</p>
+                      <p>Cores: {{ node.status.allocatable.cpu.amount }}</p>
                     </div>
                   </i-circle>
                 </ListItem>
@@ -72,7 +91,7 @@
               <List class="my-list" item-layout="vertical" :split="false">
                 <ListItem class="my-list-item">
                   <i-circle
-                    :size="200"
+                    :size="150"
                     :trail-width="trailWidth"
                     :stroke-width="strokeWidth"
                     :percent="0.4"
@@ -82,13 +101,22 @@
                     <div class="demo-Circle-custom">
                       <h2>0.4%</h2>
                       <span> Requests </span>
-                      <p>MiB: 64</p>
+                      <p>
+                        GiB:
+                        {{
+                          (
+                            node.status.allocatable.memory.amount /
+                            1024 /
+                            1024
+                          ).toFixed(2)
+                        }}
+                      </p>
                     </div>
                   </i-circle>
                 </ListItem>
                 <ListItem class="my-list-item">
                   <i-circle
-                    :size="200"
+                    :size="150"
                     :trail-width="trailWidth"
                     :stroke-width="strokeWidth"
                     :percent="0.8"
@@ -98,7 +126,16 @@
                     <div class="demo-Circle-custom">
                       <h2>0.8%</h2>
                       <span> Limits </span>
-                      <p>MiB: 128</p>
+                      <p>
+                        GiB:
+                        {{
+                          (
+                            node.status.allocatable.memory.amount /
+                            1024 /
+                            1024
+                          ).toFixed(2)
+                        }}
+                      </p>
                     </div>
                   </i-circle>
                 </ListItem>
@@ -106,13 +143,13 @@
             </Card>
           </el-col>
           <!-- pod 信息 -->
-          <el-col :span="4" :offset="1">
+          <el-col :span="6" :offset="1">
             <Card class="my-card">
               <p slot="title">Pod</p>
               <List class="my-list" item-layout="vertical" :split="false">
                 <ListItem class="my-list-item">
                   <i-circle
-                    :size="200"
+                    :size="150"
                     :trail-width="trailWidth"
                     :stroke-width="strokeWidth"
                     :percent="6.3"
@@ -122,7 +159,7 @@
                     <div class="demo-Circle-custom">
                       <h2>6.3%</h2>
                       <span> Requests </span>
-                      <p>Cores: 0.25</p>
+                      <p>Pods: 6</p>
                     </div>
                   </i-circle>
                 </ListItem>
@@ -254,6 +291,123 @@
         </div>
       </List>
     </el-card>
+    <br /><br />
+    <!-- 状态信息 -->
+    <el-card class="box-card">
+      <div slot="header" class="clearfix">
+        <span style="font-size: 16px">状态</span>
+      </div>
+      <el-table :data="node.status.conditions" style="width: 100%" stripe>
+        <el-table-column prop="type" label="类别"> </el-table-column>
+        <el-table-column prop="status" label="状态" width="120">
+        </el-table-column>
+
+        <el-table-column label="最后检测时间">
+          <template slot-scope="scope">
+            <span>{{
+              scope.row.lastHeartbeatTime.replaceAll(/[TZ]/g, " ")
+            }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="最后迁移时间">
+          <template slot-scope="scope">
+            <span>{{
+              scope.row.lastTransitionTime.replaceAll(/[TZ]/g, " ")
+            }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="reason" label="原因"> </el-table-column>
+        <el-table-column prop="message" label="信息"> </el-table-column>
+      </el-table>
+    </el-card>
+    <br /><br />
+    <!-- pod 信息 -->
+    <el-card class="box-card">
+      <div slot="header" class="clearfix">
+        <span style="font-size: 16px">Pod</span>
+      </div>
+      <el-table :data="pods" style="width: 100%" stripe>
+        <el-table-column width="40">
+          <template slot-scope="scope">
+            <svg-icon
+              :icon-class="
+                scope.row.status.containerStatuses[0].ready == false
+                  ? 'load-failed'
+                  : scope.row.status.containerStatuses[0].started == true
+                  ? 'load-success'
+                  : 'load-doubt'
+              "
+            />
+          </template>
+        </el-table-column>
+        <el-table-column prop="metadata.name" label="名字">
+          <template slot-scope="scope">
+            <router-link
+              :to="'/workload/pods/' + scope.row.metadata.name"
+              @click.native="goToPodsDetails(scope.row)"
+              class="link-type"
+            >
+              <span style="color: #409eff; text-decoration: underline">{{
+                scope.row.metadata.name
+              }}</span>
+            </router-link>
+          </template>
+        </el-table-column>
+        <el-table-column prop="metadata.namespace" label="命名空间">
+        </el-table-column>
+        <!-- <el-table-column label="标签">
+          <template slot-scope="scope">
+            <span>k8s-app: {{scope.row.metadata.labels['k8s-app']}}</span>
+            <br>
+            <span>pod-template-hash: {{scope.row.metadata.labels['pod-template-hash']}}</span>
+          </template>
+        </el-table-column> -->
+        <!-- <el-table-column prop="apiVersion" label="apiVersion"> </el-table-column> -->
+        <!-- <el-table-column prop="kind" label="kind"> </el-table-column> -->
+        <!-- <el-table-column prop="metadata.uid" label="uid"> </el-table-column> -->
+        <el-table-column prop="spec.nodeName"  label="所属节点">
+        </el-table-column>
+        <el-table-column prop="status.podIP"  label="Pod ip地址">
+        </el-table-column>
+        <el-table-column label="启动时间">
+          <template slot-scope="scope">
+            <span>{{
+              scope.row.status.startTime.replaceAll(/[TZ]/g, " ")
+            }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作">
+          <template slot-scope="scope">
+            <!-- 修改 -->
+            <el-button
+              style="margin-bottom:5px;"
+              type="primary"
+              icon="el-icon-plus"
+              size="small"
+              @click="showClasterRolesAddDialog(scope.row)"
+              >增加</el-button
+            ><br>
+            <!-- 删除 -->
+            <el-button
+              style="margin-bottom:5px;"
+              type="warning"
+              icon="el-icon-edit"
+              size="small"
+              @click="showClasterRolesEditDialog(scope.row)"
+              >编辑</el-button
+            ><br>
+            <!-- 删除 -->
+            <el-button
+              type="danger"
+              icon="el-icon-delete"
+              size="small"
+              @click="delClasterRoles(scope.row)"
+              >删除</el-button
+            >
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-card>
   </div>
 </template>
 
@@ -264,15 +418,13 @@ export default {
     return {
       trailWidth: 5,
       strokeWidth: 5,
+      usage: [],
+      pods: [],
+      nodeName: "",
+      node: {},
     };
   },
   computed: {
-    node() {
-      get: {
-        return this.$store.state.nodes.nodeDetails;
-      }
-    },
-
     // 元数据下的标签
     labels() {
       let labelArr = [];
@@ -286,7 +438,7 @@ export default {
     },
 
     // 元数据下的注释
-    annotations(){
+    annotations() {
       let annoArr = [];
       for (let anno in this.node.metadata.annotations) {
         annoArr.push({
@@ -296,40 +448,175 @@ export default {
       }
       return annoArr;
     },
+
     // 资源信息下的地址
-    addressess(){
+    addressess() {
       let addrArr = [];
       // console.log(this.node.status.addresses[0].type);
       for (let addr in this.node.status.addresses) {
-        
         addrArr.push({
           key: this.node.status.addresses[addr].type,
           value: this.node.status.addresses[addr].address,
         });
       }
       return addrArr;
-    }
+    },
   },
   mounted: function () {
-    window.addEventListener("unload", this.saveNodeInfo);
+    // 为空，直接存储
+    if (sessionStorage.getItem("nodeName") == null) {
+      sessionStorage.setItem("nodeName", this.$store.state.nodes.nodeName);
+      this.nodeName = this.$store.state.nodes.nodeName;
+    }
+    // 不为空，且当前 nodeName 有值，同时和之前的不一样，更新 nodeName
+    else if (
+      this.$store.state.nodes.nodeName != "" &&
+      sessionStorage.getItem("nodeName") != this.$store.state.nodes.nodeName
+    ) {
+      sessionStorage.setItem("nodeName", this.$store.state.nodes.nodeName);
+      this.nodeName = this.$store.state.nodes.nodeName;
+    }
+    this.$store
+      .dispatch("nodes/getNodeByName", sessionStorage.getItem("nodeName"))
+      .then((res) => {
+        this.node = res.data;
+        // 获取近20分钟的 cpu 和内存使用率进行画图
+      })
+      .catch((error) => {
+        throw error;
+      });
+    this.$store
+      .dispatch(
+        "nodes/getUsageRecentTwenty",
+        sessionStorage.getItem("nodeName")
+      )
+      .then((res) => {
+        let cpu = this.node.status.allocatable.cpu.amount;
+        let memory = this.node.status.allocatable.memory.amount;
+        let cpuArr = [];
+        let memoryArr = [];
+        let timeArr = [];
+        for (let i = 0; i < res.data.length; i++) {
+          // 格式化 cpu 数据
+          cpuArr.push((res.data[i].cpu / 1000 / 1000 / cpu / 1000).toFixed(4));
+          // 格式化 内存数据
+          memoryArr.push((res.data[i].memory / memory).toFixed(4));
+          // 格式化时间数据
+          timeArr.push(res.data[i].time.substring(11, 16));
+        }
+        // console.log(cpuArr);
+        // console.log(memoryArr);
+        // console.log(timeArr);
+
+        // 配置 cpu 图表项
+        let optionCpu = {
+          title: {
+            show: true,
+            text: "CPU",
+            textAlign: "auto",
+            left: "center",
+          },
+          tooltip: {
+            trigger: "axis",
+          },
+          xAxis: {
+            type: "category",
+            boundaryGap: false,
+            data: timeArr,
+            name: "时间",
+          },
+          yAxis: {
+            type: "value",
+            name: "利用率",
+          },
+          series: [
+            {
+              data: cpuArr,
+              type: "line",
+              areaStyle: {},
+            },
+          ],
+        };
+        // 配置内存图表项
+        let optionMemory = {
+          title: {
+            show: true,
+            text: "内存",
+            textAlign: "auto",
+            left: "center",
+          },
+          tooltip: {
+            trigger: "axis",
+          },
+          xAxis: {
+            type: "category",
+            boundaryGap: false,
+            data: timeArr,
+            name: "时间",
+          },
+          yAxis: {
+            type: "value",
+            name: "利用率",
+          },
+          series: [
+            {
+              data: memoryArr,
+              type: "line",
+              areaStyle: {},
+            },
+          ],
+        };
+
+        let cpuDom = document.getElementById("cpu-usage");
+        let memoryDom = document.getElementById("memory-usage");
+        let cpuChart = this.$echarts.init(cpuDom, null, { renderer: "svg" });
+        let memoryChart = this.$echarts.init(memoryDom, null, {
+          renderer: "svg",
+        });
+        optionCpu && cpuChart.setOption(optionCpu);
+        optionMemory && memoryChart.setOption(optionMemory);
+      })
+      .catch((error) => {
+        throw error;
+      });
+
+    // 获取当前节点下的所有 pod 数据
+    this.$store
+      .dispatch("pods/getPodsByNode", sessionStorage.getItem("nodeName"))
+      .then((res) => {
+        console.log(res);
+        this.pods = res.data;
+      })
+      .catch((error) => {
+        throw error;
+      });
   },
   created: function () {
-    if (this.$store.state.nodes.nodeDetails.name == undefined) {
-      this.node = sessionStorage.getItem("nodeDetails");
-    }
+    window.addEventListener("unload", this.saveNodeInfo);
+    // console.log(sessionStorage.getItem("nodeName"));
+    // if(sessionStorage.getItem("nodeName" == null)){
+    //   console.log(this.$store.state.nodes.nodeName);
+    //   console.log("aaa");
+    // }
+    //   console.log("bbb");
+    // this.nodeName = this.$store.state.nodes.nodeName;
   },
   methods: {
     saveNodeInfo() {
-      sessionStorage.setItem(
-        "nodeDetails",
-        this.$store.state.nodes.nodeDetails
-      );
+      alert("RELOAD", this.nodeName);
+      sessionStorage.setItem("nodeName");
     },
   },
 };
 </script>
 
 <style lang="scss" scoped>
+#cpu-usage,
+#memory-usage {
+  width: 100%;
+  height: 250px;
+}
+
 .my-card {
   & p {
     display: inline-block;
@@ -371,6 +658,7 @@ export default {
     // 标签
     & .lebel-tag {
       margin-right: 15px;
+      border-radius: 15px;
       margin-top: 5px;
       padding: 2px 8px;
       color: #333;
