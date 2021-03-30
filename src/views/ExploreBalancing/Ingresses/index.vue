@@ -13,11 +13,11 @@
         <span>所有 Ingresses</span>
       </div>
       <el-table :data="ingresses" style="width: 100%" stripe>
-        <el-table-column width="40">
+        <!-- <el-table-column width="40">
           <template slot-scope="scope">
             <svg-icon :icon-class="scope.row.status.conditions[1].status == 'True'? 'load-success': scope.row.status.conditions[1].status == 'Unknown'?'load-doubt':'load-failed'"/>
           </template>
-        </el-table-column>
+        </el-table-column> -->
         <el-table-column prop="metadata.name" label="名字">
           <template slot-scope="scope">
             <router-link :to="'/ExploreBalancing/ingresses/'+scope.row.metadata.name" @click.native="goToIngressesDetails(scope.row)" class="link-type">
