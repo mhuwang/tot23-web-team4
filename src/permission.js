@@ -1,3 +1,11 @@
+/*
+ * @Description: your project
+ * @version: 1.0
+ * @Author: Rex Joush
+ * @Date: 2021-03-19 16:14:56
+ * @LastEditors: Rex Joush
+ * @LastEditTime: 2021-03-30 20:09:53
+ */
 import router from './router'
 import store from './store'
 import { Message } from 'element-ui'
@@ -32,7 +40,7 @@ router.beforeEach(async(to, from, next) => {
       } else {
         try {
           // get user info
-          await store.dispatch('user/getInfo')
+          // await store.dispatch('user/getInfo')
 
           next()
         } catch (error) {

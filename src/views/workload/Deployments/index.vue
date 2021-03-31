@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-03-29 21:03:28
+ * @LastEditTime: 2021-03-30 20:58:46
 -->
 <template>
   <div>
@@ -15,22 +15,45 @@
       <el-table :data="deployments" style="width: 100%" stripe>
         <el-table-column width="40">
           <template slot-scope="scope">
-            <svg-icon :icon-class="scope.row.status.conditions[1].status == 'True' ? 'load-success': scope.row.status.conditions[1].status == 'Unknown'?'load-doubt':'load-failed'"/>
+            <svg-icon
+              :icon-class="
+                scope.row.status.conditions[1].status == 'True'
+                  ? 'load-success'
+                  : scope.row.status.conditions[1].status == 'Unknown'
+                  ? 'load-doubt'
+                  : 'load-failed'
+              "
+            />
           </template>
         </el-table-column>
         <el-table-column prop="metadata.name" label="名字">
           <template slot-scope="scope">
-            <router-link :to="'/workload/deployments/'+scope.row.metadata.name" @click.native="goToDeploymentsDetails(scope.row)" class="link-type">
-              <span style="color:#409EFF;text-decoration:underline">{{ scope.row.metadata.name }}</span>
+            <router-link
+              :to="'/workload/deployments/' + scope.row.metadata.name"
+              @click.native="
+                goToDeploymentsDetails(
+                  scope.row.metadata.name,
+                  scope.row.metadata.namespace
+                )
+              "
+              class="link-type"
+            >
+              <span style="color: #409eff; text-decoration: underline">{{
+                scope.row.metadata.name
+              }}</span>
             </router-link>
           </template>
         </el-table-column>
         <!-- <el-table-column prop="apiVersion" label="版本"> </el-table-column> -->
-        <el-table-column prop="metadata.namespace" label="命名空间"> </el-table-column>
+        <el-table-column prop="metadata.namespace" label="命名空间">
+        </el-table-column>
         <el-table-column label="标签">
           <template slot-scope="scope">
-            <span v-for="(item, index) in scope.row.metadata.labels" :key="index">
-                {{scope.row.metadata.labels}}
+            <span
+              v-for="(item, index) in scope.row.metadata.labels"
+              :key="index"
+            >
+              {{ scope.row.metadata.labels }}
             </span>
             <!-- <span>k8s-app: {{scope.row.metadata.labels['k8s-app']}}</span> -->
             <!-- <br> -->
@@ -44,19 +67,41 @@
         <el-table-column prop="status.podIP" width="140" label="主机ip地址"> </el-table-column> -->
         <el-table-column label="创建时间" width="200">
           <template slot-scope="scope">
-            <span>{{scope.row.metadata.creationTimestamp.replaceAll(/[TZ]/g,' ')}}</span>
+            <span>{{
+              scope.row.metadata.creationTimestamp.replaceAll(/[TZ]/g, " ")
+            }}</span>
           </template>
         </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
-              <!-- 修改 -->
-              <el-button style="margin-bottom:5px" type="primary" icon="el-icon-plus" size="small" @click="showDeploymentsAddDialog(scope.row)">增加</el-button>
-              <br>
-              <!-- 编辑 -->
-              <el-button style="margin-bottom:5px" type="warning" icon="el-icon-edit" size="small" @click="editDeploymentsEditDialog(scope.row)">编辑</el-button>
-              <br>
-              <!-- 删除 -->
-              <el-button type="danger" icon="el-icon-delete" size="small" @click="delDeployments(scope.row)">删除</el-button>
+            <!-- 修改 -->
+            <el-button
+              style="margin-bottom: 5px"
+              type="primary"
+              icon="el-icon-plus"
+              size="small"
+              @click="showDeploymentsAddDialog(scope.row)"
+              >增加</el-button
+            >
+            <br />
+            <!-- 编辑 -->
+            <el-button
+              style="margin-bottom: 5px"
+              type="warning"
+              icon="el-icon-edit"
+              size="small"
+              @click="editDeploymentsEditDialog(scope.row)"
+              >编辑</el-button
+            >
+            <br />
+            <!-- 删除 -->
+            <el-button
+              type="danger"
+              icon="el-icon-delete"
+              size="small"
+              @click="delDeployments(scope.row)"
+              >删除</el-button
+            >
           </template>
         </el-table-column>
       </el-table>
@@ -79,6 +124,13 @@ export default {
   },
 
   methods: {
+    // 详情页
+    goToDeploymentsDetails: function (deploymentName, deploymentNamespace) {
+      // console.log("deployments index namespace", deploymentNamespace);
+      this.$store
+        .dispatch("deployments/toDetails", {deploymentName, deploymentNamespace});
+    },
+
     // 获取所有 Deployments
     getDeployments() {
       this.$store

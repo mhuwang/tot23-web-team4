@@ -4,23 +4,27 @@
  * @Author: Rex Joush
  * @Date: 2021-03-27 14:18:28
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-03-27 14:39:08
+ * @LastEditTime: 2021-03-30 21:53:43
  */
-import { getAllDeployments } from '@/api/workload/deployments'
+import { getAllDeployments, getDeploymentsByNameAndNamespace } from '@/api/workload/deployments'
 import { getToken } from '@/utils/auth'
 
-const getDefaultState = () => {
-    return {
-        token: getToken(),
-        name: '',
-        avatar: ''
+
+const state = {
+    token: getToken(),
+    deployment: {
+        deploymentName: '',
+        deploymentNamespace: '',
     }
 }
 
-const state = getDefaultState()
-
 const mutations = {
-
+    // 跳转 deployment 详情页面
+    TO_DEPLOYMENTS_DETIALS: (state, {deploymentName, deploymentNamespace}) => {
+        // 赋值
+        state.deployment.deploymentName = deploymentName;
+        state.deployment.deploymentNamespace = deploymentNamespace;
+    }
 }
 
 const actions = {
@@ -37,6 +41,25 @@ const actions = {
                 reject(error)
             })
         })
+    },
+    // getDeploymentsByNameAndNamesapce
+    getDeploymentsByNameAndNamespace({ commit }, dep) {
+        return new Promise((resolve, reject) => {
+            getDeploymentsByNameAndNamespace(dep).then(response => {
+                const { data } = response
+                if (!data) {
+                    return reject('获取失败')
+                }
+                resolve(data)
+            }).catch(error => {
+                reject(error)
+            })
+        })
+    },
+
+    // 点击名字进入详情页
+    toDetails({ commit }, dep) {
+        commit("TO_DEPLOYMENTS_DETIALS", dep);
     },
 }
 
