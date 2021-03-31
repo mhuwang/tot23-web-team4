@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-10 15:03:17
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-03-26 13:41:30
+ * @LastEditTime: 2021-03-30 20:30:02
  */
 import Vue from 'vue'
 import Router from 'vue-router'
@@ -103,11 +103,27 @@ export const constantRoutes = [
         component: () => import('@/views/workload/DaemonSets/index'),
         meta: { title: 'Daemon Sets', icon: 'daemon-sets' }
       },
+      // daemonsets 详情
+      {
+        path: 'daemonsets/:name([a-z0-9-]+)',
+        component: () => import('@/views/workload/DaemonSets/details/index'),
+        name: 'Daemon Sets 详情',
+        meta: { title: 'Daemon Sets Details', noCache: true, activeMenu: '/daemonsets'},
+        hidden: true
+      },
       {
         path: 'deployments',
         name: 'Deployments',
         component: () => import('@/views/workload/Deployments/index'),
-        meta: { title: 'Deployments', icon: 'deployments' }
+        meta: { title: 'Deployments', icon: 'deployments' },
+      },
+      // deployment 详情
+      {
+        path: 'deployments/:name([a-z0-9-]+)',
+        component: () => import('@/views/workload/Deployments/details/index'),
+        name: 'Deployment 详情',
+        meta: { title: 'Deployment Details', noCache: true, activeMenu: '/deployments'},
+        hidden: true
       },
       {
         path: 'jobs',
