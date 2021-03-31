@@ -12,12 +12,20 @@ import getters from './getters'
 import app from './modules/app'
 import settings from './modules/settings'
 import user from './modules/user'
+
 import nodes from './modules/cluster/nodes'
 import namespaces from './modules/cluster/namespaces'
 import clusterRoles from './modules/cluster/clusterRoles'
 
-import pods from './modules/workload/pods'
+import cronJobs from './modules/workload/cronJobs'
+import daemonSets from './modules/workload/daemonSets'
 import deployments from './modules/workload/deployments'
+import jobs from './modules/workload/jobs'
+import pods from './modules/workload/pods'
+import replicaSets from './modules/workload/replicaSets'
+import replicationControllers from './modules/workload/replicationControllers'
+import statefulSets from './modules/workload/statefulSets'
+
 import services from './modules/ExploreBalancing/services'
 import ingresses from './modules/ExploreBalancing/ingresses'
 import configMaps from './modules/SettingStorage/configMaps'
@@ -32,13 +40,24 @@ const store = new Vuex.Store({
     app,
     settings,
     user,
-    pods,
     nodes,
     namespaces,
+
+    cronJobs,
+    daemonSets,
     deployments,
+<<<<<<< HEAD
     configMaps,
     secrets,
     persistentVolumeClaims,
+=======
+    jobs,
+    pods,
+    replicaSets,
+    replicationControllers,
+    statefulSets,
+    
+>>>>>>> add3a0a7c9243043a2589193116cfb189760fdc8
     services,
     ingresses,
     clusterRoles

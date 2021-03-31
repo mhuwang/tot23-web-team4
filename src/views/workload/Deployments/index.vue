@@ -4,18 +4,18 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-03-27 14:49:48
+ * @LastEditTime: 2021-03-29 21:03:28
 -->
 <template>
   <div>
     <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <span>所有 Deployments</span>
+        <span>所有 Deployment</span>
       </div>
       <el-table :data="deployments" style="width: 100%" stripe>
         <el-table-column width="40">
           <template slot-scope="scope">
-            <svg-icon :icon-class="scope.row.status.conditions[1].status == 'True'? 'load-success': scope.row.status.conditions[1].status == 'Unknown'?'load-doubt':'load-failed'"/>
+            <svg-icon :icon-class="scope.row.status.conditions[1].status == 'True' ? 'load-success': scope.row.status.conditions[1].status == 'Unknown'?'load-doubt':'load-failed'"/>
           </template>
         </el-table-column>
         <el-table-column prop="metadata.name" label="名字">
@@ -25,15 +25,18 @@
             </router-link>
           </template>
         </el-table-column>
-        <el-table-column prop="apiVersion" label="版本"> </el-table-column>
+        <!-- <el-table-column prop="apiVersion" label="版本"> </el-table-column> -->
         <el-table-column prop="metadata.namespace" label="命名空间"> </el-table-column>
-        <!-- <el-table-column label="标签">
+        <el-table-column label="标签">
           <template slot-scope="scope">
-            <span>k8s-app: {{scope.row.metadata.labels['k8s-app']}}</span>
-            <br>
-            <span>pod-template-hash: {{scope.row.metadata.labels['pod-template-hash']}}</span>
+            <span v-for="(item, index) in scope.row.metadata.labels" :key="index">
+                {{scope.row.metadata.labels}}
+            </span>
+            <!-- <span>k8s-app: {{scope.row.metadata.labels['k8s-app']}}</span> -->
+            <!-- <br> -->
+            <!-- <span>pod-template-hash: {{scope.row.metadata.labels['pod-template-hash']}}</span> -->
           </template>
-        </el-table-column> -->
+        </el-table-column>
         <!-- <el-table-column prop="apiVersion" label="apiVersion"> </el-table-column> -->
         <!-- <el-table-column prop="kind" label="kind"> </el-table-column> -->
         <!-- <el-table-column prop="metadata.uid" label="uid"> </el-table-column> -->
@@ -47,9 +50,11 @@
         <el-table-column label="操作">
           <template slot-scope="scope">
               <!-- 修改 -->
-              <el-button type="primary" icon="el-icon-plus" size="small" @click="showDeploymentsAddDialog(scope.row)">增加</el-button>
+              <el-button style="margin-bottom:5px" type="primary" icon="el-icon-plus" size="small" @click="showDeploymentsAddDialog(scope.row)">增加</el-button>
+              <br>
               <!-- 编辑 -->
-              <el-button type="warning" icon="el-icon-edit" size="small" @click="editDeploymentsEditDialog(scope.row)">编辑</el-button>
+              <el-button style="margin-bottom:5px" type="warning" icon="el-icon-edit" size="small" @click="editDeploymentsEditDialog(scope.row)">编辑</el-button>
+              <br>
               <!-- 删除 -->
               <el-button type="danger" icon="el-icon-delete" size="small" @click="delDeployments(scope.row)">删除</el-button>
           </template>

@@ -13,12 +13,12 @@
       <div slot="header" class="clearfix">
         <span>所有 Services</span>
       </div>
-      <el-table :data="services" style="width: 100%" stripe>
-        <el-table-column width="40">
-          <!-- <template slot-scope="scope">
+       <el-table :data="services" style="width: 100%" stripe>
+        <!--<el-table-column width="40">
+          <template slot-scope="scope">
             <svg-icon :icon-class="scope.row.status.conditions[1].status == 'True'? 'load-success': scope.row.status.conditions[1].status == 'Unknown'?'load-doubt':'load-failed'"/>
-          </template> -->
-        </el-table-column>
+          </template>
+        </el-table-column> -->
         <el-table-column prop="metadata.name" label="名字">
           <template slot-scope="scope">
             <router-link :to="'/ExploreBalancing/services/'+scope.row.metadata.name" @click.native="goToServicesDetails(scope.row)" class="link-type">
@@ -28,13 +28,13 @@
         </el-table-column>
         <!-- <el-table-column prop="apiVersion" label="版本"> </el-table-column> -->
         <el-table-column prop="metadata.namespace" label="命名空间"> </el-table-column>
-        <el-table-column label="标签">
+        <!-- <el-table-column label="标签">
           <template slot-scope="scope">
             <span>k8s-app: {{scope.row.metadata.labels['k8s-app']}}</span>
             <br>
-            <span>service-template-hash: {{scope.row.metadata.labels['service-template-hash']}}</span>
+            <span>pod-template-hash: {{scope.row.metadata.labels['service-template-hash']}}</span>
           </template>
-        </el-table-column>
+        </el-table-column> -->
         <!-- <el-table-column prop="apiVersion" label="apiVersion"> </el-table-column> -->
         <!-- <el-table-column prop="kind" label="kind"> </el-table-column> -->
         <!-- <el-table-column prop="metadata.uid" label="uid"> </el-table-column> -->
@@ -48,11 +48,9 @@
         <el-table-column label="操作">
           <template slot-scope="scope">
               <!-- 修改 -->
-              <el-button style="margin-bottom:5px" type="primary" icon="el-icon-plus" size="small" @click="showServicesAddDialog(scope.row)">增加</el-button>
-              <br>
+              <el-button type="primary" icon="el-icon-plus" size="small" @click="showServicesAddDialog(scope.row)">增加</el-button>
               <!-- 编辑 -->
-              <el-button style="margin-bottom:5px" type="warning" icon="el-icon-edit" size="small" @click="editServicesEditDialog(scope.row)">编辑</el-button>
-              <br>
+              <el-button type="warning" icon="el-icon-edit" size="small" @click="editServicesEditDialog(scope.row)">编辑</el-button>
               <!-- 删除 -->
               <el-button type="danger" icon="el-icon-delete" size="small" @click="delServices(scope.row)">删除</el-button>
           </template>

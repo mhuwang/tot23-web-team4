@@ -8,96 +8,66 @@
 -->
 <template>
   <div>
-      <el-button type="primary" @click="index">Index</el-button>
-      <el-button type="primary" @click="home">Home</el-button>
-      <br>
-      <br>
-      <el-button type="primary" @click="l1i1">Level1 index1</el-button>
-      <el-button type="primary" @click="l2i1">Level2 index1</el-button>
-      <el-button type="primary" @click="l3i1">Level3 index1</el-button>
-      <br>
-      <br>
-      <el-button type="primary" @click="l1i2">Level1 index2</el-button>
-      <el-button type="primary" @click="l2i2">Level2 index2</el-button>
-      <el-button type="primary" @click="l3i2">Level3 index2</el-button>
-      <br>
-      <br>
-      <el-button type="primary" @click="l1i3">Level1 index3</el-button>
-      <el-button type="primary" @click="l2i3">Level2 index3</el-button>
-      <el-button type="primary" @click="l3i3">Level3 index3</el-button>
+    <el-card class="box-card">
+      <div slot="header" class="clearfix">
+        <span>所有 CRD</span>
+      </div>
+      <el-table :data="CRDs" style="width: 100%" stripe>
+        <el-table-column width="40">
+          <template slot-scope="scope">
+            <svg-icon :icon-class="scope.row.status.conditions[3].status == 'True'? 'load-success': scope.row.status.conditions[3].status == 'Unknown'?'load-doubt':'load-failed'"/>
+          </template>
+        </el-table-column>
+        <el-table-column prop="" label="名字"></el-table-column>
+        <el-table-column prop="" label="Group"> </el-table-column>
+        <el-table-column prop="" label="全名"></el-table-column> -->
+        <el-table-column prop="spec.nodeName" width="140" label="Nmaespaceed"> </el-table-column>
+        <el-table-column prop="status.podIP" width="140" label="创建时间"> </el-table-column>
+        <el-table-column label="操作">
+        
+        <!-- <template slot-scope="scope">
+            
+            <el-button type="primary" icon="el-icon-plus" size="small" @click="showClasterRolesAddDialog(scope.row)">增加</el-button>
+            
+            <el-button type="warning" icon="el-icon-edit" size="small" @click="showClasterRolesEditDialog(scope.row)">编辑</el-button>
+            
+            <el-button type="danger" icon="el-icon-delete" size="small" @click="delClasterRoles(scope.row)">删除</el-button>
+        </template> -->
+        
+        </el-table-column>
+      </el-table>
+    </el-card>
   </div>
 </template>
 
 <script>
-
-import axios from "axios";
-import request from '@/utils/request'
 export default {
+  name: "CRDs",
+
+  data() {
+    return {
+      CRDs: [],
+    };
+  },
+
+  created() {
+    this.getCRDs();
+  },
+
   methods: {
-
-    httpRequest: function(url){
-
-      request({
-        url: "http://localhost:8081/customize" + url,
-        method: 'get',
-      }).then((res)=>{
-        console.log(res);
-      }).catch((error)=>{
-        console.log(error);
-      });
-
-
-      // axios.get("http://localhost:8081/customize" + url).then((res)=>{
-      //   console.log(res);
-      // }).catch((error)=>{
-      //   console.log(error);
-      // });
+    // 获取所有 CRD
+    getCRDs() {
+      this.$store
+        .dispatch("customize/getCustomResourceDefinition")
+        .then((res) => {
+          console.log(res.data);
+          this.getCRDs = res.data;
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
-
-    index: function(){
-        this.httpRequest("/index");
-    },
-    home: function(){
-      console.log("home");
-      this.httpRequest("/home");
-    },
-    l1i1: function(){
-      console.log("l1i1");
-      this.httpRequest("/level1/1");
-    },
-    l2i1: function(){
-      console.log("l2i1");
-      this.httpRequest("/level2/1");
-    },
-    l3i1: function(){
-      console.log("l3i1");
-      this.httpRequest("/level3/1");
-    },
-    l1i2: function(){
-      console.log("l1i2");
-      this.httpRequest("/level1/2");
-    },
-    l2i2: function(){
-      console.log("l2i2");
-      this.httpRequest("/level2/2");
-    },
-    l3i2: function(){
-      console.log("l3i2");
-      this.httpRequest("/level3/2");
-    },
-    l1i3: function(){
-      console.log("l1i3");
-      this.httpRequest("/level1/3");
-    },
-    l2i3: function(){
-      console.log("l2i3");
-      this.httpRequest("/level2/3");
-    },
-    l3i3: function(){
-      console.log("l3i3");
-      this.httpRequest("/level3/3");
-    },
-  }
+  },
 };
 </script>
 
