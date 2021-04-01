@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-25 22:13:37
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-03-30 19:14:49
+ * @LastEditTime: 2021-04-01 15:27:45
 -->
 <template>
   <div>
@@ -152,14 +152,14 @@
                     :size="150"
                     :trail-width="trailWidth"
                     :stroke-width="strokeWidth"
-                    :percent="6.3"
+                    :percent="(podsAmount / node.status.allocatable.pods.amount * 100).toFixed(2)"
                     stroke-linecap="square"
                     stroke-color="#b4aee8"
                   >
                     <div class="demo-Circle-custom">
-                      <h2>6.3%</h2>
+                      <h2>{{ (podsAmount / node.status.allocatable.pods.amount * 100).toFixed(2) }} % </h2>
                       <span> Requests </span>
-                      <p>Pods: 6</p>
+                      <p>Pods: {{podsAmount}}</p>
                     </div>
                   </i-circle>
                 </ListItem>
@@ -324,84 +324,139 @@
     <!-- pod 信息 -->
     <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <span style="font-size: 16px">Pod</span>
+        <span>Pod</span>
       </div>
-      <el-table :data="pods" style="width: 100%" stripe>
+      <!-- <el-row :gutter="20">
+        <el-col :span="5">
+          搜索区域
+          <el-select
+            v-model="value"
+            filterable
+            clearable
+            size="large"
+            style="width: 100%"
+            @change="selectChange"
+            @clear="clearSelect"
+            @focus="initNamespace"
+            placeholder="请选择命名空间"
+          >
+            <el-option
+              v-for="item in namespaces"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            >
+            </el-option>
+          </el-select>
+          搜索按钮
+            <el-button
+              slot="append"
+              size="large"
+              icon="el-icon-plus"
+              @click="getPods"
+            ></el-button> 
+        </el-col>
+        添加按钮
+        <el-col :span="4">
+          <el-button
+            type="primary"
+            size="large"
+            icon="el-icon-plus"
+            @click="addDialogVisible = true"
+          >
+            添加 Pod
+          </el-button>
+        </el-col>
+      </el-row> -->
+      <el-table :data="pods" style="width: 100%;" stripe>
         <el-table-column width="40">
           <template slot-scope="scope">
             <svg-icon
               :icon-class="
-                scope.row.status.containerStatuses[0].ready == false
-                  ? 'load-failed'
-                  : scope.row.status.containerStatuses[0].started == true
-                  ? 'load-success'
-                  : 'load-doubt'
-              "
-            />
-          </template>
+                scope.row.pod.status.phase == 'Running' || scope.row.pod.status.phase == 'Succeeded'
+                  ? 'load-success' : 'load-failed'
+              "/></template>
         </el-table-column>
-        <el-table-column prop="metadata.name" label="名字">
+        <el-table-column prop="pod.metadata.name" label="名字">
           <template slot-scope="scope">
             <router-link
-              :to="'/workload/pods/' + scope.row.metadata.name"
-              @click.native="goToPodsDetails(scope.row)"
+              :to="'/workload/pods/' + scope.row.pod.metadata.name"
+              @click.native="goToPodsDetails(scope.row.pod)"
               class="link-type"
             >
               <span style="color: #409eff; text-decoration: underline">{{
-                scope.row.metadata.name
+                scope.row.pod.metadata.name
               }}</span>
             </router-link>
           </template>
         </el-table-column>
-        <el-table-column prop="metadata.namespace" label="命名空间">
+        <el-table-column prop="pod.metadata.namespace" label="命名空间">
         </el-table-column>
-        <!-- <el-table-column label="标签">
+        <el-table-column prop="pod.status.phase" label="状态">
+        </el-table-column>
+        <el-table-column align="center" prop="pod.status.containerStatuses[0].restartCount" label="重启次数">
+        </el-table-column>
+        <el-table-column align="center" label="CPU 利用率" width="140">
           <template slot-scope="scope">
-            <span>k8s-app: {{scope.row.metadata.labels['k8s-app']}}</span>
-            <br>
-            <span>pod-template-hash: {{scope.row.metadata.labels['pod-template-hash']}}</span>
+            <div v-if="scope.row.usage">
+                
+                <div class="usage-cpu-tag-zero" v-if="scope.row.usage.cpu < 0.1">
+                  0 m
+                </div>
+                <div class="usage-cpu-tag-success" v-else>
+                  {{(scope.row.usage.cpu / 1000 / 1000).toFixed(2)}} m
+                </div>
+            </div>
+                        
+            <div class="usage-cpu-tag-failed" v-else>
+              --
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column align="center" label="内存利用率" width="140">
+          <template slot-scope="scope">
+            <div v-if="scope.row.usage">
+                
+                <div class="usage-memory-tag-zero" v-if="scope.row.usage.memory == 0">
+                  0 MiB
+                </div>
+                <div class="usage-memory-tag-success" v-else>
+                  {{(scope.row.usage.memory / 1024).toFixed(2)}} MiB
+                </div>
+            </div>
+                        
+            <div class="usage-memory-tag-failed" v-else>
+              --
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column prop="pod.spec.nodeName" width="120" label="所属节点">
+        </el-table-column>
+        <el-table-column prop="pod.status.podIP" width="120" label="主机ip地址">
+        </el-table-column>
+        <!-- <el-table-column label="启动时间" width="200">
+          <template slot-scope="scope">
+            <span>{{scope.row.status.startTime.replaceAll(/[TZ]/g,' ')}}</span>
           </template>
         </el-table-column> -->
-        <!-- <el-table-column prop="apiVersion" label="apiVersion"> </el-table-column> -->
-        <!-- <el-table-column prop="kind" label="kind"> </el-table-column> -->
-        <!-- <el-table-column prop="metadata.uid" label="uid"> </el-table-column> -->
-        <el-table-column prop="spec.nodeName"  label="所属节点">
-        </el-table-column>
-        <el-table-column prop="status.podIP"  label="Pod ip地址">
-        </el-table-column>
-        <el-table-column label="启动时间">
-          <template slot-scope="scope">
-            <span>{{
-              scope.row.status.startTime.replaceAll(/[TZ]/g, " ")
-            }}</span>
-          </template>
-        </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
             <!-- 修改 -->
             <el-button
-              style="margin-bottom:5px;"
               type="primary"
-              icon="el-icon-plus"
-              size="small"
-              @click="showClasterRolesAddDialog(scope.row)"
-              >增加</el-button
-            ><br>
-            <!-- 删除 -->
-            <el-button
-              style="margin-bottom:5px;"
-              type="warning"
               icon="el-icon-edit"
+              style="margin-bottom:5px"
               size="small"
-              @click="showClasterRolesEditDialog(scope.row)"
+              @click="showClasterRolesEditDialog(scope.row.pod)"
               >编辑</el-button
-            ><br>
+            >
+            <br>
             <!-- 删除 -->
             <el-button
               type="danger"
               icon="el-icon-delete"
               size="small"
-              @click="delClasterRoles(scope.row)"
+              @click="delClasterRoles(scope.row.pod)"
               >删除</el-button
             >
           </template>
@@ -422,6 +477,7 @@ export default {
       pods: [],
       nodeName: "",
       node: {},
+      podsAmount: 0,
     };
   },
   computed: {
@@ -586,6 +642,7 @@ export default {
       .then((res) => {
         console.log(res);
         this.pods = res.data;
+        this.podsAmount = res.data.length;
       })
       .catch((error) => {
         throw error;
@@ -611,6 +668,31 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+
+.usage-cpu-tag-success {
+  color: white;
+  text-align: center;
+  background-color: #387c6d;
+  border-radius: 10px;
+}
+.usage-memory-tag-success {
+  color: white;
+  text-align: center;
+  background-color: #28527a;
+  border-radius: 10px;
+}
+.usage-cpu-tag-zero, .usage-memory-tag-zero {
+  color: white;
+  text-align: center;
+  background-color: #aaa;
+  border-radius: 10px;
+}
+.usage-cpu-tag-failed, .usage-memory-tag-failed {
+  color: #333;
+  text-align: center;
+  border-radius: 10px;
+}
+
 #cpu-usage,
 #memory-usage {
   width: 100%;

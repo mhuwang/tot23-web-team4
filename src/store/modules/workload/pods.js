@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-22 17:20:12
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-03-30 16:06:31
+ * @LastEditTime: 2021-03-31 14:42:30
  */
 import { getAllPods, getPodsByNode } from '@/api/workload/pods'
 import { getToken } from '@/utils/auth'
@@ -24,10 +24,10 @@ const mutations = {
 }
 
 const actions = {
-  // getAllPods
-  getAllPods({commit}) {
+  // 获取所有 pods
+  getAllPods({commit}, namespace) {
     return new Promise((resolve, reject) => {
-        getAllPods().then(response => {
+        getAllPods(namespace).then(response => {
         const { data } = response
         if (!data) {
           return reject('获取失败')
@@ -38,7 +38,7 @@ const actions = {
       })
     })
   },
-  // getPodsByNode
+  // 通过 node 名称获取对应的 pod
   getPodsByNode({commit}, nodeName) {
     return new Promise((resolve, reject) => {
       getPodsByNode(nodeName).then(response => {

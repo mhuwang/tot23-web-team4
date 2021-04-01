@@ -1,10 +1,10 @@
 /*
- * @Descripttion: your project
+ * @Description: your project
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-03-19 16:14:56
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-03-24 19:46:56
+ * @LastEditTime: 2021-03-31 14:54:45
  */
 import axios from 'axios'
 import { Message } from 'element-ui'

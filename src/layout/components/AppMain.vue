@@ -1,10 +1,10 @@
 <!--
- * @Descripttion: your project
+ * @Description: your project
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-03-10 15:03:17
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-03-26 13:51:46
+ * @LastEditTime: 2021-03-31 14:57:20
 -->
 <template>
   <section class="app-main">
