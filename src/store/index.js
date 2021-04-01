@@ -28,6 +28,9 @@ import statefulSets from './modules/workload/statefulSets'
 
 import services from './modules/ExploreBalancing/services'
 import ingresses from './modules/ExploreBalancing/ingresses'
+import configMaps from './modules/SettingStorage/configMaps'
+import secrets from './modules/SettingStorage/secrets'
+import persistentVolumeClaims from './modules/SettingStorage/persistentVolumeClaims'
 
 
 Vue.use(Vuex)
@@ -43,12 +46,18 @@ const store = new Vuex.Store({
     cronJobs,
     daemonSets,
     deployments,
+<<<<<<< HEAD
+    configMaps,
+    secrets,
+    persistentVolumeClaims,
+=======
     jobs,
     pods,
     replicaSets,
     replicationControllers,
     statefulSets,
     
+>>>>>>> add3a0a7c9243043a2589193116cfb189760fdc8
     services,
     ingresses,
     clusterRoles
