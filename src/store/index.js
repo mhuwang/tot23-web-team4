@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-19 16:14:56
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-03-28 19:30:02
+ * @LastEditTime: 2021-04-01 16:12:49
  */
 import Vue from 'vue'
 import Vuex from 'vuex'
@@ -46,18 +46,15 @@ const store = new Vuex.Store({
     cronJobs,
     daemonSets,
     deployments,
-<<<<<<< HEAD
     configMaps,
     secrets,
     persistentVolumeClaims,
-=======
     jobs,
     pods,
     replicaSets,
     replicationControllers,
     statefulSets,
     
->>>>>>> add3a0a7c9243043a2589193116cfb189760fdc8
     services,
     ingresses,
     clusterRoles
