@@ -2,11 +2,11 @@
  * @Description: your project
  * @version: 1.0
  * @Author: Rex Joush
- * @Date: 2021-03-25 20:41:52
+ * @Date: 2021-04-02 12:44:04
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-04-02 12:44:26
+ * @LastEditTime: 2021-04-02 13:35:56
  */
-import { getAllNodes, getNodeByName, getUsageRecentTwenty } from '@/api/cluster/nodes'
+import { getAllEdgeNodes, getNodeByName } from '@/api/edge'
 import { getToken } from '@/utils/auth'
 
 const state = {
@@ -17,18 +17,18 @@ const state = {
 }
 
 const mutations = {
-  // 跳转 Node 详情页面
-  TO_NODE_DETIALS: (state, nodeName) => {
+  // 跳转 Edge Node 详情页面
+  TO_EDGE_NODE_DETIALS: (state, nodeName) => {
     // 赋值
     state.nodeName = nodeName;
   }
 }
 
 const actions = {
-  // getAllNodes
-  getAllNodes({commit}) {
+  // 获取所有边缘节点
+  getAllEdgeNodes({ commit }) {
     return new Promise((resolve, reject) => {
-        getAllNodes().then(response => {
+      getAllEdgeNodes().then(response => {
         const { data } = response
         if (!data) {
           return reject('获取失败')
@@ -54,25 +54,12 @@ const actions = {
       })
     })
   },
+
   // 点击名字进入详情页
-  toDetails({commit}, nodeName) {
-    commit("TO_NODE_DETIALS", nodeName);
+  toDetails({ commit }, nodeName) {
+    commit("TO_EDGE_NODE_DETIALS", nodeName);
   },
 
-  // 获取近20分钟的利用率
-  getUsageRecentTwenty({commit}, nodeName) {
-    return new Promise((resolve, reject) => {
-      getUsageRecentTwenty(nodeName).then(response => {
-      const { data } = response
-      if (!data) {
-        return reject('获取失败')
-      }
-      resolve(data)
-    }).catch(error => {
-      reject(error)
-    })
-  })
-  }
 }
 
 export default {
@@ -81,4 +68,3 @@ export default {
   mutations,
   actions
 }
-
