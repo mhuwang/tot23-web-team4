@@ -9,18 +9,21 @@
 import { getAllServices } from '@/api/ExploreBalancing/services'
 import { getToken } from '@/utils/auth'
 
-const getDefaultState = () => {
-    return {
-        token: getToken(),
-        name: '',
-        avatar: ''
+const state = {
+    token: getToken(),
+    service: {
+        serviceName: '',
+        serviceNamespace: '',
     }
 }
 
-const state = getDefaultState()
-
 const mutations = {
-
+    // 跳转 service 详情页面
+    TO_SERVICES_DETIALS: (state, {serviceName, serviceNamespace}) => {
+        // 赋值
+        state.service.serviceName = serviceName;
+        state.service.serviceNamespace = serviceNamespace;
+    }
 }
 
 const actions = {
@@ -38,7 +41,28 @@ const actions = {
             })
         })
     },
+
+    // getServicesByNameAndNamesapce
+    getServicesByNameAndNamespace({ commit }, dep) {
+        return new Promise((resolve, reject) => {
+            getServicesByNameAndNamespace(dep).then(response => {
+                const { data } = response
+                if (!data) {
+                    return reject('获取失败')
+                }
+                resolve(data)
+            }).catch(error => {
+                reject(error)
+            })
+        })
+    },
+
+     // 点击名字进入详情页
+     toDetails({ commit }, dep) {
+        commit("TO_SERVICES_DETIALS", dep);
+    },
 }
+
 
 export default {
     namespaced: true,

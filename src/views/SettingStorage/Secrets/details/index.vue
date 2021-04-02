@@ -1,64 +1,6 @@
 
 <template>
-  <div>
-    <el-divider content-position="left"
-      ><span style="font-weight: bold; font-size: 20px">
-        {{
-        secret.metadata.name
-      }}
-      </span></el-divider
-    >
-    <!-- 元数据 -->
-    <el-card class="box-card">
-      <div slot="header" class="clearfix">
-        <span style="font-size: 16px">元数据</span>
-      </div>
-      <List item-layout="horizontal" :split="false">
-        <div class="metadata-item">
-          <p>名字</p>
-          <span>{{ secret.metadata.name }}</span>
-        </div>
-        <div class="metadata-item">
-          <p>创建时间</p>
-          <span>{{
-            secret.metadata.creationTimestamp.replaceAll(/[TZ]/g, " ")
-          }}</span>
-        </div>
-        <div class="metadata-item">
-          <p>UID</p>
-          <span>{{ secret.metadata.uid }}</span>
-        </div>
-      </List>
-      <!-- 元数据 标签 注释部分 -->
-      <List item-layout="horizontal" :split="false">
-        <div class="metadata-item">
-          <p>标签</p>
-          <li v-for="label in this.labels">
-            <el-tag
-              class="lebel-tag"
-              effect="dark"
-              size="medium"
-              color="#bedcfa"
-              >{{ label.key }}: {{ label.value }}</el-tag
-            >
-          </li>
-        </div>
-        <div class="metadata-item">
-          <p>注释</p>
-          <li v-for="anno in this.annotations">
-            <el-tag
-              class="lebel-tag"
-              effect="dark"
-              size="medium"
-              color="#bedcfa"
-              >{{ anno.key }}: {{ anno.value }}</el-tag
-            >
-          </li>
-        </div>
-      </List>
-    </el-card>
-    <br /><br />
-  </div>
+  <h1>Secrets Details</h1>
 </template>
 
 <script>
@@ -141,7 +83,7 @@ export default {
       for (let anno in this.secret.metadata.annotations) {
         annoArr.push({
           key: anno,
-          value: this.secret.metadata.annotations[anno],
+          value: this.se.metadata.annotations[anno],
         });
       }
       return annoArr;
