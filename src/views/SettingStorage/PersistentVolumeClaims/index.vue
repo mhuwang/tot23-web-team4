@@ -17,6 +17,48 @@
       <div slot="header" class="clearfix">
         <span>所有 Persistent Volume Claims</span>
       </div>
+      <el-row :gutter="20">
+        <el-col :span="5">
+          <!-- 搜索区域 -->
+          <el-select
+            v-model="value"
+            filterable
+            clearable
+            size="large"
+            style="width: 100%"
+            @change="selectChange"
+            @clear="clearSelect"
+            @focus="initNamespace"
+            placeholder="请选择命名空间"
+          >
+            <el-option
+              v-for="item in namespaces"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            >
+            </el-option>
+          </el-select>
+          <!-- 搜索按钮
+            <el-button
+              slot="append"
+              size="large"
+              icon="el-icon-plus"
+              @click="getPods"
+            ></el-button> -->
+        </el-col>
+        <!-- 添加按钮 -->
+        <!-- <el-col :span="4">
+          <el-button
+            type="primary"
+            size="large"
+            icon="el-icon-plus"
+            @click="addDialogVisible = true"
+          >
+            添加 Pod
+          </el-button>
+        </el-col> -->
+      </el-row>
       <el-table :data="persistentVolumeClaims" style="width: 100%" stripe>
         <!-- <el-table-column width="40">
           <template slot-scope="scope">
@@ -61,14 +103,24 @@
         </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
-              <!-- 修改 -->
-              <el-button style="margin-bottom:5px" type="primary" icon="el-icon-plus" size="small" @click="showClasterRolesAddDialog(scope.row)">增加</el-button>
-              <br>
-              <!-- 删除 -->
-              <el-button style="margin-bottom:5px" type="warning" icon="el-icon-edit" size="small" @click="showClasterRolesEditDialog(scope.row)">编辑</el-button>
-              <br>
-              <!-- 删除 -->
-              <el-button type="danger" icon="el-icon-delete" size="small" @click="delClasterRoles(scope.row)">删除</el-button>
+            <!-- 修改 -->
+            <el-button
+              type="primary"
+              icon="el-icon-edit"
+              style="margin-bottom:5px"
+              size="small"
+              @click="showClasterRolesEditDialog(scope.row.pod)"
+              >编辑</el-button
+            >
+            <br>
+            <!-- 删除 -->
+            <el-button
+              type="danger"
+              icon="el-icon-delete"
+              size="small"
+              @click="delClasterRoles(scope.row.pod)"
+              >删除</el-button
+            >
           </template>
         </el-table-column>
       </el-table>
@@ -91,6 +143,13 @@ export default {
   },
 
   methods: {
+    // 详情页
+    goToPersistentVolumeClaimsDetails: function (persistentVolumeClaimName, persistentVolumeClaimNamespace) {
+      // console.log("persistentVolumeClaims index namespace", persistentVolumeClaimNamespace);
+      this.$store
+        .dispatch("persistentVolumeClaims/toDetails", {persistentVolumeClaimName, persistentVolumeClaimNamespace});
+    },
+
     // 获取所有 pods
     getPersistentVolumeClaims() {
       this.$store

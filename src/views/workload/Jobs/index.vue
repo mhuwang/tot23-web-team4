@@ -15,6 +15,48 @@
       <div slot="header" class="clearfix">
         <span>所有 Job</span>
       </div>
+      <el-row :gutter="20">
+        <el-col :span="5">
+          <!-- 搜索区域 -->
+          <el-select
+            v-model="value"
+            filterable
+            clearable
+            size="large"
+            style="width: 100%"
+            @change="selectChange"
+            @clear="clearSelect"
+            @focus="initNamespace"
+            placeholder="请选择命名空间"
+          >
+            <el-option
+              v-for="item in namespaces"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            >
+            </el-option>
+          </el-select>
+          <!-- 搜索按钮
+            <el-button
+              slot="append"
+              size="large"
+              icon="el-icon-plus"
+              @click="getPods"
+            ></el-button> -->
+        </el-col>
+        <!-- 添加按钮 -->
+        <!-- <el-col :span="4">
+          <el-button
+            type="primary"
+            size="large"
+            icon="el-icon-plus"
+            @click="addDialogVisible = true"
+          >
+            添加 Pod
+          </el-button>
+        </el-col> -->
+      </el-row>
       <el-table :data="jobs" style="width: 100%" stripe>
         <el-table-column width="40">
           <!-- <template slot-scope="scope"> -->

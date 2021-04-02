@@ -9,6 +9,7 @@
 import { getAllPVC } from '@/api/SettingStorage/persistentVolumeClaims'
 import { getToken } from '@/utils/auth'
 
+////------------
 const getDefaultState = () => {
     return {
         token: getToken(),
@@ -17,9 +18,23 @@ const getDefaultState = () => {
     }
 }
 
-const state = getDefaultState()
+//const state = getDefaultState()
+const state = {
+    token: getToken(),
+    persistentVolumeClaim: {
+        persistentVolumeClaimName: '',
+        persistentVolumeClaimNamespace: '',
+    }
+}
+
 
 const mutations = {
+    // 跳转 persistentVolumeClaim 详情页面
+    TO_PERSISTENTVOLUMECLAIMS_DETIALS: (state, {persistentVolumeClaimName, persistentVolumeClaimNamespace}) => {
+        // 赋值
+        state.persistentVolumeClaim.persistentVolumeClaimName = persistentVolumeClaimName;
+        state.persistentVolumeClaim.persistentVolumeClaimNamespace = persistentVolumeClaimNamespace;
+    }
 
 }
 
@@ -37,6 +52,11 @@ const actions = {
                 reject(error)
             })
         })
+    },
+
+    // 点击名字进入详情页
+    toDetails({ commit }, per) {
+        commit("TO_DEPLOYMENTS_DETIALS", per);
     },
 }
 
