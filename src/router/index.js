@@ -172,11 +172,27 @@ export const constantRoutes = [
         component: () => import('@/views/ExploreBalancing/Ingresses/index'),
         meta: { title: 'Ingresses', icon: 'ingresses' }
       },
+      // ingresses 详情
+      {
+        path: 'ingresses/:name([a-z0-9-]+)',
+        component: () => import('@/views/ExploreBalancing/Ingresses/details/index'),
+        name: 'Ingress 详情',
+        meta: { title: 'Ingress Details', noCache: true, activeMenu: '/ingresses'},
+        hidden: true
+      },
       {
         path: 'services',
         name: 'Services',
         component: () => import('@/views/ExploreBalancing/Services/index'),
         meta: { title: 'Services', icon: 'services' }
+      },
+      // services 详情
+      {
+        path: 'services/:name([a-z0-9-]+)',
+        component: () => import('@/views/ExploreBalancing/Services/details/index'),
+        name: 'Service 详情',
+        meta: { title: 'Service Details', noCache: true, activeMenu: '/services'},
+        hidden: true
       }
     ]
   },

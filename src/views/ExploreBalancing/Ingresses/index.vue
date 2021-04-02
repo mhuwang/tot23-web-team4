@@ -62,7 +62,7 @@
         </el-table-column> -->
         <el-table-column prop="metadata.name" label="名字">
           <template slot-scope="scope">
-            <router-link :to="'/ExploreBalancing/ingresses/'+scope.row.metadata.name" @click.native="goToIngressesDetails(scope.row)" class="link-type">
+            <router-link :to="'/ExploreBalancing/ingresses/'+scope.row.metadata.name" @click.native="goToIngressesDetails(scope.row.metadata.name, scope.row.metadata.namespace)" class="link-type">
               <span style="color:#409EFF;text-decoration:underline">{{ scope.row.metadata.name }}</span>
             </router-link>
           </template>
@@ -88,14 +88,24 @@
         </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
-              <!-- 修改 -->
-              <el-button style="margin-bottom:5px" type="primary" icon="el-icon-plus" size="small" @click="showIngressesAddDialog(scope.row)">增加</el-button>
-              <br>
-              <!-- 编辑 -->
-              <el-button style="margin-bottom:5px" type="warning" icon="el-icon-edit" size="small" @click="editIngressesEditDialog(scope.row)">编辑</el-button>
-              <br>
-              <!-- 删除 -->
-              <el-button type="danger" icon="el-icon-delete" size="small" @click="delIngresses(scope.row)">删除</el-button>
+            <!-- 修改 -->
+            <el-button
+              type="primary"
+              icon="el-icon-edit"
+              style="margin-bottom:5px"
+              size="small"
+              @click="showClasterRolesEditDialog(scope.row.pod)"
+              >编辑</el-button
+            >
+            <br>
+            <!-- 删除 -->
+            <el-button
+              type="danger"
+              icon="el-icon-delete"
+              size="small"
+              @click="delClasterRoles(scope.row.pod)"
+              >删除</el-button
+            >
           </template>
         </el-table-column>
       </el-table>
