@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-19 16:14:56
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-04-01 16:12:49
+ * @LastEditTime: 2021-04-02 11:44:08
  */
 import Vue from 'vue'
 import Vuex from 'vuex'
@@ -32,6 +32,8 @@ import configMaps from './modules/SettingStorage/configMaps'
 import secrets from './modules/SettingStorage/secrets'
 import persistentVolumeClaims from './modules/SettingStorage/persistentVolumeClaims'
 
+import customize from './modules/customize'
+
 
 Vue.use(Vuex)
 
@@ -57,7 +59,8 @@ const store = new Vuex.Store({
     
     services,
     ingresses,
-    clusterRoles
+    clusterRoles,
+    customize
   },
   getters
 })
