@@ -6,7 +6,7 @@
  * @LastEditors: Rex Joush
  * @LastEditTime: 2021-04-02 13:35:56
  */
-import { getAllEdgeNodes, getNodeByName } from '@/api/edge'
+import { getAllEdgeNodes, getNodeByName,getAllDevices } from '@/api/edge'
 import { getToken } from '@/utils/auth'
 
 const state = {
@@ -44,6 +44,19 @@ const actions = {
   getNodeByName({commit}, nodeName) {
     return new Promise((resolve, reject) => {
       getNodeByName(nodeName).then(response => {
+        const { data } = response
+        if (!data) {
+          return reject('获取失败')
+        }
+        resolve(data)
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
+  getAllDevices({ commit }) {
+    return new Promise((resolve, reject) => {
+      getAllDevices().then(response => {
         const { data } = response
         if (!data) {
           return reject('获取失败')

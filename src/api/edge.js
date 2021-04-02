@@ -24,3 +24,12 @@ export function getNodeByName(data) {
     }
   })
 }
+export function getAllDevices(data) {
+  return request({
+    url: baseUrl + '/customize/getCustomResourceDefinitionObjectList',
+    method: 'get',
+    params: {
+      nodeName: data,
+    }
+  })
+}

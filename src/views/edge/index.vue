@@ -102,8 +102,8 @@
       <div slot="header" class="clearfix">
         <span style="font-size: 20px">设备列表</span>
       </div>
-      <el-table :data="nodes" style="width: 100%" stripe>
-        <el-table-column width="40">
+      <el-table :data="devices" style="width: 100%" stripe>
+        <!-- <el-table-column width="40">
           <template slot-scope="scope">
             <svg-icon
               :icon-class="
@@ -115,8 +115,8 @@
               "
             />
           </template>
-        </el-table-column>
-        <el-table-column label="名字">
+        </el-table-column> -->
+        <el-table-column label="设备名字">
           <template slot-scope="scope">
             <router-link
               :to="'/edge/edgenodes/' + scope.row.metadata.name"
@@ -137,8 +137,13 @@
           </template>
         </el-table-column> -->
         <el-table-column
-          prop="status.conditions[0].status"
-          label="准备就绪"
+          prop="metadata.namespace"
+          label="命名空间"
+        >
+        </el-table-column>
+        <el-table-column
+          prop="status.twins[0].desired.value"
+          label="状态"
         >
         </el-table-column>
         <el-table-column
@@ -186,6 +191,7 @@
       </el-table>
     </el-card>
   </div>
+
 </template>
 
 <script>
@@ -193,17 +199,19 @@ export default {
   data(){
     return {
       nodes:[],
+      devices:[],
     }
   },
-
+  
   // 初始化方法
   created: function () {
     this.getAllEdgeNodes();
+    this.getAllDevices();
   },
   
   methods: {
     // 获取 node 节点详情页
-    goToEdgeNodeDetails: function(nodeName){
+    goToEdgeDevices: function(nodeName){
       this.$store.dispatch("edge/toDetails", nodeName);
     },
 
@@ -220,7 +228,20 @@ export default {
           throw error;
         });
     },
+    getAllDevices() {
+      this.$store
+        .dispatch("edge/getAllDevices","default")
+        .then((res) => {
+          console.log(res.data);
+          this.devices = res.data.items;
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    
   }
+ 
 };
 </script>
 
