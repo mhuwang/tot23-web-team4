@@ -15,3 +15,14 @@ export function getAllCronJobs(data) {
     method: 'get',
   })
 }
+
+export function getCronJobByNameAndNamespace(nameAndNamespace) {
+  return request({
+    url: baseUrl + '/cronJobs/getCronJobByNameAndNamespace',
+    method: 'get',
+    params: {
+      name: nameAndNamespace.name,
+      namespace: nameAndNamespace.namespace
+    }
+  })
+}

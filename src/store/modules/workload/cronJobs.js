@@ -6,7 +6,7 @@
  * @LastEditors: zqy
  * @LastEditTime: 2021.03.29 16:14
  */
-import { getAllCronJobs } from '@/api/workload/cronJobs'
+import { getAllCronJobs, getCronJobByNameAndNamespace } from '@/api/workload/cronJobs'
 import { getToken } from '@/utils/auth'
 
 const getDefaultState = () => {
@@ -28,6 +28,20 @@ const actions = {
   getAllCronJobs({ commit }) {
     return new Promise((resolve, reject) => {
       getAllCronJobs().then(response => {
+        const { data } = response
+        if (!data) {
+          return reject('获取失败')
+        }
+        resolve(data)
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
+  //通过名字和命名空间获取CronJob
+  getCronJobByNameAndNamespace({ commit }, nameAndNamespace) {
+    return new Promise((resolve, reject) => {
+      getCronJobByNameAndNamespace(nameAndNamespace).then(response => {
         const { data } = response
         if (!data) {
           return reject('获取失败')

@@ -46,18 +46,15 @@ const store = new Vuex.Store({
     cronJobs,
     daemonSets,
     deployments,
-<<<<<<< HEAD
     configMaps,
     secrets,
     persistentVolumeClaims,
-=======
     jobs,
     pods,
     replicaSets,
     replicationControllers,
     statefulSets,
     
->>>>>>> add3a0a7c9243043a2589193116cfb189760fdc8
     services,
     ingresses,
     clusterRoles

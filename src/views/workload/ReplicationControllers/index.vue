@@ -23,7 +23,7 @@
         </el-table-column>
         <el-table-column prop="metadata.name" label="名字">
           <template slot-scope="scope">
-            <router-link :to="'/workload/replicationControllers/'+scope.row.metadata.name" @click.native="goToReplicationControllersDetails(scope.row)" class="link-type">
+            <router-link :to="{name: 'ReplicationController 详情', params: {name: scope.row.metadata.name + ',' + scope.row.metadata.namespace}}" @click.native="goToReplicationControllersDetails(scope.row)" class="link-type">
               <span style="color:#409EFF;text-decoration:underline">{{ scope.row.metadata.name }}</span>
             </router-link>
           </template>
@@ -49,11 +49,13 @@
         <el-table-column label="操作">
           <template slot-scope="scope">
               <!-- 修改 -->
-              <el-button type="primary" icon="el-icon-plus" size="small" @click="showreplicationControllersAddDialog(scope.row)">增加</el-button>
+              <el-button style="margin-bottom: 5px" type="primary" icon="el-icon-plus" size="small" @click="showreplicationControllersAddDialog(scope.row)">增加</el-button>
+              <br />
               <!-- 删除 -->
-              <el-button type="warning" icon="el-icon-edit" size="small" @click="showreplicationControllersEditDialog(scope.row)">编辑</el-button>
+              <el-button style="margin-bottom: 5px" type="warning" icon="el-icon-edit" size="small" @click="showreplicationControllersEditDialog(scope.row)">编辑</el-button>
+              <br />
               <!-- 删除 -->
-              <el-button type="danger" icon="el-icon-delete" size="small" @click="delreplicationControllers(scope.row)">删除</el-button>
+              <el-button style="margin-bottom: 5px" type="danger" icon="el-icon-delete" size="small" @click="delreplicationControllers(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>

@@ -13,7 +13,7 @@
 
 <script>
 export default {
-    
+    props: ["name"]
 }
 </script>
 <style lang="scss" scoped>

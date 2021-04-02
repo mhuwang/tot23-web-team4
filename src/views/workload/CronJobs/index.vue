@@ -20,7 +20,7 @@
         </el-table-column>
         <el-table-column prop="metadata.name" label="名字">
           <template slot-scope="scope">
-            <router-link :to="'/workload/cronJobs/'+scope.row.metadata.name" @click.native="goToCronJobsDetails(scope.row)" class="link-type">
+            <router-link :to="{name: 'CronJob 详情', params: {name: scope.row.metadata.name + ',' + scope.row.metadata.namespace}}" @click.native="goToCronJobDetails(scope.row.metadata.name, scope.row.metadata.namespace)" class="link-type">
               <span style="color:#409EFF;text-decoration:underline">{{ scope.row.metadata.name }}</span>
             </router-link>
           </template>
@@ -100,6 +100,12 @@ export default {
   },
 
   methods: {
+    // 详情页
+    goToCronJobDetails: function (cronJobName, cronJobNamespace) {
+      // console.log("deployments index namespace", deploymentNamespace);
+      // this.$store
+      //   .dispatch("cronJobs/toDetails", {cronJobName, cronJobNamespace});
+    },
     // 获取所有 CronJobs
     getCronJobs() {
       this.$store
