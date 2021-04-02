@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-03-30 22:44:23
+ * @LastEditTime: 2021-04-02 13:17:51
 -->
 <template>
   <div>
@@ -199,8 +199,7 @@ export default {
         .dispatch("nodes/getAllNodes")
         .then((res) => {
           console.log(res);
-          // 过滤掉 edge 节点
-          this.nodes = res.data.filter( item => item.node.metadata.name.indexOf('edge') < 0 );
+          this.nodes = res.data;
         })
         .catch((error) => {
           console.log(error);

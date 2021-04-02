@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-10 15:03:17
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-03-30 20:30:02
+ * @LastEditTime: 2021-04-02 13:27:38
  */
 import Vue from 'vue'
 import Router from 'vue-router'
@@ -242,17 +242,41 @@ export const constantRoutes = [
         component: () => import('@/views/SettingStorage/ConfigMaps/index'),
         meta: { title: 'Config Maps', icon: 'config-maps' }
       },
+      // -----configMap 详情
+      {
+        path: 'configmaps/:name([a-z0-9-]+)',
+        component: () => import('@/views/SettingStorage/ConfigMaps/details/index'),
+        name: 'Config Map 详情',
+        meta: { title: 'ConfigMap Details', noCache: true, activeMenu: '/configmaps'},
+        hidden: true
+      },
       {
         path: 'persistentvolumeclaims',
         name: 'Persistent Volume Claims',
         component: () => import('@/views/SettingStorage/PersistentVolumeClaims/index'),
         meta: { title: 'Persistent Volume Claims', icon: 'persistent-volume-claims' }
       },
+      //------- persistentvolumeclaims 详情
+      {
+        path: 'persistentvolumeclaims/:name([a-z0-9-]+)',
+        component: () => import('@/views/SettingStorage/PersistentVolumeClaims/details/index'),
+        name: 'PersistentVolumeClaims 详情',
+        meta: { title: 'PersistentVolumeClaims Details', noCache: true, activeMenu: '/persistentvolumeclaims'},
+        hidden: true
+      },
       {
         path: 'secrets',
         name: 'Secrets',
         component: () => import('@/views/SettingStorage/Secrets/index'),
         meta: { title: 'Secrets', icon: 'secrets' }
+      },
+      //-------- Secrets 详情
+      {
+        path: 'secrets/:name([a-z0-9-]+)',
+        component: () => import('@/views/SettingStorage/Secrets/details/index'),
+        name: 'Secrets 详情',
+        meta: { title: 'Secrets Details', noCache: true, activeMenu: '/secrets'},
+        hidden: true
       }
     ]
   },
@@ -286,12 +310,21 @@ export const constantRoutes = [
     path: '/edge',
     component: Layout,
     redirect: '/edge',
-    children: [{
+    children: [
+      {
       path: 'edge',
       name: '边缘节点',
       component: () => import('@/views/edge/index'),
       meta: { title: '边缘节点', icon: 'edge' }
-    }]
+      },
+      {
+        path: 'edgenodes/:name([a-z0-9-]+)',
+        component: () => import('@/views/edge/details/index'),
+        name: '边缘节点详情',
+        meta: { title: 'Edge Node Details', noCache: true, activeMenu: '/edge'},
+        hidden: true
+      },
+    ]
   },
   // 创建资源
   {

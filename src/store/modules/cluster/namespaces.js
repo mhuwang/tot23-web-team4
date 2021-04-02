@@ -4,14 +4,15 @@
  * @Author: Rex Joush
  * @Date: 2021-03-26 13:23:01
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-03-26 16:03:55
+ * @LastEditTime: 2021-03-31 15:09:34
  */
-import { getAllNamespaces } from '@/api/cluster/namespaces'
+import { getAllNamespaces, getAllNamespaceName } from '@/api/cluster/namespaces'
 import { getToken } from '@/utils/auth'
 
 const state = {
   namespaceDetails: {},
   token: getToken(),
+  namespaces: [],
   // name: '',
   // avatar: ''
 }
@@ -21,11 +22,15 @@ const mutations = {
   TO_NAMESPACE_DETIALS: (state, namespaceDetails) => {
     // 赋值
     state.namespaceDetails = namespaceDetails;
+  },
+  // 初始化获取所有命名空间名称
+  SAVE_NAMESPACE_NAME: (state, namespcaes) => {
+    state.namespaces = namespcaes;
   }
 }
 
 const actions = {
-  // getAllNamespaces
+  // 获取所有命名空间
   getAllNamespaces({commit}) {
     return new Promise((resolve, reject) => {
         getAllNamespaces().then(response => {
@@ -34,6 +39,21 @@ const actions = {
           return reject('获取失败')
         }
         resolve(data)
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
+
+  // 获取所有命名空间名字
+  getAllNamespaceName({commit}) {
+    return new Promise((resolve, reject) => {
+      getAllNamespaceName().then(response => {
+        const { data } = response.data
+        if (!data) {
+          return reject('获取失败')
+        }
+        commit("SAVE_NAMESPACE_NAME", data);
       }).catch(error => {
         reject(error)
       })

@@ -2,9 +2,9 @@
  * @Description: your project
  * @version: 1.0
  * @Author: Rex Joush
- * @Date: 2021-03-25 22:13:37
+ * @Date: 2021-04-02 13:11:07
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-04-01 15:27:45
+ * @LastEditTime: 2021-04-02 13:40:57
 -->
 <template>
   <div>
@@ -13,25 +13,6 @@
         node.metadata.name
       }}</span></el-divider
     >
-    <!-- 内存信息 -->
-    <el-card class="box-card">
-      <div slot="header" class="clearfix">
-        <span style="font-size: 16px">资源利用率</span>
-      </div>
-      <div>
-        <el-row>
-          <el-col :span="24">
-            <div id="cpu-usage"></div>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="24">
-            <div id="memory-usage"></div>
-          </el-col>
-        </el-row>
-      </div>
-    </el-card>
-    <br /><br />
     <!-- 分配信息 -->
     <el-card class="box-card">
       <div slot="header" class="clearfix">
@@ -152,14 +133,27 @@
                     :size="150"
                     :trail-width="trailWidth"
                     :stroke-width="strokeWidth"
-                    :percent="(podsAmount / node.status.allocatable.pods.amount * 100).toFixed(2)"
+                    :percent="
+                      (
+                        (podsAmount / node.status.allocatable.pods.amount) *
+                        100
+                      ).toFixed(2)
+                    "
                     stroke-linecap="square"
                     stroke-color="#b4aee8"
                   >
                     <div class="demo-Circle-custom">
-                      <h2>{{ (podsAmount / node.status.allocatable.pods.amount * 100).toFixed(2) }} % </h2>
+                      <h2>
+                        {{
+                          (
+                            (podsAmount / node.status.allocatable.pods.amount) *
+                            100
+                          ).toFixed(2)
+                        }}
+                        %
+                      </h2>
                       <span> Requests </span>
-                      <p>Pods: {{podsAmount}}</p>
+                      <p>Pods: {{ podsAmount }}</p>
                     </div>
                   </i-circle>
                 </ListItem>
@@ -246,7 +240,7 @@
       <div slot="header" class="clearfix">
         <span style="font-size: 16px">系统信息</span>
       </div>
-      <List item-layout="horizontal" :split="false">
+      <!-- <List item-layout="horizontal" :split="false">
         <div class="metadata-item">
           <p>机器 ID</p>
           <span>{{ node.status.nodeInfo.machineID }}</span>
@@ -259,7 +253,7 @@
           <p>启动 ID</p>
           <span>{{ node.status.nodeInfo.bootID }}</span>
         </div>
-      </List>
+      </List> -->
       <List item-layout="horizontal" :split="false">
         <div class="metadata-item">
           <p>内核版本</p>
@@ -277,10 +271,10 @@
           <p>kubelet 版本</p>
           <span>{{ node.status.nodeInfo.kubeletVersion }}</span>
         </div>
-        <div class="metadata-item">
+        <!-- <div class="metadata-item">
           <p>kube-proxy 版本</p>
           <span>{{ node.status.nodeInfo.kubeProxyVersion }}</span>
-        </div>
+        </div> -->
         <div class="metadata-item">
           <p>操作系统</p>
           <span>{{ node.status.nodeInfo.operatingSystem }}</span>
@@ -368,14 +362,17 @@
           </el-button>
         </el-col>
       </el-row> -->
-      <el-table :data="pods" style="width: 100%;" stripe>
+      <el-table :data="pods" style="width: 100%" stripe>
         <el-table-column width="40">
           <template slot-scope="scope">
             <svg-icon
               :icon-class="
-                scope.row.pod.status.phase == 'Running' || scope.row.pod.status.phase == 'Succeeded'
-                  ? 'load-success' : 'load-failed'
-              "/></template>
+                scope.row.pod.status.phase == 'Running' ||
+                scope.row.pod.status.phase == 'Succeeded'
+                  ? 'load-success'
+                  : 'load-failed'
+              "
+          /></template>
         </el-table-column>
         <el-table-column prop="pod.metadata.name" label="名字">
           <template slot-scope="scope">
@@ -394,40 +391,41 @@
         </el-table-column>
         <el-table-column prop="pod.status.phase" label="状态">
         </el-table-column>
-        <el-table-column align="center" prop="pod.status.containerStatuses[0].restartCount" label="重启次数">
+        <el-table-column
+          align="center"
+          prop="pod.status.containerStatuses[0].restartCount"
+          label="重启次数"
+        >
         </el-table-column>
         <el-table-column align="center" label="CPU 利用率" width="140">
           <template slot-scope="scope">
             <div v-if="scope.row.usage">
-                
-                <div class="usage-cpu-tag-zero" v-if="scope.row.usage.cpu < 0.1">
-                  0 m
-                </div>
-                <div class="usage-cpu-tag-success" v-else>
-                  {{(scope.row.usage.cpu / 1000 / 1000).toFixed(2)}} m
-                </div>
+              <div class="usage-cpu-tag-zero" v-if="scope.row.usage.cpu < 0.1">
+                0 m
+              </div>
+              <div class="usage-cpu-tag-success" v-else>
+                {{ (scope.row.usage.cpu / 1000 / 1000).toFixed(2) }} m
+              </div>
             </div>
-                        
-            <div class="usage-cpu-tag-failed" v-else>
-              --
-            </div>
+
+            <div class="usage-cpu-tag-failed" v-else>--</div>
           </template>
         </el-table-column>
         <el-table-column align="center" label="内存利用率" width="140">
           <template slot-scope="scope">
             <div v-if="scope.row.usage">
-                
-                <div class="usage-memory-tag-zero" v-if="scope.row.usage.memory == 0">
-                  0 MiB
-                </div>
-                <div class="usage-memory-tag-success" v-else>
-                  {{(scope.row.usage.memory / 1024).toFixed(2)}} MiB
-                </div>
+              <div
+                class="usage-memory-tag-zero"
+                v-if="scope.row.usage.memory == 0"
+              >
+                0 MiB
+              </div>
+              <div class="usage-memory-tag-success" v-else>
+                {{ (scope.row.usage.memory / 1024).toFixed(2) }} MiB
+              </div>
             </div>
-                        
-            <div class="usage-memory-tag-failed" v-else>
-              --
-            </div>
+
+            <div class="usage-memory-tag-failed" v-else>--</div>
           </template>
         </el-table-column>
         <el-table-column prop="pod.spec.nodeName" width="120" label="所属节点">
@@ -445,12 +443,12 @@
             <el-button
               type="primary"
               icon="el-icon-edit"
-              style="margin-bottom:5px"
+              style="margin-bottom: 5px"
               size="small"
               @click="showClasterRolesEditDialog(scope.row.pod)"
               >编辑</el-button
             >
-            <br>
+            <br />
             <!-- 删除 -->
             <el-button
               type="danger"
@@ -521,116 +519,22 @@ export default {
   mounted: function () {
     // 为空，直接存储
     if (sessionStorage.getItem("nodeName") == null) {
-      sessionStorage.setItem("nodeName", this.$store.state.nodes.nodeName);
-      this.nodeName = this.$store.state.nodes.nodeName;
+      sessionStorage.setItem("nodeName", this.$store.state.edge.nodeName);
+      this.nodeName = this.$store.state.edge.nodeName;
     }
     // 不为空，且当前 nodeName 有值，同时和之前的不一样，更新 nodeName
     else if (
-      this.$store.state.nodes.nodeName != "" &&
-      sessionStorage.getItem("nodeName") != this.$store.state.nodes.nodeName
+      this.$store.state.edge.nodeName != "" &&
+      sessionStorage.getItem("nodeName") != this.$store.state.edge.nodeName
     ) {
-      sessionStorage.setItem("nodeName", this.$store.state.nodes.nodeName);
-      this.nodeName = this.$store.state.nodes.nodeName;
+      sessionStorage.setItem("nodeName", this.$store.state.edge.nodeName);
+      this.nodeName = this.$store.state.edge.nodeName;
     }
     this.$store
-      .dispatch("nodes/getNodeByName", sessionStorage.getItem("nodeName"))
+      .dispatch("edge/getNodeByName", sessionStorage.getItem("nodeName"))
       .then((res) => {
         this.node = res.data;
         // 获取近20分钟的 cpu 和内存使用率进行画图
-      })
-      .catch((error) => {
-        throw error;
-      });
-    this.$store
-      .dispatch(
-        "nodes/getUsageRecentTwenty",
-        sessionStorage.getItem("nodeName")
-      )
-      .then((res) => {
-        let cpu = this.node.status.allocatable.cpu.amount;
-        let memory = this.node.status.allocatable.memory.amount;
-        let cpuArr = [];
-        let memoryArr = [];
-        let timeArr = [];
-        for (let i = 0; i < res.data.length; i++) {
-          // 格式化 cpu 数据
-          cpuArr.push((res.data[i].cpu / 1000 / 1000 / cpu / 1000).toFixed(4));
-          // 格式化 内存数据
-          memoryArr.push((res.data[i].memory / memory).toFixed(4));
-          // 格式化时间数据
-          timeArr.push(res.data[i].time.substring(11, 16));
-        }
-        // console.log(cpuArr);
-        // console.log(memoryArr);
-        // console.log(timeArr);
-
-        // 配置 cpu 图表项
-        let optionCpu = {
-          title: {
-            show: true,
-            text: "CPU",
-            textAlign: "auto",
-            left: "center",
-          },
-          tooltip: {
-            trigger: "axis",
-          },
-          xAxis: {
-            type: "category",
-            boundaryGap: false,
-            data: timeArr,
-            name: "时间",
-          },
-          yAxis: {
-            type: "value",
-            name: "利用率",
-          },
-          series: [
-            {
-              data: cpuArr,
-              type: "line",
-              areaStyle: {},
-            },
-          ],
-        };
-        // 配置内存图表项
-        let optionMemory = {
-          title: {
-            show: true,
-            text: "内存",
-            textAlign: "auto",
-            left: "center",
-          },
-          tooltip: {
-            trigger: "axis",
-          },
-          xAxis: {
-            type: "category",
-            boundaryGap: false,
-            data: timeArr,
-            name: "时间",
-          },
-          yAxis: {
-            type: "value",
-            name: "利用率",
-          },
-          series: [
-            {
-              data: memoryArr,
-              type: "line",
-              areaStyle: {},
-            },
-          ],
-        };
-
-        let cpuDom = document.getElementById("cpu-usage");
-        let memoryDom = document.getElementById("memory-usage");
-        let cpuChart = this.$echarts.init(cpuDom, null, { renderer: "svg" });
-        let memoryChart = this.$echarts.init(memoryDom, null, {
-          renderer: "svg",
-        });
-        optionCpu && cpuChart.setOption(optionCpu);
-        optionMemory && memoryChart.setOption(optionMemory);
       })
       .catch((error) => {
         throw error;
@@ -668,7 +572,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
 .usage-cpu-tag-success {
   color: white;
   text-align: center;

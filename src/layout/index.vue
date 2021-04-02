@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-10 15:03:17
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-03-19 16:10:48
+ * @LastEditTime: 2021-03-31 15:20:36
 -->
 <template>
   <div :class="classObj" class="app-wrapper">
@@ -67,6 +67,10 @@ export default {
         mobile: this.device === "mobile",
       };
     },
+    
+  },
+  created: function(){
+    this.$store.dispatch("namespaces/getAllNamespaceName");
   },
   methods: {
     // 退出登录

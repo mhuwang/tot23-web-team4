@@ -1,10 +1,10 @@
 /*
- * @Descripttion: your project
+ * @Description: your project
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-03-25 20:41:52
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-03-30 19:08:18
+ * @LastEditTime: 2021-04-02 12:44:26
  */
 import { getAllNodes, getNodeByName, getUsageRecentTwenty } from '@/api/cluster/nodes'
 import { getToken } from '@/utils/auth'

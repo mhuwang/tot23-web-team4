@@ -2,32 +2,33 @@
  * @Description: your project
  * @version: 1.0
  * @Author: Rex Joush
- * @Date: 2021-03-22 17:20:12
+ * @Date: 2021-04-02 12:44:04
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-03-31 14:42:30
+ * @LastEditTime: 2021-04-02 13:35:56
  */
-import { getAllPods, getPodsByNode } from '@/api/workload/pods'
+import { getAllEdgeNodes, getNodeByName } from '@/api/edge'
 import { getToken } from '@/utils/auth'
 
-const getDefaultState = () => {
-  return {
-    token: getToken(),
-    name: '',
-    avatar: ''
+const state = {
+  nodeName: '',
+  token: getToken(),
+  // name: '',
+  // avatar: ''
+}
+
+const mutations = {
+  // 跳转 Edge Node 详情页面
+  TO_EDGE_NODE_DETIALS: (state, nodeName) => {
+    // 赋值
+    state.nodeName = nodeName;
   }
 }
 
-const state = getDefaultState()
-
-const mutations = {
-  
-}
-
 const actions = {
-  // 获取所有 pods
-  getAllPods({commit}, namespace) {
+  // 获取所有边缘节点
+  getAllEdgeNodes({ commit }) {
     return new Promise((resolve, reject) => {
-        getAllPods(namespace).then(response => {
+      getAllEdgeNodes().then(response => {
         const { data } = response
         if (!data) {
           return reject('获取失败')
@@ -38,10 +39,11 @@ const actions = {
       })
     })
   },
-  // 通过 node 名称获取对应的 pod
-  getPodsByNode({commit}, nodeName) {
+
+  // 通过node名字获取信息 
+  getNodeByName({commit}, nodeName) {
     return new Promise((resolve, reject) => {
-      getPodsByNode(nodeName).then(response => {
+      getNodeByName(nodeName).then(response => {
         const { data } = response
         if (!data) {
           return reject('获取失败')
@@ -52,6 +54,12 @@ const actions = {
       })
     })
   },
+
+  // 点击名字进入详情页
+  toDetails({ commit }, nodeName) {
+    commit("TO_EDGE_NODE_DETIALS", nodeName);
+  },
+
 }
 
 export default {
@@ -60,4 +68,3 @@ export default {
   mutations,
   actions
 }
-
