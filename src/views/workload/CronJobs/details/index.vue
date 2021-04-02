@@ -1,21 +1,16 @@
-<!--
- * @Description: your project
- * @version: 1.0
- * @Author: Rex Joush
- * @Date: 2021-03-30 19:58:14
- * @LastEditors: Rex Joush
- * @LastEditTime: 2021-03-30 22:32:48
--->
-
+/*
+* @Description: my project
+* @version: 1.0
+* @Author: zqy
+* @Date: 2021-04-01 13:57:37
+* @LastEditors: Rex Joush
+* @LastEditTime: 2021-04-01 13:57:37
+*/
 <template>
   <div>
-    <!-- {{name}}
-    {{namespace}} -->
     <el-divider content-position="left"
       ><span style="font-weight: bold; font-size: 20px">
-        {{
-        deployment.metadata.name
-      }}
+        {{ cronJob.metadata.name }}
       </span></el-divider
     >
     <!-- 元数据 -->
@@ -26,24 +21,24 @@
       <List item-layout="horizontal" :split="false">
         <div class="metadata-item">
           <p>名字</p>
-          <span>{{ deployment.metadata.name }}</span>
+          <span>{{ cronJob.metadata.name }}</span>
         </div>
         <div class="metadata-item">
           <p>创建时间</p>
           <span>{{
-            deployment.metadata.creationTimestamp.replaceAll(/[TZ]/g, " ")
+            cronJob.metadata.creationTimestamp.replaceAll(/[TZ]/g, " ")
           }}</span>
         </div>
         <div class="metadata-item">
           <p>UID</p>
-          <span>{{ deployment.metadata.uid }}</span>
+          <span>{{ cronJob.metadata.uid }}</span>
         </div>
       </List>
       <!-- 元数据 标签 注释部分 -->
       <List item-layout="horizontal" :split="false">
         <div class="metadata-item">
           <p>标签</p>
-          <li v-for="label in this.labels" :key=label>
+          <!-- <li v-for="label in this.labels" :key="label">
             <el-tag
               class="lebel-tag"
               effect="dark"
@@ -51,11 +46,11 @@
               color="#bedcfa"
               >{{ label.key }}: {{ label.value }}</el-tag
             >
-          </li>
+          </li> -->
         </div>
         <div class="metadata-item">
           <p>注释</p>
-          <li v-for="anno in this.annotations" :key='anno'>
+          <li v-for="anno in this.annotations" :key="anno">
             <el-tag
               class="lebel-tag"
               effect="dark"
@@ -73,17 +68,16 @@
 
 <script>
 export default {
-  props: ['name','namespace'],
+  props: ["name"],
   data() {
     return {
-      deployment: {},
-      deploymentName: "",
-      deploymentNamespace: "",
+      cronJob: {},
+      cronJobName: "",
+      cronJobNamespace: "",
     };
   },
   // 生命周期方法
   mounted: function () {
-
     /* name */
     // // 为空，直接存储
     // if (sessionStorage.getItem("deploymentName") == null) {
@@ -99,7 +93,6 @@ export default {
     //   this.deploymentName = this.$store.state.deployments.deployment.deploymentName;
     // }
 
-    
     // /* namespace */
     // // 为空，直接存储
     // if (sessionStorage.getItem("deploymentNamespace") == null) {
@@ -115,19 +108,19 @@ export default {
     //   this.deploymentNamespace = this.$store.state.deployments.deployment.deploymentNamespace;
     // }
 
-    
     // 获取数据
-    let dep = {
+    let nameAndNamespace = {
       // name: sessionStorage.getItem("deploymentName"),
       // namespace: sessionStorage.getItem("deploymentNamespace"),
-      name: this.name.split(',')[0],
-      namespace: this.name.split(',')[1],
+      name: this.name.split(",")[0],
+      namespace: this.name.split(",")[1],
     };
+    console.log('CronJobDetailes.name and namespace =', nameAndNamespace, "="),
     this.$store
-      .dispatch("deployments/getDeploymentsByNameAndNamespace", dep)
+      .dispatch("cronJobs/getCronJobByNameAndNamespace", nameAndNamespace)
       .then((res) => {
         console.log(res);
-        this.deployment = res.data;
+        this.cronJob = res.data;
       })
       .catch((error) => {
         throw error;
@@ -138,10 +131,10 @@ export default {
     // 元数据下的标签
     labels() {
       let labelArr = [];
-      for (let pro in this.deployment.metadata.labels) {
+      for (let pro in this.cronJob.metadata.labels) {
         labelArr.push({
           key: pro,
-          value: this.deployment.metadata.labels[pro],
+          value: this.cronJob.metadata.labels[pro],
         });
       }
       return labelArr;
@@ -150,18 +143,18 @@ export default {
     // 元数据下的注释
     annotations() {
       let annoArr = [];
-      for (let anno in this.deployment.metadata.annotations) {
+      for (let anno in this.cronJob.metadata.annotations) {
         annoArr.push({
           key: anno,
-          value: this.deployment.metadata.annotations[anno],
+          value: this.cronJob.metadata.annotations[anno],
         });
       }
       return annoArr;
     },
-  }
-  
+  },
 };
 </script>
+
 <style lang="scss" scoped>
 #cpu-usage,
 #memory-usage {

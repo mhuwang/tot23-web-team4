@@ -9,6 +9,7 @@
 import { getAllSecrets } from '@/api/SettingStorage/secrets'
 import { getToken } from '@/utils/auth'
 
+//------------
 const getDefaultState = () => {
     return {
         token: getToken(),
@@ -17,9 +18,23 @@ const getDefaultState = () => {
     }
 }
 
-const state = getDefaultState()
+//const state = getDefaultState()
+const state = {
+    token: getToken(),
+    secret: {
+        secretName: '',
+        secretNamespace: '',
+    }
+}
+
 
 const mutations = {
+    // 跳转 secret 详情页面
+    TO_SECRETS_DETIALS: (state, {secretName, secretNamespace}) => {
+        // 赋值
+        state.secret.secretName = secretName;
+        state.secret.secretNamespace = secretNamespace;
+    }
 
 }
 
@@ -37,6 +52,11 @@ const actions = {
                 reject(error)
             })
         })
+    },
+
+    // 点击名字进入详情页
+    toDetails({ commit }, ser) {
+        commit("TO_DEPLOYMENTS_DETIALS", ser);
     },
 }
 

@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-03-30 20:58:46
+ * @La * @LastEditTime: 2021-03-30 20:58:46
 -->
 <template>
   <div>
@@ -71,7 +71,7 @@
         <el-table-column prop="metadata.name" label="名字">
           <template slot-scope="scope">
             <router-link
-              :to="'/workload/deployments/' + scope.row.metadata.name"
+              :to="{name: 'Deployment 详情', params:{name: scope.row.metadata.name + ',' + scope.row.metadata.namespace}}"
               @click.native="
                 goToDeploymentsDetails(
                   scope.row.metadata.name,

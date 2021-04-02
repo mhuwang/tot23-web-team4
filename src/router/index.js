@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-10 15:03:17
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-03-30 20:30:02
+ * @LastEditTime: 2021-04-02 13:27:38
  */
 import Vue from 'vue'
 import Router from 'vue-router'
@@ -97,19 +97,29 @@ export const constantRoutes = [
         component: () => import('@/views/workload/CronJobs/index'),
         meta: { title: 'Cron Jobs', icon: 'cron-jobs' }
       },
+      // cronjob 详情
+      {
+        path: 'cronjob/:name',
+        component: () => import('@/views/workload/CronJobs/details/index'),
+        name: 'CronJob 详情',
+        meta: { title: 'CronJob Details', noCache: true, activeMenu: '/cronjobs'},
+        hidden: true,
+        props: true
+      },
       {
         path: 'daemonsets',
         name: 'Daemon Sets',
         component: () => import('@/views/workload/DaemonSets/index'),
         meta: { title: 'Daemon Sets', icon: 'daemon-sets' }
       },
-      // daemonsets 详情
+      // daemonset 详情
       {
-        path: 'daemonsets/:name([a-z0-9-]+)',
+        path: 'daemonset/:name',
         component: () => import('@/views/workload/DaemonSets/details/index'),
-        name: 'Daemon Sets 详情',
-        meta: { title: 'Daemon Sets Details', noCache: true, activeMenu: '/daemonsets'},
-        hidden: true
+        name: 'DaemonSet 详情',
+        meta: { title: 'Daemon Set Details', noCache: true, activeMenu: '/daemonsets'},
+        hidden: true,
+        props: true
       },
       {
         path: 'deployments',
@@ -119,17 +129,27 @@ export const constantRoutes = [
       },
       // deployment 详情
       {
-        path: 'deployments/:name([a-z0-9-]+)',
+        path: 'deployment/:name',
         component: () => import('@/views/workload/Deployments/details/index'),
         name: 'Deployment 详情',
         meta: { title: 'Deployment Details', noCache: true, activeMenu: '/deployments'},
-        hidden: true
+        hidden: true,
+        props: true
       },
       {
         path: 'jobs',
         name: 'Jobs',
         component: () => import('@/views/workload/Jobs/index'),
         meta: { title: 'Jobs', icon: 'jobs' }
+      },
+      // job 详情
+      {
+        path: 'job/:name',
+        component: () => import('@/views/workload/Jobs/details/index'),
+        name: 'Job 详情',
+        meta: { title: 'Job Details', noCache: true, activeMenu: '/jobs'},
+        hidden: true,
+        props: true
       },
       {
         path: 'pods',
@@ -143,17 +163,44 @@ export const constantRoutes = [
         component: () => import('@/views/workload/ReplicaSets/index'),
         meta: { title: 'ReplicaSets', icon: 'replica-sets' }
       },
+      // replicaset 详情
+      {
+        path: 'replicaset/:name',
+        component: () => import('@/views/workload/ReplicaSets/details/index'),
+        name: 'ReplicaSet 详情',
+        meta: { title: 'Replicaset Details', noCache: true, activeMenu: '/replicasets'},
+        hidden: true,
+        props: true
+      },
       {
         path: 'replicationcontrollers',
         name: 'Replication Controllers',
         component: () => import('@/views/workload/ReplicationControllers/index'),
         meta: { title: 'Replication Controllers', icon: 'replication-controllers' }
       },
+      // replicationcontroller 详情
+      {
+        path: 'replicationcontroller/:name',
+        component: () => import('@/views/workload/ReplicationControllers/details/index'),
+        name: 'ReplicationController 详情',
+        meta: { title: 'replicationcontroller Details', noCache: true, activeMenu: '/replicationcontrollers'},
+        hidden: true,
+        props: true
+      },
       {
         path: 'statefulsets',
         name: 'Stateful Sets',
         component: () => import('@/views/workload/StatefulSets/index'),
         meta: { title: 'Stateful Sets', icon: 'stateful-sets' }
+      },
+      // statefulset 详情
+      {
+        path: 'statefulset/:name',
+        component: () => import('@/views/workload/StatefulSets/details/index'),
+        name: 'Statefulset 详情',
+        meta: { title: 'Statefulset Details', noCache: true, activeMenu: '/statefulsets'},
+        hidden: true,
+        props: true
       },
     ]
   },
@@ -211,17 +258,41 @@ export const constantRoutes = [
         component: () => import('@/views/SettingStorage/ConfigMaps/index'),
         meta: { title: 'Config Maps', icon: 'config-maps' }
       },
+      // -----configMap 详情
+      {
+        path: 'configmaps/:name([a-z0-9-]+)',
+        component: () => import('@/views/SettingStorage/ConfigMaps/details/index'),
+        name: 'Config Map 详情',
+        meta: { title: 'ConfigMap Details', noCache: true, activeMenu: '/configmaps'},
+        hidden: true
+      },
       {
         path: 'persistentvolumeclaims',
         name: 'Persistent Volume Claims',
         component: () => import('@/views/SettingStorage/PersistentVolumeClaims/index'),
         meta: { title: 'Persistent Volume Claims', icon: 'persistent-volume-claims' }
       },
+      //------- persistentvolumeclaims 详情
+      {
+        path: 'persistentvolumeclaims/:name([a-z0-9-]+)',
+        component: () => import('@/views/SettingStorage/PersistentVolumeClaims/details/index'),
+        name: 'PersistentVolumeClaims 详情',
+        meta: { title: 'PersistentVolumeClaims Details', noCache: true, activeMenu: '/persistentvolumeclaims'},
+        hidden: true
+      },
       {
         path: 'secrets',
         name: 'Secrets',
         component: () => import('@/views/SettingStorage/Secrets/index'),
         meta: { title: 'Secrets', icon: 'secrets' }
+      },
+      //-------- Secrets 详情
+      {
+        path: 'secrets/:name([a-z0-9-]+)',
+        component: () => import('@/views/SettingStorage/Secrets/details/index'),
+        name: 'Secrets 详情',
+        meta: { title: 'Secrets Details', noCache: true, activeMenu: '/secrets'},
+        hidden: true
       }
     ]
   },
@@ -255,12 +326,21 @@ export const constantRoutes = [
     path: '/edge',
     component: Layout,
     redirect: '/edge',
-    children: [{
+    children: [
+      {
       path: 'edge',
       name: '边缘节点',
       component: () => import('@/views/edge/index'),
       meta: { title: '边缘节点', icon: 'edge' }
-    }]
+      },
+      {
+        path: 'edgenodes/:name([a-z0-9-]+)',
+        component: () => import('@/views/edge/details/index'),
+        name: '边缘节点详情',
+        meta: { title: 'Edge Node Details', noCache: true, activeMenu: '/edge'},
+        hidden: true
+      },
+    ]
   },
   // 创建资源
   {

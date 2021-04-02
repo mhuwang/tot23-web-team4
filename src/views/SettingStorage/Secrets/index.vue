@@ -87,14 +87,24 @@
         </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
-              <!-- 修改 -->
-              <el-button style="margin-bottom:5px" type="primary" icon="el-icon-plus" size="small" @click="showClasterRolesAddDialog(scope.row)">增加</el-button>
-              <br>
-              <!-- 删除 -->
-              <el-button style="margin-bottom:5px" type="warning" icon="el-icon-edit" size="small" @click="showClasterRolesEditDialog(scope.row)">编辑</el-button>
-              <br>
-              <!-- 删除 -->
-              <el-button type="danger" icon="el-icon-delete" size="small" @click="delClasterRoles(scope.row)">删除</el-button>
+            <!-- 修改 -->
+            <el-button
+              type="primary"
+              icon="el-icon-edit"
+              style="margin-bottom:5px"
+              size="small"
+              @click="showClasterRolesEditDialog(scope.row.pod)"
+              >编辑</el-button
+            >
+            <br>
+            <!-- 删除 -->
+            <el-button
+              type="danger"
+              icon="el-icon-delete"
+              size="small"
+              @click="delClasterRoles(scope.row.pod)"
+              >删除</el-button
+            >
           </template>
         </el-table-column>
       </el-table>
@@ -118,6 +128,13 @@ export default {
   },
 
   methods: {
+    // 详情页
+    goToSecretsDetails: function (secretName, secretNamespace) {
+      // console.log("secrets index namespace", secretNamespace);
+      this.$store
+        .dispatch("secrets/toDetails", {secretName, secretNamespace});
+    },
+
     // 获取所有 Secrets
     getSecrets() {
       this.$store
