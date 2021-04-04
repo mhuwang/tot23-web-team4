@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-10 15:03:17
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-04-02 13:27:38
+ * @LastEditTime: 2021-04-04 17:07:04
  */
 import Vue from 'vue'
 import Router from 'vue-router'
@@ -156,6 +156,15 @@ export const constantRoutes = [
         name: 'Pods',
         component: () => import('@/views/workload/Pods/index'),
         meta: { title: 'Pods', icon: 'pods' }
+      },
+      // pod 详情
+      {
+        path: 'pod/:name',
+        component: () => import('@/views/workload/Pods/details/index'),
+        name: 'Pod 详情',
+        meta: { title: 'Pod Details', noCache: true, activeMenu: '/pods'},
+        hidden: true,
+        props: true
       },
       {
         path: 'replicasets',
