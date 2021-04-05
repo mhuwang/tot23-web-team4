@@ -15,3 +15,12 @@ export function getCustomResourceDefinition(data) {
     method: 'get',
   })
 }
+export function getCustomResourceDefinitionByName(customResourceDefinitionName) {
+  return request({
+    url: baseUrl + '/customize/getCustomResourceDefinitionByName',
+    method: 'get',
+    params: {
+      name: customResourceDefinitionName,
+    }
+  })
+}

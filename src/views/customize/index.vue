@@ -12,8 +12,8 @@
       <div slot="header" class="clearfix">
         <span>所有 CRD</span>
       </div>
-    
-       <el-table :data="crd" style="width: 100%" stripe>
+
+      <el-table :data="customResourceDefinition" style="width: 100%" stripe>
         <!--<el-table-column width="40">
           <template slot-scope="scope">
             <svg-icon :icon-class="scope.row.status.conditions[1].status == 'True'? 'load-success': scope.row.status.conditions[1].status == 'Unknown'?'load-doubt':'load-failed'"/>
@@ -21,10 +21,29 @@
         </el-table-column> -->
         <el-table-column prop="metadata.name" label="名字">
           <template slot-scope="scope">
-            <router-link :to="'/customize/'+scope.row.metadata.name" @click.native="goToCRDDetails(scope.row)" class="link-type">
-              <span style="color:#409EFF;text-decoration:underline">{{ scope.row.metadata.name }}</span>
+            <router-link
+              :to="'/customize/' + scope.row.metadata.name"
+              @click.native="
+                goToCustomResourceDefinitionDetails(scope.row.metadata.name)
+              "
+              class="link-type"
+            >
+              <span style="color: #409eff; text-decoration: underline">{{
+                scope.row.metadata.name
+              }}</span>
             </router-link>
           </template>
+          <!-- <template slot-scope="scope">
+             <router-link
+              :to="'/customize/' + scope.row.node.metadata.name"
+              @click.native="goToNodeDetails(scope.row.node.metadata.name)"
+              class="link-type"
+            >
+              <span style="color: #409eff; text-decoration: underline">{{
+                scope.row.metadata.name
+              }}</span>
+            </router-link>
+          </template> -->
         </el-table-column>
         <!-- <el-table-column prop="apiVersion" label="版本"> </el-table-column> -->
         <el-table-column prop="spec.group" label="Group"> </el-table-column>
@@ -43,7 +62,9 @@
         <el-table-column prop="spec.scope" label="scope"> </el-table-column>
         <el-table-column label="创建时间" width="200">
           <template slot-scope="scope">
-            <span>{{scope.row.metadata.creationTimestamp.replaceAll(/[TZ]/g,' ')}}</span>
+            <span>{{
+              scope.row.metadata.creationTimestamp.replaceAll(/[TZ]/g, " ")
+            }}</span>
           </template>
         </el-table-column>
         <el-table-column label="操作">
@@ -52,12 +73,12 @@
             <el-button
               type="primary"
               icon="el-icon-edit"
-              style="margin-bottom:5px"
+              style="margin-bottom: 5px"
               size="small"
               @click="showClasterRolesEditDialog(scope.row.pod)"
               >编辑</el-button
             >
-            <br>
+            <br />
             <!-- 删除 -->
             <el-button
               type="danger"
@@ -75,30 +96,36 @@
 
 <script>
 export default {
-  name: "crd",
+  name: "customResourceDefinition",
 
   data() {
     return {
-      crd: [],
+      customResourceDefinition: [],
     };
   },
 
   created() {
-    this.getcrd();
+    this.getCustomResourceDefinition();
   },
 
   methods: {
     // 获取所有 CRD
-    getcrd() {
+    getCustomResourceDefinition() {
       this.$store
         .dispatch("customize/getCustomResourceDefinition")
         .then((res) => {
           console.log(res.data);
-          this.crd = res.data;
+          this.customResourceDefinition = res.data;
         })
         .catch((error) => {
           console.log(error);
         });
+    },
+    // 详情页
+    goToCustomResourceDefinitionDetails: function (
+      customResourceDefinitionName
+    ) {
+      this.$store.dispatch("customize/toDetails", customResourceDefinitionName);
     },
   },
 };

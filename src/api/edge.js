@@ -29,7 +29,7 @@ export function getAllDevices(data) {
     url: baseUrl + '/customize/getCustomResourceDefinitionObjectList',
     method: 'get',
     params: {
-      nodeName: data,
+      nameSapce: data,
     }
   })
 }
