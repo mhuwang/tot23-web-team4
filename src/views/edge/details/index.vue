@@ -367,37 +367,39 @@
           <template slot-scope="scope">
             <svg-icon
               :icon-class="
-                scope.row.pod.status.phase == 'Running' ||
-                scope.row.pod.status.phase == 'Succeeded'
+                scope.row.phase == 'Running' ||
+                scope.row.phase == 'Succeeded'
                   ? 'load-success'
                   : 'load-failed'
               "
           /></template>
         </el-table-column>
-        <el-table-column prop="pod.metadata.name" label="名字">
+        <el-table-column  label="名字">
           <template slot-scope="scope">
             <router-link
-              :to="'/workload/pods/' + scope.row.pod.metadata.name"
-              @click.native="goToPodsDetails(scope.row.pod)"
+              :to="'/workload/pods/' + scope.row.name"
+              @click.native="
+                goToPodsDetails(scope.row.name, scope.row.namespace)
+              "
               class="link-type"
             >
               <span style="color: #409eff; text-decoration: underline">{{
-                scope.row.pod.metadata.name
+                scope.row.name
               }}</span>
             </router-link>
           </template>
         </el-table-column>
-        <el-table-column prop="pod.metadata.namespace" label="命名空间">
+        <el-table-column prop="namespace" label="命名空间">
         </el-table-column>
-        <el-table-column prop="pod.status.phase" label="状态">
+        <el-table-column prop="phase" label="状态">
         </el-table-column>
         <el-table-column
           align="center"
-          prop="pod.status.containerStatuses[0].restartCount"
+          prop="restartCount"
           label="重启次数"
         >
         </el-table-column>
-        <el-table-column align="center" label="CPU 利用率" width="140">
+        <!-- <el-table-column align="center" label="CPU 利用率" width="140">
           <template slot-scope="scope">
             <div v-if="scope.row.usage">
               <div class="usage-cpu-tag-zero" v-if="scope.row.usage.cpu < 0.1">
@@ -427,10 +429,10 @@
 
             <div class="usage-memory-tag-failed" v-else>--</div>
           </template>
+        </el-table-column> -->
+        <el-table-column prop="nodeName" width="120" label="所属节点">
         </el-table-column>
-        <el-table-column prop="pod.spec.nodeName" width="120" label="所属节点">
-        </el-table-column>
-        <el-table-column prop="pod.status.podIP" width="120" label="主机ip地址">
+        <el-table-column prop="podIP" width="120" label="主机ip地址">
         </el-table-column>
         <!-- <el-table-column label="启动时间" width="200">
           <template slot-scope="scope">
@@ -540,12 +542,16 @@ export default {
         throw error;
       });
 
+
+
+
     // 获取当前节点下的所有 pod 数据
     this.$store
       .dispatch("pods/getPodsByNode", sessionStorage.getItem("nodeName"))
       .then((res) => {
         console.log(res);
         this.pods = res.data;
+
         this.podsAmount = res.data.length;
       })
       .catch((error) => {
@@ -566,6 +572,14 @@ export default {
     saveNodeInfo() {
       alert("RELOAD", this.nodeName);
       sessionStorage.setItem("nodeName");
+    },
+    // 前往 pods 详情页
+    goToPodsDetails(name, namespace){
+      let podDetails = {
+        podName: name,
+        podNamespace: namespace
+      }
+      this.$store.dispatch("pods/toDetails", podDetails);
     },
   },
 };

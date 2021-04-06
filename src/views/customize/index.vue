@@ -101,11 +101,13 @@ export default {
   data() {
     return {
       customResourceDefinition: [],
+      objects: [],
     };
   },
 
   created() {
     this.getCustomResourceDefinition();
+    this.goToCustomResourceDefinitionDetails();
   },
 
   methods: {

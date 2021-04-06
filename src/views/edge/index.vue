@@ -118,7 +118,7 @@
         </el-table-column> -->
         <el-table-column label="设备名字">
           <template slot-scope="scope">
-            <router-link
+            <!-- <router-link
               :to="'/edge/edgenodes/' + scope.row.metadata.name"
               @click.native="goToEdgeNodeDetails(scope.row.metadata.name)"
               class="link-type"
@@ -126,7 +126,9 @@
               <span style="color: #409eff; text-decoration: underline">{{
                 scope.row.metadata.name
               }}</span>
-            </router-link>
+            </router-link> -->
+            <a style="color: #409eff; text-decoration: underline" href="http://172.18.7.17:8089" target="_blank">{{ scope.row.metadata.name }}</a>
+
           </template>
         </el-table-column>
         <!-- <el-table-column label="标签">
@@ -238,6 +240,9 @@ export default {
         .catch((error) => {
           console.log(error);
         });
+    },
+    goToEdgeNodeDetails: function(edgenodeName){
+      this.$store.dispatch("edge/toDetails", edgenodeName);
     },
     
   }

@@ -6,7 +6,7 @@
  * @LastEditors: Bernie
  * @LastEditTime: 
  */
-import { getCustomResourceDefinition, getCustomResourceDefinitionByName } from '@/api/customize'
+import { getCustomResourceDefinition, getCustomResourceDefinitionByName,getCustomResourceDefinitionObjectListbyName } from '@/api/customize'
 import { getToken } from '@/utils/auth'
 
 const getDefaultState = () => {
@@ -61,6 +61,20 @@ const actions = {
   },
   toDetails({ commit }, customResourceDefinitionName) {
     commit("TO_CRD_DETIALS", customResourceDefinitionName);
+  },
+  //getCustomResourceDefinitionObjectListbyName
+  getCustomResourceDefinitionObjectListbyName({ commit }, customResourceDefinitionName) {
+    return new Promise((resolve, reject) => {
+      getCustomResourceDefinitionObjectListbyName(customResourceDefinitionName).then(response => {
+        const { data } = response
+        if (!data) {
+          return reject('获取失败')
+        }
+        resolve(data)
+      }).catch(error => {
+        reject(error)
+      })
+    })
   },
 }
 

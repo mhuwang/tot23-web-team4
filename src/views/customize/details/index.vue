@@ -15,8 +15,8 @@
         {{
         customResourceDefinition.metadata.name
       }}
-      </span></el-divider
-    >
+      </span>
+    </el-divider>
     <!-- 元数据 -->
     <el-card class="box-card">
       <div slot="header" class="clearfix">
@@ -67,15 +67,185 @@
       </List>
     </el-card>
     <br /><br />
+     <!-- 资源信息 -->
+    <el-card class="box-card">
+      <div slot="header" class="clearfix">
+        <span style="font-size: 16px">资源信息</span>
+      </div>
+      <List item-layout="horizontal" :split="false">
+        <div class="metadata-item">
+          <p>版本</p>
+          <span>{{customResourceDefinition.spec.versions[0].name}}</span>
+        </div>
+        <div class="metadata-item">
+          <p>范围</p>
+          <span>{{customResourceDefinition.spec.scope}}</span>
+        </div>
+        <div class="metadata-item">
+          <p>Group</p>
+          <span>{{customResourceDefinition.spec.group }}</span>
+        </div>
+      </List>
+    </el-card>
+    <br /><br />
+    <!-- 允许的名称 -->
+    <el-card class="box-card">
+      <div slot="header" class="clearfix">
+        <span style="font-size: 16px">允许的名称</span>
+      </div>
+      <List item-layout="horizontal" :split="false">
+        <div class="metadata-item">
+          <p>复数</p>
+          <span>{{ customResourceDefinition.spec.names.plural }}</span>
+        </div>
+        <div class="metadata-item">
+          <p>单数</p>
+          <span>{{customResourceDefinition.spec.names.singular}}</span>
+        </div>
+        <div class="metadata-item">
+          <p>种类</p>
+          <span>{{ customResourceDefinition.spec.names.kind }}</span>
+        </div>
+        <div class="metadata-item">
+          <p>列出种类</p>
+          <span>{{customResourceDefinition.spec.names.listKind }}</span>
+        </div>
+        <div class="metadata-item">
+          <p>短名称</p>
+          <span>{{ customResourceDefinition.spec.names.shortNames[0]}}</span>
+        </div>
+      </List>
+    </el-card>
+    <br /><br />
+   <!-- Objects -->
+    <el-card class="box-card">
+      <div slot="header" class="clearfix">
+        <span style="font-size: 20px">Objects</span>
+      </div>
+      <el-table :data="objects" style="width: 100%" stripe>
+        <!-- <el-table-column width="40">
+          <template slot-scope="scope">
+            <svg-icon
+              :icon-class="
+                scope.row.status.conditions[0].status == 'True'
+                  ? 'load-success'
+                  : scope.row.status.conditions[0].status == 'Unknown'
+                  ? 'load-doubt'
+                  : 'load-failed'
+              "
+            />
+          </template>
+        </el-table-column> -->
+        <el-table-column label="名字">
+          <template slot-scope="scope">
+            <router-link
+              :to="'/edge/edgenodes/' + scope.row.metadata.name"
+              @click.native="goToEdgeNodeDetails(scope.row.metadata.name)"
+              class="link-type"
+            >
+              <span style="color: #409eff; text-decoration: underline">{{
+                scope.row.metadata.name
+              }}</span>
+            </router-link>
+          </template>
+        </el-table-column>
+        <!-- <el-table-column label="标签">
+          <template slot-scope="scope">
+            <span>k8s-app: {{scope.row.metadata.labels['k8s-app']}}</span>
+            <br>
+            <span>pod-template-hash: {{scope.row.metadata.labels['pod-template-hash']}}</span>
+          </template>
+        </el-table-column> -->
+        <el-table-column
+          prop="metadata.namespace"
+          label="命名空间"
+        >
+        </el-table-column>
+        <!-- <el-table-column
+          prop="status.twins[0].desired.value"
+          label="状态"
+        >
+        </el-table-column> -->
+        <el-table-column
+          prop="metadata.creationTimestamp"
+          label="创建时间"
+        >
+          <template slot-scope="scope">
+            <span>{{
+              scope.row.metadata.creationTimestamp.replaceAll(/[TZ]/g, " ")
+            }}</span>
+          </template>
+        </el-table-column>
+        <!-- <el-table-column label="是否可调度" width="100">
+          作用域插槽
+          <template slot-scope="scope">
+            {{scope.row}} 每一行封存的数据
+            <el-switch
+              v-model="!scope.row.spec.unschedulable"
+              @change="userStateChange(scope.row)"
+            ></el-switch>
+          </template>
+        </el-table-column> -->
+        <el-table-column label="操作">
+          <template slot-scope="scope">
+            <!-- 修改 -->
+            <el-button
+              style="margin-bottom: 5px"
+              type="primary"
+              icon="el-icon-edit"
+              size="small"
+              @click="showNodeEditDialog(scope.row)"
+              >编辑</el-button
+            >
+            <br />
+            <!-- 删除 -->
+            <el-button
+              type="danger"
+              icon="el-icon-delete"
+              size="small"
+              @click="delNode(scope.row)"
+              >删除</el-button
+            >
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-card>
+    <br /><br />
+   
+    <!-- 状态-->
+    <el-card class="box-card">
+      <div slot="header" class="clearfix">
+        <span style="font-size: 16px">状态</span>
+      </div>
+      <el-table :data="customResourceDefinition.status.conditions" style="width: 100%" stripe>
+        <el-table-column prop="type" label="类别"> </el-table-column>
+        <el-table-column prop="status" label="状态" width="120">
+        </el-table-column>
+        <el-table-column label="最后迁移时间">
+          <template slot-scope="scope">
+            <span>{{
+              scope.row.lastTransitionTime.replaceAll(/[TZ]/g, " ")
+            }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="reason" label="原因"> </el-table-column>
+        <el-table-column prop="message" label="信息"> </el-table-column>
+      </el-table>
+    </el-card>
+    <br /><br />
+   
+    <br /><br />
   </div>
 </template>
 
 <script>
 export default {
+
   data() {
     return {
       customResourceDefinition: {},
       customResourceDefinitionName: "",
+      objects: [],
     };
   },
   // 生命周期方法
@@ -124,6 +294,16 @@ export default {
       .catch((error) => {
         throw error;
       });
+    this.$store
+      .dispatch("customize/getCustomResourceDefinitionObjectListbyName", sessionStorage.getItem("customResourceDefinitionName"))
+      .then((res) => {
+        console.log(res);
+        this.objects = res.data.items;
+      })
+      .catch((error) => {
+        throw error;
+      });
+    
   },
 
   computed: {
@@ -155,6 +335,31 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+
+.usage-cpu-tag-success {
+  color: white;
+  text-align: center;
+  background-color: #387c6d;
+  border-radius: 10px;
+}
+.usage-memory-tag-success {
+  color: white;
+  text-align: center;
+  background-color: #28527a;
+  border-radius: 10px;
+}
+.usage-cpu-tag-zero, .usage-memory-tag-zero {
+  color: white;
+  text-align: center;
+  background-color: #aaa;
+  border-radius: 10px;
+}
+.usage-cpu-tag-failed, .usage-memory-tag-failed {
+  color: #333;
+  text-align: center;
+  border-radius: 10px;
+}
+
 #cpu-usage,
 #memory-usage {
   width: 100%;

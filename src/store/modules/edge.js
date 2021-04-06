@@ -69,9 +69,11 @@ const actions = {
   },
 
   // 点击名字进入详情页
-  toDetails({ commit }, nodeName) {
-    commit("TO_EDGE_NODE_DETIALS", nodeName);
+  toDetails({ commit }, edgenodeName) {
+    commit("TO_EDGE_NODE_DETIALS", edgenodeName);
+    console.log("333",edgenodeName);
   },
+  
 
 }
 
