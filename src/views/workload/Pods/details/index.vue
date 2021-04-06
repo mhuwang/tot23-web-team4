@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-04-02 14:00:48
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-04-02 15:06:00
+ * @LastEditTime: 2021-04-06 13:58:14
 -->
 <template>
   <div>
@@ -13,7 +13,7 @@
         pod.metadata.name
       }}</span></el-divider
     >
-    <!-- 内存信息 -->
+    <!-- 利用率信息 -->
     <el-card class="box-card">
       <div slot="header" class="clearfix">
         <span style="font-size: 16px">资源利用率</span>
@@ -61,7 +61,7 @@
                     <div class="demo-Circle-custom">
                       <h2>6.3%</h2>
                       <span> Requests </span>
-                      <p>Cores: {{ node.status.allocatable.cpu.amount }}</p>
+                      <p>Cores: {{ pod.status.allocatable.cpu.amount }}</p>
                     </div>
                   </i-circle>
                 </ListItem>
@@ -77,7 +77,7 @@
                     <div class="demo-Circle-custom">
                       <h2>12.5%</h2>
                       <span> Limits </span>
-                      <p>Cores: {{ node.status.allocatable.cpu.amount }}</p>
+                      <p>Cores: {{ pod.status.allocatable.cpu.amount }}</p>
                     </div>
                   </i-circle>
                 </ListItem>
@@ -105,7 +105,7 @@
                         GiB:
                         {{
                           (
-                            node.status.allocatable.memory.amount /
+                            pod.status.allocatable.memory.amount /
                             1024 /
                             1024
                           ).toFixed(2)
@@ -130,7 +130,7 @@
                         GiB:
                         {{
                           (
-                            node.status.allocatable.memory.amount /
+                            pod.status.allocatable.memory.amount /
                             1024 /
                             1024
                           ).toFixed(2)
@@ -154,7 +154,7 @@
                     :stroke-width="strokeWidth"
                     :percent="
                       (
-                        (podsAmount / node.status.allocatable.pods.amount) *
+                        (podsAmount / pod.status.allocatable.pods.amount) *
                         100
                       ).toFixed(2)
                     "
@@ -165,7 +165,7 @@
                       <h2>
                         {{
                           (
-                            (podsAmount / node.status.allocatable.pods.amount) *
+                            (podsAmount / pod.status.allocatable.pods.amount) *
                             100
                           ).toFixed(2)
                         }}
@@ -191,24 +191,28 @@
       <List item-layout="horizontal" :split="false">
         <div class="metadata-item">
           <p>名字</p>
-          <span>{{ node.metadata.name }}</span>
+          <span>{{ pod.metadata.name }}</span>
+        </div>
+        <div class="metadata-item">
+          <p>命名空间</p>
+          <span>{{ pod.metadata.namespace }}</span>
         </div>
         <div class="metadata-item">
           <p>创建时间</p>
           <span>{{
-            node.metadata.creationTimestamp.replaceAll(/[TZ]/g, " ")
+            pod.metadata.creationTimestamp.replaceAll(/[TZ]/g, " ")
           }}</span>
         </div>
         <div class="metadata-item">
           <p>UID</p>
-          <span>{{ node.metadata.uid }}</span>
+          <span>{{ pod.metadata.uid }}</span>
         </div>
       </List>
       <!-- 元数据 标签 注释部分 -->
-      <List item-layout="horizontal" :split="false">
+      <List v-if="labels.length > 0" item-layout="horizontal" :split="false">
         <div class="metadata-item">
           <p>标签</p>
-          <li v-for="label in this.labels">
+          <li v-for="(label, index) in this.labels" :key="index">
             <el-tag
               class="lebel-tag"
               effect="dark"
@@ -218,9 +222,9 @@
             >
           </li>
         </div>
-        <div class="metadata-item">
+        <div v-if="annotations.length > 0" class="metadata-item">
           <p>注释</p>
-          <li v-for="anno in this.annotations">
+          <li v-for="(anno, index) in annotations" :key="index">
             <el-tag
               class="lebel-tag"
               effect="dark"
@@ -240,67 +244,20 @@
       </div>
       <List item-layout="horizontal" :split="false">
         <div class="metadata-item">
-          <p>地址</p>
-          <li v-for="address in this.addressess">
-            <el-tag
-              class="lebel-tag"
-              effect="dark"
-              size="medium"
-              color="#bedcfa"
-              >{{ address.key }}: {{ address.value }}</el-tag
-            >
-          </li>
-        </div>
-      </List>
-    </el-card>
-    <br /><br />
-    <!-- 系统信息 -->
-    <el-card class="box-card">
-      <div slot="header" class="clearfix">
-        <span style="font-size: 16px">系统信息</span>
-      </div>
-      <List item-layout="horizontal" :split="false">
-        <div class="metadata-item">
-          <p>机器 ID</p>
-          <span>{{ node.status.nodeInfo.machineID }}</span>
+          <p>节点</p>
+          <span>{{ pod.spec.nodeName }}</span>
         </div>
         <div class="metadata-item">
-          <p>系统 UUID</p>
-          <span>{{ node.status.nodeInfo.systemUUID }}</span>
+          <p>状态</p>
+          <span>{{ pod.status.phase }}</span>
         </div>
         <div class="metadata-item">
-          <p>启动 ID</p>
-          <span>{{ node.status.nodeInfo.bootID }}</span>
-        </div>
-      </List>
-      <List item-layout="horizontal" :split="false">
-        <div class="metadata-item">
-          <p>内核版本</p>
-          <span>{{ node.status.nodeInfo.kernelVersion }}</span>
+          <p>IP</p>
+          <span>{{ pod.status.podIP }}</span>
         </div>
         <div class="metadata-item">
-          <p>操作系统镜像</p>
-          <span>{{ node.status.nodeInfo.osImage }}</span>
-        </div>
-        <div class="metadata-item">
-          <p>容器运行时版本</p>
-          <span>{{ node.status.nodeInfo.containerRuntimeVersion }}</span>
-        </div>
-        <div class="metadata-item">
-          <p>kubelet 版本</p>
-          <span>{{ node.status.nodeInfo.kubeletVersion }}</span>
-        </div>
-        <div class="metadata-item">
-          <p>kube-proxy 版本</p>
-          <span>{{ node.status.nodeInfo.kubeProxyVersion }}</span>
-        </div>
-        <div class="metadata-item">
-          <p>操作系统</p>
-          <span>{{ node.status.nodeInfo.operatingSystem }}</span>
-        </div>
-        <div class="metadata-item">
-          <p>架构</p>
-          <span>{{ node.status.nodeInfo.architecture }}</span>
+          <p>QoS类</p>
+          <span>{{ pod.status.qosClass }}</span>
         </div>
       </List>
     </el-card>
@@ -310,7 +267,7 @@
       <div slot="header" class="clearfix">
         <span style="font-size: 16px">状态</span>
       </div>
-      <el-table :data="node.status.conditions" style="width: 100%" stripe>
+      <el-table :data="pod.status.conditions" style="width: 100%" stripe>
         <el-table-column prop="type" label="类别"> </el-table-column>
         <el-table-column prop="status" label="状态" width="120">
         </el-table-column>
@@ -318,168 +275,27 @@
         <el-table-column label="最后检测时间">
           <template slot-scope="scope">
             <span>{{
-              scope.row.lastHeartbeatTime.replaceAll(/[TZ]/g, " ")
-            }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="最后迁移时间">
-          <template slot-scope="scope">
-            <span>{{
               scope.row.lastTransitionTime.replaceAll(/[TZ]/g, " ")
             }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="reason" label="原因"> </el-table-column>
-        <el-table-column prop="message" label="信息"> </el-table-column>
+        <el-table-column label="原因">
+          <template slot-scope="scope">
+            <span>{{
+              scope.row.reason != undefined ? scope.row.reason : "--"
+            }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="信息">
+          <template slot-scope="scope">
+            <span>{{
+              scope.row.message != undefined ? scope.row.message : "--"
+            }}</span>
+          </template>
+        </el-table-column>
       </el-table>
     </el-card>
     <br /><br />
-    <!-- pod 信息 -->
-    <el-card class="box-card">
-      <div slot="header" class="clearfix">
-        <span>Pod</span>
-      </div>
-      <!-- <el-row :gutter="20">
-        <el-col :span="5">
-          搜索区域
-          <el-select
-            v-model="value"
-            filterable
-            clearable
-            size="large"
-            style="width: 100%"
-            @change="selectChange"
-            @clear="clearSelect"
-            @focus="initNamespace"
-            placeholder="请选择命名空间"
-          >
-            <el-option
-              v-for="item in namespaces"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            >
-            </el-option>
-          </el-select>
-          搜索按钮
-            <el-button
-              slot="append"
-              size="large"
-              icon="el-icon-plus"
-              @click="getPods"
-            ></el-button> 
-        </el-col>
-        添加按钮
-        <el-col :span="4">
-          <el-button
-            type="primary"
-            size="large"
-            icon="el-icon-plus"
-            @click="addDialogVisible = true"
-          >
-            添加 Pod
-          </el-button>
-        </el-col>
-      </el-row> -->
-      <el-table :data="pods" style="width: 100%" stripe>
-        <el-table-column width="40">
-          <template slot-scope="scope">
-            <svg-icon
-              :icon-class="
-                scope.row.pod.status.phase == 'Running' ||
-                scope.row.pod.status.phase == 'Succeeded'
-                  ? 'load-success'
-                  : 'load-failed'
-              "
-          /></template>
-        </el-table-column>
-        <el-table-column prop="pod.metadata.name" label="名字">
-          <template slot-scope="scope">
-            <router-link
-              :to="'/workload/pods/' + scope.row.pod.metadata.name"
-              @click.native="goToPodsDetails(scope.row.pod)"
-              class="link-type"
-            >
-              <span style="color: #409eff; text-decoration: underline">{{
-                scope.row.pod.metadata.name
-              }}</span>
-            </router-link>
-          </template>
-        </el-table-column>
-        <el-table-column prop="pod.metadata.namespace" label="命名空间">
-        </el-table-column>
-        <el-table-column prop="pod.status.phase" label="状态">
-        </el-table-column>
-        <el-table-column
-          align="center"
-          prop="pod.status.containerStatuses[0].restartCount"
-          label="重启次数"
-        >
-        </el-table-column>
-        <el-table-column align="center" label="CPU 利用率" width="140">
-          <template slot-scope="scope">
-            <div v-if="scope.row.usage">
-              <div class="usage-cpu-tag-zero" v-if="scope.row.usage.cpu < 0.1">
-                0 m
-              </div>
-              <div class="usage-cpu-tag-success" v-else>
-                {{ (scope.row.usage.cpu / 1000 / 1000).toFixed(2) }} m
-              </div>
-            </div>
-
-            <div class="usage-cpu-tag-failed" v-else>--</div>
-          </template>
-        </el-table-column>
-        <el-table-column align="center" label="内存利用率" width="140">
-          <template slot-scope="scope">
-            <div v-if="scope.row.usage">
-              <div
-                class="usage-memory-tag-zero"
-                v-if="scope.row.usage.memory == 0"
-              >
-                0 MiB
-              </div>
-              <div class="usage-memory-tag-success" v-else>
-                {{ (scope.row.usage.memory / 1024).toFixed(2) }} MiB
-              </div>
-            </div>
-
-            <div class="usage-memory-tag-failed" v-else>--</div>
-          </template>
-        </el-table-column>
-        <el-table-column prop="pod.spec.nodeName" width="120" label="所属节点">
-        </el-table-column>
-        <el-table-column prop="pod.status.podIP" width="120" label="主机ip地址">
-        </el-table-column>
-        <!-- <el-table-column label="启动时间" width="200">
-          <template slot-scope="scope">
-            <span>{{scope.row.status.startTime.replaceAll(/[TZ]/g,' ')}}</span>
-          </template>
-        </el-table-column> -->
-        <el-table-column label="操作">
-          <template slot-scope="scope">
-            <!-- 修改 -->
-            <el-button
-              type="primary"
-              icon="el-icon-edit"
-              style="margin-bottom: 5px"
-              size="small"
-              @click="showClasterRolesEditDialog(scope.row.pod)"
-              >编辑</el-button
-            >
-            <br />
-            <!-- 删除 -->
-            <el-button
-              type="danger"
-              icon="el-icon-delete"
-              size="small"
-              @click="delClasterRoles(scope.row.pod)"
-              >删除</el-button
-            >
-          </template>
-        </el-table-column>
-      </el-table>
-    </el-card>
   </div>
 </template>
 
@@ -491,20 +307,18 @@ export default {
       trailWidth: 5,
       strokeWidth: 5,
       usage: [],
-      pods: [],
-      nodeName: "",
-      node: {},
-      podsAmount: 0,
+      podName: "",
+      pod: {},
     };
   },
   computed: {
     // 元数据下的标签
     labels() {
       let labelArr = [];
-      for (let pro in this.node.metadata.labels) {
+      for (let pro in this.pod.metadata.labels) {
         labelArr.push({
           key: pro,
-          value: this.node.metadata.labels[pro],
+          value: this.pod.metadata.labels[pro],
         });
       }
       return labelArr;
@@ -513,10 +327,10 @@ export default {
     // 元数据下的注释
     annotations() {
       let annoArr = [];
-      for (let anno in this.node.metadata.annotations) {
+      for (let anno in this.pod.metadata.annotations) {
         annoArr.push({
           key: anno,
-          value: this.node.metadata.annotations[anno],
+          value: this.pod.metadata.annotations[anno],
         });
       }
       return annoArr;
@@ -525,160 +339,174 @@ export default {
     // 资源信息下的地址
     addressess() {
       let addrArr = [];
-      // console.log(this.node.status.addresses[0].type);
-      for (let addr in this.node.status.addresses) {
+      // console.log(this.pod.status.addresses[0].type);
+      for (let addr in this.pod.status.addresses) {
         addrArr.push({
-          key: this.node.status.addresses[addr].type,
-          value: this.node.status.addresses[addr].address,
+          key: this.pod.status.addresses[addr].type,
+          value: this.pod.status.addresses[addr].address,
         });
       }
       return addrArr;
     },
   },
   mounted: function () {
+    /* name */
+
     // 为空，直接存储
-    if (sessionStorage.getItem("nodeName") == null) {
-      sessionStorage.setItem("nodeName", this.$store.state.nodes.nodeName);
-      this.nodeName = this.$store.state.nodes.nodeName;
+    if (sessionStorage.getItem("podName") == null) {
+      sessionStorage.setItem("podName", this.$store.state.pods.pod.podName);
+      this.podName = this.$store.state.pods.pod.podName;
     }
-    // 不为空，且当前 nodeName 有值，同时和之前的不一样，更新 nodeName
+    // 不为空，且当前 podName 有值，同时和之前的不一样，更新 podName
     else if (
-      this.$store.state.nodes.nodeName != "" &&
-      sessionStorage.getItem("nodeName") != this.$store.state.nodes.nodeName
+      this.$store.state.pods.pod.podName != "" &&
+      sessionStorage.getItem("podName") != this.$store.state.pods.pod.podName
     ) {
-      sessionStorage.setItem("nodeName", this.$store.state.nodes.nodeName);
-      this.nodeName = this.$store.state.nodes.nodeName;
+      sessionStorage.setItem("podName", this.$store.state.pods.pod.podName);
+      this.podName = this.$store.state.pods.pod.podName;
     }
-    this.$store
-      .dispatch("nodes/getNodeByName", sessionStorage.getItem("nodeName"))
-      .then((res) => {
-        this.node = res.data;
-        // 获取近20分钟的 cpu 和内存使用率进行画图
-      })
-      .catch((error) => {
-        throw error;
-      });
-    this.$store
-      .dispatch(
-        "nodes/getUsageRecentTwenty",
-        sessionStorage.getItem("nodeName")
-      )
-      .then((res) => {
-        let cpu = this.node.status.allocatable.cpu.amount;
-        let memory = this.node.status.allocatable.memory.amount;
-        let cpuArr = [];
-        let memoryArr = [];
-        let timeArr = [];
-        for (let i = 0; i < res.data.length; i++) {
-          // 格式化 cpu 数据
-          cpuArr.push((res.data[i].cpu / 1000 / 1000 / cpu / 1000).toFixed(4));
-          // 格式化 内存数据
-          memoryArr.push((res.data[i].memory / memory).toFixed(4));
-          // 格式化时间数据
-          timeArr.push(res.data[i].time.substring(11, 16));
-        }
-        // console.log(cpuArr);
-        // console.log(memoryArr);
-        // console.log(timeArr);
 
-        // 配置 cpu 图表项
-        let optionCpu = {
-          title: {
-            show: true,
-            text: "CPU",
-            textAlign: "auto",
-            left: "center",
-          },
-          tooltip: {
-            trigger: "axis",
-          },
-          xAxis: {
-            type: "category",
-            boundaryGap: false,
-            data: timeArr,
-            name: "时间",
-          },
-          yAxis: {
-            type: "value",
-            name: "利用率",
-          },
-          series: [
-            {
-              data: cpuArr,
-              type: "line",
-              areaStyle: {},
-            },
-          ],
-        };
-        // 配置内存图表项
-        let optionMemory = {
-          title: {
-            show: true,
-            text: "内存",
-            textAlign: "auto",
-            left: "center",
-          },
-          tooltip: {
-            trigger: "axis",
-          },
-          xAxis: {
-            type: "category",
-            boundaryGap: false,
-            data: timeArr,
-            name: "时间",
-          },
-          yAxis: {
-            type: "value",
-            name: "利用率",
-          },
-          series: [
-            {
-              data: memoryArr,
-              type: "line",
-              areaStyle: {},
-            },
-          ],
-        };
+    /* namespace */
+    // 为空，直接存储
+    if (sessionStorage.getItem("podNamespace") == null) {
+      sessionStorage.setItem(
+        "podNamespace",
+        this.$store.state.pods.pod.podNamespace
+      );
+      this.podNamespace = this.$store.state.pods.pod.podNamespace;
+    }
+    // 不为空，且当前 podNamespace 有值，同时和之前的不一样，更新 podNamespace
+    else if (
+      this.$store.state.pods.pod.podNamespace != "" &&
+      sessionStorage.getItem("podNamespace") !=
+        this.$store.state.pods.pod.podNamespace
+    ) {
+      sessionStorage.setItem(
+        "podNamespace",
+        this.$store.state.pods.pod.podNamespace
+      );
+      this.podNamespace = this.$store.state.pods.pod.podNamespace;
+    }
 
-        let cpuDom = document.getElementById("cpu-usage");
-        let memoryDom = document.getElementById("memory-usage");
-        let cpuChart = this.$echarts.init(cpuDom, null, { renderer: "svg" });
-        let memoryChart = this.$echarts.init(memoryDom, null, {
-          renderer: "svg",
-        });
-        optionCpu && cpuChart.setOption(optionCpu);
-        optionMemory && memoryChart.setOption(optionMemory);
-      })
-      .catch((error) => {
-        throw error;
-      });
-
-    // 获取当前节点下的所有 pod 数据
+    let podDetails = {
+      podName: sessionStorage.getItem("podName"),
+      podNamespace: sessionStorage.getItem("podNamespace"),
+    };
+    
     this.$store
-      .dispatch("pods/getPodsByNode", sessionStorage.getItem("nodeName"))
+      .dispatch("pods/getPodByNameAndNamespace", podDetails)
       .then((res) => {
         console.log(res);
-        this.pods = res.data;
-        this.podsAmount = res.data.length;
+        this.pod = res.data.pod;
+        this.usage = res.data.podUsagesList;
+        // 获取近20分钟的 cpu 和内存使用率进行画图
+        if (res.data.podUsagesList.length > 0) {
+          //   let cpu = this.usage.status.allocatable.cpu.amount;
+          //   let memory = this.pod.status.allocatable.memory.amount;
+          let cpuArr = [];
+          let memoryArr = [];
+          let timeArr = [];
+          for (let i = 0; i < res.data.podUsagesList.length; i++) {
+            // 格式化 cpu 数据
+            cpuArr.push(
+              (res.data.podUsagesList[i].cpu / 1000 / 1000).toFixed(4)
+            );
+            // 格式化 内存数据
+            memoryArr.push(
+              (res.data.podUsagesList[i].memory / 1024).toFixed(4)
+            );
+            // 格式化时间数据
+            timeArr.push(res.data.podUsagesList[i].time.substring(11, 16));
+          }
+          console.log(cpuArr);
+          console.log(memoryArr);
+          console.log(timeArr);
+
+          // 配置 cpu 图表项
+          let optionCpu = {
+            title: {
+              show: true,
+              text: "CPU",
+              textAlign: "auto",
+              left: "center",
+            },
+            tooltip: {
+              trigger: "axis",
+            },
+            xAxis: {
+              type: "category",
+              boundaryGap: false,
+              data: timeArr,
+              name: "时间",
+            },
+            yAxis: {
+              type: "value",
+              name: "使用量",
+            },
+            series: [
+              {
+                data: cpuArr,
+                type: "line",
+                areaStyle: {},
+              },
+            ],
+          };
+          // 配置内存图表项
+          let optionMemory = {
+            title: {
+              show: true,
+              text: "内存",
+              textAlign: "auto",
+              left: "center",
+            },
+            tooltip: {
+              trigger: "axis",
+            },
+            xAxis: {
+              type: "category",
+              boundaryGap: false,
+              data: timeArr,
+              name: "时间",
+            },
+            yAxis: {
+              type: "value",
+              name: "使用量",
+            },
+            series: [
+              {
+                data: memoryArr,
+                type: "line",
+                areaStyle: {},
+              },
+            ],
+          };
+
+          let cpuDom = document.getElementById("cpu-usage");
+          console.log(cpuDom);
+          let memoryDom = document.getElementById("memory-usage");
+          let cpuChart = this.$echarts.init(cpuDom, null, { renderer: "svg" });
+          let memoryChart = this.$echarts.init(memoryDom, null, {
+            renderer: "svg",
+          });
+          optionCpu && cpuChart.setOption(optionCpu);
+          optionMemory && memoryChart.setOption(optionMemory);
+        }
       })
       .catch((error) => {
         throw error;
       });
   },
+  watch: {
+    usage: function () {
+      console.log("watch", document.getElementById("cpu-usage"));
+    },
+  },
   created: function () {
-    window.addEventListener("unload", this.saveNodeInfo);
-    // console.log(sessionStorage.getItem("nodeName"));
-    // if(sessionStorage.getItem("nodeName" == null)){
-    //   console.log(this.$store.state.nodes.nodeName);
-    //   console.log("aaa");
-    // }
-    //   console.log("bbb");
-    // this.nodeName = this.$store.state.nodes.nodeName;
+    window.addEventListener("unload", this.savepodInfo);
   },
   methods: {
-    saveNodeInfo() {
-      alert("RELOAD", this.nodeName);
-      sessionStorage.setItem("nodeName");
+    savepodInfo() {
+      sessionStorage.setItem("podName");
     },
   },
 };
@@ -697,13 +525,15 @@ export default {
   background-color: #28527a;
   border-radius: 10px;
 }
-.usage-cpu-tag-zero, .usage-memory-tag-zero {
+.usage-cpu-tag-zero,
+.usage-memory-tag-zero {
   color: white;
   text-align: center;
   background-color: #aaa;
   border-radius: 10px;
 }
-.usage-cpu-tag-failed, .usage-memory-tag-failed {
+.usage-cpu-tag-failed,
+.usage-memory-tag-failed {
   color: #333;
   text-align: center;
   border-radius: 10px;

@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-04-04 17:13:44
+ * @LastEditTime: 2021-04-05 21:00:39
 -->
 <template>
   <div>
@@ -189,10 +189,14 @@ export default {
           console.log(error);
         });
     },
-
+    
     // 前往 pods 详情页
     goToPodsDetails(name, namespace){
-      
+      let podDetails = {
+        podName: name,
+        podNamespace: namespace
+      }
+      this.$store.dispatch("pods/toDetails", podDetails);
     },
     // 当选择框聚焦时获取命名空间
     initNamespace() {
