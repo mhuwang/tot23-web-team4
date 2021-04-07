@@ -54,9 +54,9 @@ const actions = {
       })
     })
   },
-  getAllDevices({ commit },nameSapce) {
+  getAllDevices({ commit },objName) {
     return new Promise((resolve, reject) => {
-      getAllDevices(nameSapce).then(response => {
+      getAllDevices(objName).then(response => {
         const { data } = response
         if (!data) {
           return reject('获取失败')

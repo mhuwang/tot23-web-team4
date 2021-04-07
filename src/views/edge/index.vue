@@ -232,7 +232,7 @@ export default {
     },
     getAllDevices() {
       this.$store
-        .dispatch("edge/getAllDevices","default")
+        .dispatch("edge/getAllDevices","devices.devices.kubeedge.io")
         .then((res) => {
           console.log(res.data);
           this.devices = res.data.items;
