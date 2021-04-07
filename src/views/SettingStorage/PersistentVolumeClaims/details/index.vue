@@ -19,6 +19,10 @@
           <span>{{ persistentVolumeClaim.metadata.name }}</span>
         </div>
         <div class="metadata-item">
+          <p>命名空间</p>
+          <span>{{ persistentVolumeClaim.metadata.namespace }}</span>
+        </div>
+        <div class="metadata-item">
           <p>创建时间</p>
           <span>{{
             persistentVolumeClaim.metadata.creationTimestamp.replaceAll(/[TZ]/g, " ")
@@ -58,6 +62,35 @@
       </List>
     </el-card>
     <br /><br />
+    <!-- 资源信息 -->
+    <el-card class="box-card">
+      <div slot="header" class="clearfix">
+        <span style="font-size: 16px">资源信息</span>
+      </div>
+      <List item-layout="horizontal" :split="false">
+        <!-- <div class="metadata-item">
+          <p>节点</p>
+          <span>{{ persistentVolumeClaim.spec.nodeName }}</span>
+        </div> -->
+        <div class="metadata-item">
+          <p>状态</p>
+          <span>{{ persistentVolumeClaim.status.phase }}</span>
+        </div>
+        <div class="metadata-item">
+          <p>容量</p>
+          <span>{{ persistentVolumeClaim.status.capacity.storage.amount }} {{persistentVolumeClaim.status.capacity.storage.format}}</span>
+          <!-- <template slot-scope="scope">
+            <span>{{scope.row.status.capacity.storage.amount}} {{scope.row.status.capacity.storage.format}}</span>
+          </template> -->
+        </div>
+        <div class="metadata-item">
+          <p>访问模式</p>
+          <span>{{ persistentVolumeClaim.spec.accessModes[0] }}</span>
+        </div>
+      </List>
+    </el-card>
+    <br /><br />
+
   </div>
 </template>
 

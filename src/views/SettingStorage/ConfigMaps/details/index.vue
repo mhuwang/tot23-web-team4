@@ -62,10 +62,24 @@
       </List>
     </el-card>
     <br /><br />
+    <!-- 数据 还没写完，待续...............-->   
+    <el-card class="box-card">
+      <div slot="header" class="clearfix">
+        <span style="font-size: 16px">数据</span>
+      </div>
+      <List item-layout="horizontal" :split="false">
+          ca.crt&nbsp;&nbsp;<i :class="!caShow? 'el-icon-zoom-in' : 'el-icon-zoom-out'" @click="showCa"></i>
+          <highlightjs v-show="caShow" style="width:100%" language='plaintext' :code="configMap.data['client-ca-file']" />
+          <!-- <span>{{  }}</span> -->
+          <!-- <input type="text" v-model="configMap.data.client-ca-file"> -->
+      </List>
+    </el-card>
+    <br /><br />
   </div>
 </template>
 
 <script>
+
 export default {
   props: ['name','namespace'],
   data() {
@@ -73,7 +87,14 @@ export default {
       configMap: {},
       configMapName: "",
       configMapNamespace: "",
+      caShow: false,
     };
+  },
+
+  methods: {
+    showCa: function(){
+      this.caShow = !this.caShow;
+    }
   },
 
   // 生命周期方法
