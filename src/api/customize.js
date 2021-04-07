@@ -24,3 +24,13 @@ export function getCustomResourceDefinitionByName(customResourceDefinitionName) 
     }
   })
 }
+//getCustomResourceDefinitionObjectListbyName
+export function getCustomResourceDefinitionObjectListbyName(customResourceDefinitionName) {
+  return request({
+    url: baseUrl + '/customize/getCustomResourceDefinitionObjectListbyName',
+    method: 'get',
+    params: {
+      crdName: customResourceDefinitionName,
+    }
+  })
+}

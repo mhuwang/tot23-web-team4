@@ -1,10 +1,10 @@
 <!--
  * @Descripttion: your project
  * @version: 1.0
- * @Author: Rex Joush
- * @Date: 2021-03-17 15:26:16
- * @LastEditors: Rex Joush
- * @LastEditTime: 2021-03-19 16:09:16
+ * @Author: Anna667
+ * @Date: 2021-04-06 19:04:16
+ * @LastEditors: Anna667
+ * @LastEditTime: 2021-04-06 19:04:16
 -->
 <template>
   <div>
@@ -55,15 +55,32 @@
         </el-col> -->
       </el-row>
       <el-table :data="configMaps" style="width: 100%" stripe>
-        <!-- <el-table-column width="40">
+         <!-- <el-table-column width="40">
           <template slot-scope="scope">
-            <svg-icon :icon-class="scope.row.status.conditions[3].status == 'True'? 'load-success': scope.row.status.conditions[3].status == 'Unknown'?'load-doubt':'load-failed'"/>
+            <svg-icon 
+              :icon-class="
+                scope.row.phase == 'Running' || scope.row.phase == 'Succeeded'
+                  ? 'load-success'
+                  : 'load-failed'
+              "
+            />
           </template>
-        </el-table-column> -->
+        </el-table-column>  -->
         <el-table-column prop="metadata.name" label="名字">
           <template slot-scope="scope">
-            <router-link :to="'/SettingStorage/configMaps/'+scope.row.metadata.name" @click.native="goToConfigMapsDetails(scope.row)" class="link-type">
-              <span style="color:#409EFF;text-decoration:underline">{{ scope.row.metadata.name }}</span>
+            <router-link 
+              :to="'/settingstorage/configmaps/' + scope.row.name"
+              @click.native="
+                goToConfigMapsDetails(
+                  scope.row.metadata.name,
+                  scope.row.metadata.namespace
+                  )
+                " 
+                class="link-type"
+              >
+                <span style="color:#409EFF;text-decoration:underline">{{ 
+                  scope.row.metadata.name 
+                }}</span>
             </router-link>
           </template>
         </el-table-column>
@@ -93,7 +110,7 @@
               icon="el-icon-edit"
               style="margin-bottom:5px"
               size="small"
-              @click="showClasterRolesEditDialog(scope.row.pod)"
+              @click="showClasterRolesEditDialog(scope.row.confiMap)"
               >编辑</el-button
             >
             <br>
@@ -102,7 +119,7 @@
               type="danger"
               icon="el-icon-delete"
               size="small"
-              @click="delClasterRoles(scope.row.pod)"
+              @click="delClasterRoles(scope.row.congigMap)"
               >删除</el-button
             >
           </template>
@@ -130,18 +147,39 @@ export default {
   methods: {
     // 详情页
     goToConfigMapsDetails: function (configMapName, configMapNamespace) {
-      // console.log("configMaps index namespace", configMapNamespace);
+     // console.log("configMaps index namespace", configMapNamespace);
+      let configMapsDetails = {
+        configMapName: configMapName,
+        configMapNamespace: configMapNamespace
+      }
       this.$store
-        .dispatch("configMaps/toDetails", {configMapName, configMapNamespace});
+        .dispatch("configMaps/toDetails", configMapsDetails);
     },
+    // 当选择框聚焦时获取命名空间
+    // initNamespace() {
+    //   if (this.namespaces.length == 0) {
+    //     this.namespaces = this.$store.state.namespaces.namespaces;
+    //   }
+    // },
+    // 选择框变化事件
+    // selectChange(value) {
+    //   this.loading = true;
+    //   this.getConfigMaps(value);
+    // },
+    // 选择框清空事件
+    // clearSelect() {
+    //   this.loading = true;
+    //   this.getConfigMaps("all");
+    // },
 
     // 获取所有 pods
-    getConfigMaps() {
+    getConfigMaps(namespace) {  //namespace加还是不加？
       this.$store
         .dispatch("configMaps/getAllConfigMaps")
         .then((res) => {
-          console.log(res.data);
+          console.log(res);
           this.configMaps = res.data;
+          this.loading = false;
         })
         .catch((error) => {
           console.log(error);

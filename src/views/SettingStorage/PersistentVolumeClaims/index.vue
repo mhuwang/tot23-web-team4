@@ -67,7 +67,16 @@
         </el-table-column> -->
         <el-table-column prop="metadata.name" label="名字" width="200">
           <template slot-scope="scope">
-            <router-link :to="'/SettingStorage/persistentVolumeClaims/'+scope.row.metadata.name" @click.native="goToPersistentVolumeClaimsDetails(scope.row)" class="link-type">
+            <router-link 
+            :to="'/SettingStorage/persistentVolumeClaims/'+scope.row.metadata.name" 
+            @click.native="
+            goToPersistentVolumeClaimsDetails(
+              scope.row.metadata.name,
+              scope.row.metadata.namespace
+              )
+            " 
+            class="link-type"
+          >
               <span style="color:#409EFF;text-decoration:underline">{{ scope.row.metadata.name }}</span>
             </router-link>
           </template>
@@ -109,7 +118,7 @@
               icon="el-icon-edit"
               style="margin-bottom:5px"
               size="small"
-              @click="showClasterRolesEditDialog(scope.row.pod)"
+              @click="showClasterRolesEditDialog(scope.row.persistentVolumeClaim)"
               >编辑</el-button
             >
             <br>
@@ -118,7 +127,7 @@
               type="danger"
               icon="el-icon-delete"
               size="small"
-              @click="delClasterRoles(scope.row.pod)"
+              @click="delClasterRoles(scope.row.persistentVolumeClaim)"
               >删除</el-button
             >
           </template>
@@ -146,12 +155,16 @@ export default {
     // 详情页
     goToPersistentVolumeClaimsDetails: function (persistentVolumeClaimName, persistentVolumeClaimNamespace) {
       // console.log("persistentVolumeClaims index namespace", persistentVolumeClaimNamespace);
+      let pvcsDetails = {
+        persistentVolumeClaimName: persistentVolumeClaimName,
+        persistentVolumeClaimNamespace: persistentVolumeClaimNamespace
+      }
       this.$store
-        .dispatch("persistentVolumeClaims/toDetails", {persistentVolumeClaimName, persistentVolumeClaimNamespace});
+        .dispatch("persistentVolumeClaims/toDetails", pvcsDetails);
     },
 
-    // 获取所有 pods
-    getPersistentVolumeClaims() {
+    // 获取所有 persistentVolumeClaims
+    getPersistentVolumeClaims(namespace) { //namespace加还是不加？
       this.$store
         .dispatch("persistentVolumeClaims/getAllPVC")
         .then((res) => {

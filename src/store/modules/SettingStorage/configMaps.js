@@ -2,21 +2,21 @@
  * @Description: your project
  * @version: 1.0
  * @Author: Anna667
- * @Date: 2021-03-28 21:00:03
+ * @Date: 2021-04-06 21:42:03
  * @LastEditors: Anna667
- * @LastEditTime: 2021-03-28 21:00:03
+ * @LastEditTime: 2021-04-06 21:42:03
  */
-import { getAllConfigMaps } from '@/api/SettingStorage/configMaps'
+import { getAllConfigMaps, getConfigMapByNameAndNamespace} from '@/api/SettingStorage/configMaps'
 import { getToken } from '@/utils/auth'
 
 //------------
-const getDefaultState = () => {
-    return {
-        token: getToken(),
-        name: '',
-        avatar: ''
-    }
-}
+// const getDefaultState = () => {
+//     return {
+//         token: getToken(),
+//         name: '',
+//         avatar: ''
+//     }
+// }
 
 //const state = getDefaultState()
 const state = {
@@ -29,10 +29,10 @@ const state = {
 
 const mutations = {
     // 跳转 configMap 详情页面
-    TO_CONFIGMAPS_DETIALS: (state, {configMapName, configMapNamespace}) => {
+    TO_CONFIGMAPS_DETIALS: (state, configMapsDetails) => {        
         // 赋值
-        state.configMap.configMapName = configMapName;
-        state.configMap.configMapNamespace = configMapNamespace;
+        state.configMap.configMapName = configMapsDetails.configMapName;
+        state.configMap.configMapNamespace = configMapsDetails.configMapNamespace;
     }
 
 }
@@ -52,10 +52,26 @@ const actions = {
             })
         })
     },
+    // getConfigMapByNameAndNamesapce
+    getConfigMapByNameAndNamespace({ commit }, con) {
+        return new Promise((resolve, reject) => {
+            getConfigMapByNameAndNamespace(con).then(response => {
+                const { data } = response
+                if (!data) {
+                    return reject('获取失败')
+                }
+                resolve(data)
+            }).catch(error => {
+                reject(error)
+            })
+        })
+    },
 
     // 点击名字进入详情页
-    toDetails({ commit }, con) {
-        commit("TO_DEPLOYMENTS_DETIALS", con);
+    toDetails({ commit }, configMapsDetails) {
+        //console.log("1111",configMapsDetails.configMapName);
+        commit("TO_CONFIGMAPS_DETIALS", configMapsDetails);
+
     },
 
 }

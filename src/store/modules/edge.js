@@ -54,9 +54,9 @@ const actions = {
       })
     })
   },
-  getAllDevices({ commit },nameSapce) {
+  getAllDevices({ commit },objName) {
     return new Promise((resolve, reject) => {
-      getAllDevices(nameSapce).then(response => {
+      getAllDevices(objName).then(response => {
         const { data } = response
         if (!data) {
           return reject('获取失败')
@@ -69,9 +69,11 @@ const actions = {
   },
 
   // 点击名字进入详情页
-  toDetails({ commit }, nodeName) {
-    commit("TO_EDGE_NODE_DETIALS", nodeName);
+  toDetails({ commit }, edgenodeName) {
+    commit("TO_EDGE_NODE_DETIALS", edgenodeName);
+    console.log("333",edgenodeName);
   },
+  
 
 }
 

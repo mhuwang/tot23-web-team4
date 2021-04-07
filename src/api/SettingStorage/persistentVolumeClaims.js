@@ -14,3 +14,13 @@ export function getAllPVC(data) {
     method: 'get',
   })
 }
+export function getPVCByNameAndNamespace(per) {
+  return request({
+    url: baseUrl + '/persistentVolumeClaims/getPVCByNameAndNamespace',
+    method: 'get',
+    params: {
+      name: per.name,
+      namespace: per.namespace
+    }
+  })
+}

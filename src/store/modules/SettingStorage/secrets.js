@@ -6,17 +6,17 @@
  * @LastEditors: Anna667
  * @LastEditTime: 2021-03-28 21:00:03
  */
-import { getAllSecrets } from '@/api/SettingStorage/secrets'
+import { getAllSecrets, getSecretByNameAndNamespace} from '@/api/SettingStorage/secrets'
 import { getToken } from '@/utils/auth'
 
 //------------
-const getDefaultState = () => {
-    return {
-        token: getToken(),
-        name: '',
-        avatar: ''
-    }
-}
+// const getDefaultState = () => {
+//     return {
+//         token: getToken(),
+//         name: '',
+//         avatar: ''
+//     }
+// }
 
 //const state = getDefaultState()
 const state = {
@@ -30,10 +30,10 @@ const state = {
 
 const mutations = {
     // 跳转 secret 详情页面
-    TO_SECRETS_DETIALS: (state, {secretName, secretNamespace}) => {
+    TO_SECRETS_DETIALS: (state,ser) => {
         // 赋值
-        state.secret.secretName = secretName;
-        state.secret.secretNamespace = secretNamespace;
+        state.secret.secretName = ser.secretName;
+        state.secret.secretNamespace = ser.secretNamespace;
     }
 
 }
@@ -53,10 +53,25 @@ const actions = {
             })
         })
     },
+    // getSecretByNameAndNamespace
+    getSecretByNameAndNamespace({ commit }, ser) {
+        return new Promise((resolve, reject) => {
+            getSecretByNameAndNamespace(ser).then(response => {
+                const { data } = response
+                if (!data) {
+                    return reject('获取失败')
+                }
+                resolve(data)
+            }).catch(error => {
+                reject(error)
+            })
+        })
+    },
 
     // 点击名字进入详情页
     toDetails({ commit }, ser) {
-        commit("TO_DEPLOYMENTS_DETIALS", ser);
+        //console.log("1111",ser.secretName);
+        commit("TO_SECRETS_DETIALS", ser);
     },
 }
 

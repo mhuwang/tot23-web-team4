@@ -14,3 +14,13 @@ export function getAllSecrets(data) {
     method: 'get',
   })
 }
+export function getSecretByNameAndNamespace(ser) {
+  return request({
+    url: baseUrl + '/secrets/getSecretByNameAndNamespace',
+    method: 'get',
+    params: {
+      name: ser.name,
+      namespace: ser.namespace
+    }
+  })
+}
