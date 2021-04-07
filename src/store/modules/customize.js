@@ -6,7 +6,7 @@
  * @LastEditors: Bernie
  * @LastEditTime: 
  */
-import { getCustomResourceDefinition, getCustomResourceDefinitionByName,getCustomResourceDefinitionObjectListbyName } from '@/api/customize'
+import { getCustomResourceDefinition, getCustomResourceDefinitionByName, getCustomResourceDefinitionObjectListbyName } from '@/api/customize'
 import { getToken } from '@/utils/auth'
 
 const getDefaultState = () => {
@@ -59,6 +59,7 @@ const actions = {
       })
     })
   },
+  // 给全局变量赋值
   toDetails({ commit }, customResourceDefinitionName) {
     commit("TO_CRD_DETIALS", customResourceDefinitionName);
   },

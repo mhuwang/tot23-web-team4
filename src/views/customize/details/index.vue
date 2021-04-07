@@ -12,9 +12,7 @@
     {{namespace}} -->
     <el-divider content-position="left"
       ><span style="font-weight: bold; font-size: 20px">
-        {{
-        customResourceDefinition.metadata.name
-      }}
+        {{ customResourceDefinition.metadata.name }}
       </span>
     </el-divider>
     <!-- 元数据 -->
@@ -30,7 +28,10 @@
         <div class="metadata-item">
           <p>创建时间</p>
           <span>{{
-            customResourceDefinition.metadata.creationTimestamp.replaceAll(/[TZ]/g, " ")
+            customResourceDefinition.metadata.creationTimestamp.replaceAll(
+              /[TZ]/g,
+              " "
+            )
           }}</span>
         </div>
         <div class="metadata-item">
@@ -42,7 +43,7 @@
       <List item-layout="horizontal" :split="false">
         <div v-if="labels.length != 0" class="metadata-item">
           <p>标签</p>
-          <li v-for="label in this.labels" :key=label>
+          <li v-for="label in this.labels" :key="label">
             <el-tag
               class="lebel-tag"
               effect="dark"
@@ -54,7 +55,7 @@
         </div>
         <div v-if="labels.length != 0" class="metadata-item">
           <p>注释</p>
-          <li v-for="anno in this.annotations" :key='anno'>
+          <li v-for="anno in this.annotations" :key="anno">
             <el-tag
               class="lebel-tag"
               effect="dark"
@@ -67,7 +68,7 @@
       </List>
     </el-card>
     <br /><br />
-     <!-- 资源信息 -->
+    <!-- 资源信息 -->
     <el-card class="box-card">
       <div slot="header" class="clearfix">
         <span style="font-size: 16px">资源信息</span>
@@ -75,15 +76,15 @@
       <List item-layout="horizontal" :split="false">
         <div class="metadata-item">
           <p>版本</p>
-          <span>{{customResourceDefinition.spec.versions[0].name}}</span>
+          <span>{{ customResourceDefinition.spec.versions[0].name }}</span>
         </div>
         <div class="metadata-item">
           <p>范围</p>
-          <span>{{customResourceDefinition.spec.scope}}</span>
+          <span>{{ customResourceDefinition.spec.scope }}</span>
         </div>
         <div class="metadata-item">
           <p>Group</p>
-          <span>{{customResourceDefinition.spec.group }}</span>
+          <span>{{ customResourceDefinition.spec.group }}</span>
         </div>
       </List>
     </el-card>
@@ -100,7 +101,7 @@
         </div>
         <div class="metadata-item">
           <p>单数</p>
-          <span>{{customResourceDefinition.spec.names.singular}}</span>
+          <span>{{ customResourceDefinition.spec.names.singular }}</span>
         </div>
         <div class="metadata-item">
           <p>种类</p>
@@ -108,16 +109,16 @@
         </div>
         <div class="metadata-item">
           <p>列出种类</p>
-          <span>{{customResourceDefinition.spec.names.listKind }}</span>
+          <span>{{ customResourceDefinition.spec.names.listKind }}</span>
         </div>
         <div class="metadata-item">
           <p>短名称</p>
-          <span>{{ customResourceDefinition.spec.names.shortNames[0]}}</span>
+          <span>{{ customResourceDefinition.spec.names.shortNames[0] }}</span>
         </div>
       </List>
     </el-card>
     <br /><br />
-   <!-- Objects -->
+    <!-- Objects -->
     <el-card class="box-card">
       <div slot="header" class="clearfix">
         <span style="font-size: 20px">Objects</span>
@@ -156,20 +157,14 @@
             <span>pod-template-hash: {{scope.row.metadata.labels['pod-template-hash']}}</span>
           </template>
         </el-table-column> -->
-        <el-table-column
-          prop="metadata.namespace"
-          label="命名空间"
-        >
+        <el-table-column prop="metadata.namespace" label="命名空间">
         </el-table-column>
         <!-- <el-table-column
           prop="status.twins[0].desired.value"
           label="状态"
         >
         </el-table-column> -->
-        <el-table-column
-          prop="metadata.creationTimestamp"
-          label="创建时间"
-        >
+        <el-table-column prop="metadata.creationTimestamp" label="创建时间">
           <template slot-scope="scope">
             <span>{{
               scope.row.metadata.creationTimestamp.replaceAll(/[TZ]/g, " ")
@@ -211,13 +206,17 @@
       </el-table>
     </el-card>
     <br /><br />
-   
+
     <!-- 状态-->
     <el-card class="box-card">
       <div slot="header" class="clearfix">
         <span style="font-size: 16px">状态</span>
       </div>
-      <el-table :data="customResourceDefinition.status.conditions" style="width: 100%" stripe>
+      <el-table
+        :data="customResourceDefinition.status.conditions"
+        style="width: 100%"
+        stripe
+      >
         <el-table-column prop="type" label="类别"> </el-table-column>
         <el-table-column prop="status" label="状态" width="120">
         </el-table-column>
@@ -233,14 +232,13 @@
       </el-table>
     </el-card>
     <br /><br />
-   
+
     <br /><br />
   </div>
 </template>
 
 <script>
 export default {
-
   data() {
     return {
       customResourceDefinition: {},
@@ -250,24 +248,28 @@ export default {
   },
   // 生命周期方法
   mounted: function () {
-
-
     /* name */
     // 为空，直接存储
     if (sessionStorage.getItem("customResourceDefinitionName") == null) {
-      sessionStorage.setItem("customResourceDefinitionName", this.$store.state.customize.customResourceDefinitionName);
+      sessionStorage.setItem(
+        "customResourceDefinitionName",
+        this.$store.state.customize.customResourceDefinitionName
+      );
       this.customResourceDefinitionName = this.$store.state.customize.customResourceDefinitionName;
     }
     // 不为空，且当前 customResourceDefinitionName 有值，同时和之前的不一样，更新 customResourceDefinitionName
     else if (
       this.$store.state.customize.customResourceDefinitionName != "" &&
-      sessionStorage.getItem("customResourceDefinitionName") != this.$store.state.customize.customResourceDefinitionName
+      sessionStorage.getItem("customResourceDefinitionName") !=
+        this.$store.state.customize.customResourceDefinitionName
     ) {
-      sessionStorage.setItem("customResourceDefinitionName", this.$store.state.customize.customResourceDefinitionName);
+      sessionStorage.setItem(
+        "customResourceDefinitionName",
+        this.$store.state.customize.customResourceDefinitionName
+      );
       this.customResourceDefinitionName = this.$store.state.customize.customResourceDefinitionName;
     }
 
-    
     // /* namespace */
     // // 为空，直接存储
     // if (sessionStorage.getItem("deploymentNamespace") == null) {
@@ -283,10 +285,12 @@ export default {
     //   this.deploymentNamespace = this.$store.state.deployments.deployment.deploymentNamespace;
     // }
 
-    
-    // 获取数据
+    // 获取该CRD
     this.$store
-      .dispatch("customize/getCustomResourceDefinitionByName", sessionStorage.getItem("customResourceDefinitionName"))
+      .dispatch(
+        "customize/getCustomResourceDefinitionByName",
+        sessionStorage.getItem("customResourceDefinitionName")
+      )
       .then((res) => {
         console.log(res);
         this.customResourceDefinition = res.data;
@@ -294,8 +298,12 @@ export default {
       .catch((error) => {
         throw error;
       });
+    //通过CRD名字获取对象列表
     this.$store
-      .dispatch("customize/getCustomResourceDefinitionObjectListbyName", sessionStorage.getItem("customResourceDefinitionName"))
+      .dispatch(
+        "customize/getCustomResourceDefinitionObjectListbyName",
+        sessionStorage.getItem("customResourceDefinitionName")
+      )
       .then((res) => {
         console.log(res);
         this.objects = res.data.items;
@@ -303,7 +311,6 @@ export default {
       .catch((error) => {
         throw error;
       });
-    
   },
 
   computed: {
@@ -330,12 +337,10 @@ export default {
       }
       return annoArr;
     },
-  }
-  
+  },
 };
 </script>
 <style lang="scss" scoped>
-
 .usage-cpu-tag-success {
   color: white;
   text-align: center;
@@ -348,13 +353,15 @@ export default {
   background-color: #28527a;
   border-radius: 10px;
 }
-.usage-cpu-tag-zero, .usage-memory-tag-zero {
+.usage-cpu-tag-zero,
+.usage-memory-tag-zero {
   color: white;
   text-align: center;
   background-color: #aaa;
   border-radius: 10px;
 }
-.usage-cpu-tag-failed, .usage-memory-tag-failed {
+.usage-cpu-tag-failed,
+.usage-memory-tag-failed {
   color: #333;
   text-align: center;
   border-radius: 10px;

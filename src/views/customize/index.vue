@@ -123,7 +123,7 @@ export default {
           console.log(error);
         });
     },
-    // 详情页
+    // CRD详情页
     goToCustomResourceDefinitionDetails: function (
       customResourceDefinitionName
     ) {

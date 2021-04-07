@@ -367,14 +367,13 @@
           <template slot-scope="scope">
             <svg-icon
               :icon-class="
-                scope.row.phase == 'Running' ||
-                scope.row.phase == 'Succeeded'
+                scope.row.phase == 'Running' || scope.row.phase == 'Succeeded'
                   ? 'load-success'
                   : 'load-failed'
               "
           /></template>
         </el-table-column>
-        <el-table-column  label="名字">
+        <el-table-column label="名字">
           <template slot-scope="scope">
             <router-link
               :to="'/workload/pods/' + scope.row.name"
@@ -389,15 +388,9 @@
             </router-link>
           </template>
         </el-table-column>
-        <el-table-column prop="namespace" label="命名空间">
-        </el-table-column>
-        <el-table-column prop="phase" label="状态">
-        </el-table-column>
-        <el-table-column
-          align="center"
-          prop="restartCount"
-          label="重启次数"
-        >
+        <el-table-column prop="namespace" label="命名空间"> </el-table-column>
+        <el-table-column prop="phase" label="状态"> </el-table-column>
+        <el-table-column align="center" prop="restartCount" label="重启次数">
         </el-table-column>
         <!-- <el-table-column align="center" label="CPU 利用率" width="140">
           <template slot-scope="scope">
@@ -480,6 +473,68 @@ export default {
       podsAmount: 0,
     };
   },
+
+  mounted: function () {
+    // 为空，直接存储
+    if (sessionStorage.getItem("nodeName") == null) {
+      sessionStorage.setItem("nodeName", this.$store.state.edge.nodeName);
+      this.nodeName = this.$store.state.edge.nodeName;
+    }
+    // 不为空，且当前 nodeName 有值，同时和之前的不一样，更新 nodeName
+    else if (
+      this.$store.state.edge.nodeName != "" &&
+      sessionStorage.getItem("nodeName") != this.$store.state.edge.nodeName
+    ) {
+      sessionStorage.setItem("nodeName", this.$store.state.edge.nodeName);
+      this.nodeName = this.$store.state.edge.nodeName;
+    }
+    this.$store
+      .dispatch("edge/getNodeByName", sessionStorage.getItem("nodeName"))
+      .then((res) => {
+        this.node = res.data;
+        // 获取近20分钟的 cpu 和内存使用率进行画图
+      })
+      .catch((error) => {
+        throw error;
+      });
+
+    // 获取当前节点下的所有 pod 数据
+    this.$store
+      .dispatch("pods/getPodsByNode", sessionStorage.getItem("nodeName"))
+      .then((res) => {
+        console.log(res);
+        this.pods = res.data;
+
+        this.podsAmount = res.data.length;
+      })
+      .catch((error) => {
+        throw error;
+      });
+  },
+  created: function () {
+    window.addEventListener("unload", this.saveNodeInfo);
+    // console.log(sessionStorage.getItem("nodeName"));
+    // if(sessionStorage.getItem("nodeName" == null)){
+    //   console.log(this.$store.state.nodes.nodeName);
+    //   console.log("aaa");
+    // }
+    //   console.log("bbb");
+    // this.nodeName = this.$store.state.nodes.nodeName;
+  },
+  methods: {
+    saveNodeInfo() {
+      alert("RELOAD", this.nodeName);
+      sessionStorage.setItem("nodeName");
+    },
+    // 前往 pods 详情页
+    goToPodsDetails(name, namespace) {
+      let podDetails = {
+        podName: name,
+        podNamespace: namespace,
+      };
+      this.$store.dispatch("pods/toDetails", podDetails);
+    },
+  },
   computed: {
     // 元数据下的标签
     labels() {
@@ -518,70 +573,6 @@ export default {
       return addrArr;
     },
   },
-  mounted: function () {
-    // 为空，直接存储
-    if (sessionStorage.getItem("nodeName") == null) {
-      sessionStorage.setItem("nodeName", this.$store.state.edge.nodeName);
-      this.nodeName = this.$store.state.edge.nodeName;
-    }
-    // 不为空，且当前 nodeName 有值，同时和之前的不一样，更新 nodeName
-    else if (
-      this.$store.state.edge.nodeName != "" &&
-      sessionStorage.getItem("nodeName") != this.$store.state.edge.nodeName
-    ) {
-      sessionStorage.setItem("nodeName", this.$store.state.edge.nodeName);
-      this.nodeName = this.$store.state.edge.nodeName;
-    }
-    this.$store
-      .dispatch("edge/getNodeByName", sessionStorage.getItem("nodeName"))
-      .then((res) => {
-        this.node = res.data;
-        // 获取近20分钟的 cpu 和内存使用率进行画图
-      })
-      .catch((error) => {
-        throw error;
-      });
-
-
-
-
-    // 获取当前节点下的所有 pod 数据
-    this.$store
-      .dispatch("pods/getPodsByNode", sessionStorage.getItem("nodeName"))
-      .then((res) => {
-        console.log(res);
-        this.pods = res.data;
-
-        this.podsAmount = res.data.length;
-      })
-      .catch((error) => {
-        throw error;
-      });
-  },
-  created: function () {
-    window.addEventListener("unload", this.saveNodeInfo);
-    // console.log(sessionStorage.getItem("nodeName"));
-    // if(sessionStorage.getItem("nodeName" == null)){
-    //   console.log(this.$store.state.nodes.nodeName);
-    //   console.log("aaa");
-    // }
-    //   console.log("bbb");
-    // this.nodeName = this.$store.state.nodes.nodeName;
-  },
-  methods: {
-    saveNodeInfo() {
-      alert("RELOAD", this.nodeName);
-      sessionStorage.setItem("nodeName");
-    },
-    // 前往 pods 详情页
-    goToPodsDetails(name, namespace){
-      let podDetails = {
-        podName: name,
-        podNamespace: namespace
-      }
-      this.$store.dispatch("pods/toDetails", podDetails);
-    },
-  },
 };
 </script>
 
@@ -598,13 +589,15 @@ export default {
   background-color: #28527a;
   border-radius: 10px;
 }
-.usage-cpu-tag-zero, .usage-memory-tag-zero {
+.usage-cpu-tag-zero,
+.usage-memory-tag-zero {
   color: white;
   text-align: center;
   background-color: #aaa;
   border-radius: 10px;
 }
-.usage-cpu-tag-failed, .usage-memory-tag-failed {
+.usage-cpu-tag-failed,
+.usage-memory-tag-failed {
   color: #333;
   text-align: center;
   border-radius: 10px;

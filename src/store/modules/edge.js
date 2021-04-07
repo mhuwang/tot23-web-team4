@@ -6,7 +6,7 @@
  * @LastEditors: Rex Joush
  * @LastEditTime: 2021-04-02 13:35:56
  */
-import { getAllEdgeNodes, getNodeByName,getAllDevices } from '@/api/edge'
+import { getAllEdgeNodes, getNodeByName, getAllDevices } from '@/api/edge'
 import { getToken } from '@/utils/auth'
 
 const state = {
@@ -41,7 +41,7 @@ const actions = {
   },
 
   // 通过node名字获取信息 
-  getNodeByName({commit}, nodeName) {
+  getNodeByName({ commit }, nodeName) {
     return new Promise((resolve, reject) => {
       getNodeByName(nodeName).then(response => {
         const { data } = response
@@ -54,7 +54,8 @@ const actions = {
       })
     })
   },
-  getAllDevices({ commit },objName) {
+  // 获取所有设备
+  getAllDevices({ commit }, objName) {
     return new Promise((resolve, reject) => {
       getAllDevices(objName).then(response => {
         const { data } = response
@@ -68,12 +69,12 @@ const actions = {
     })
   },
 
-  // 点击名字进入详情页
+  // 点击名字进入 node 详情页
   toDetails({ commit }, edgenodeName) {
     commit("TO_EDGE_NODE_DETIALS", edgenodeName);
-    console.log("333",edgenodeName);
+    console.log("333", edgenodeName);
   },
-  
+
 
 }
 
