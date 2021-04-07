@@ -257,7 +257,7 @@ export const constantRoutes = [
   {
     path: '/settingstorage',
     component: Layout,
-    redirect: '/SettingStorage/ConfigMaps',
+    redirect: '/settingstorage/configmaps',
     name: '配置与存储',
     meta: { title: '配置与存储', icon: 'setting-storage' },
     children: [
@@ -269,7 +269,7 @@ export const constantRoutes = [
       },
       // -----configMap 详情
       {
-        path: 'configmaps/:name([a-z0-9-]+)',
+        path: 'configmaps/:name([a-z0-9-.]+)',
         component: () => import('@/views/SettingStorage/ConfigMaps/details/index'),
         name: 'Config Map 详情',
         meta: { title: 'ConfigMap Details', noCache: true, activeMenu: '/configmaps' },
@@ -283,7 +283,7 @@ export const constantRoutes = [
       },
       //------- persistentvolumeclaims 详情
       {
-        path: 'persistentvolumeclaims/:name([a-z0-9-]+)',
+        path: 'persistentvolumeclaims/:name([a-z0-9-.]+)',
         component: () => import('@/views/SettingStorage/PersistentVolumeClaims/details/index'),
         name: 'PersistentVolumeClaims 详情',
         meta: { title: 'PersistentVolumeClaims Details', noCache: true, activeMenu: '/persistentvolumeclaims' },
@@ -297,7 +297,7 @@ export const constantRoutes = [
       },
       //-------- Secrets 详情
       {
-        path: 'secrets/:name([a-z0-9-]+)',
+        path: 'secrets/:name([a-z0-9-.]+)',
         component: () => import('@/views/SettingStorage/Secrets/details/index'),
         name: 'Secrets 详情',
         meta: { title: 'Secrets Details', noCache: true, activeMenu: '/secrets' },

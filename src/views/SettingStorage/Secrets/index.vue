@@ -62,7 +62,16 @@
         </el-table-column> -->
         <el-table-column prop="metadata.name" label="名字">
           <template slot-scope="scope">
-            <router-link :to="'/SettingStorage/secrets/'+scope.row.metadata.name" @click.native="goToSecretsDetails(scope.row)" class="link-type">
+            <router-link 
+            :to="'/SettingStorage/secrets/'+scope.row.metadata.name" 
+            @click.native="
+              goToSecretsDetails(
+                scope.row.metadata.name,
+                scope.row.metadata.namespace
+                )
+              " 
+              class="link-type"
+            >
               <span style="color:#409EFF;text-decoration:underline">{{ scope.row.metadata.name }}</span>
             </router-link>
           </template>
@@ -93,7 +102,7 @@
               icon="el-icon-edit"
               style="margin-bottom:5px"
               size="small"
-              @click="showClasterRolesEditDialog(scope.row.pod)"
+              @click="showClasterRolesEditDialog(scope.row.secret)"
               >编辑</el-button
             >
             <br>
@@ -102,7 +111,7 @@
               type="danger"
               icon="el-icon-delete"
               size="small"
-              @click="delClasterRoles(scope.row.pod)"
+              @click="delClasterRoles(scope.row.secret)"
               >删除</el-button
             >
           </template>
@@ -131,17 +140,22 @@ export default {
     // 详情页
     goToSecretsDetails: function (secretName, secretNamespace) {
       // console.log("secrets index namespace", secretNamespace);
+      let secretsDetails = {
+        secretName: secretName,
+        secretNamespace: secretNamespace
+      }
       this.$store
-        .dispatch("secrets/toDetails", {secretName, secretNamespace});
+        .dispatch("secrets/toDetails", secretsDetails);
     },
 
     // 获取所有 Secrets
-    getSecrets() {
+    getSecrets(namespace) { //namespace加还是不加？
       this.$store
         .dispatch("secrets/getAllSecrets")
         .then((res) => {
-          console.log(res.data);
+          console.log(res);
           this.secrets = res.data;
+          this.loading = false;
         })
         .catch((error) => {
           console.log(error);
