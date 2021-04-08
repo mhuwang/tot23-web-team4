@@ -4,9 +4,9 @@
  * @Author: Rex Joush
  * @Date: 2021-03-22 17:20:12
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-04-06 11:20:50
+ * @LastEditTime: 2021-04-07 19:39:50
  */
-import { getAllPods, getPodsByNode, getPodByNameAndNamespace } from '@/api/workload/pods'
+import { getAllPods, getPodsByNode, getPodByNameAndNamespace, getPodYamlByNameAndNamespace } from '@/api/workload/pods'
 import { getToken } from '@/utils/auth'
 
 
@@ -56,11 +56,26 @@ const actions = {
       })
     })
   },
-  // 通过名称和命名空间获取对应的 pod的详情，带利用率信息
+  // 通过名称和命名空间获取对应的 pod 的详情，带利用率信息
   getPodByNameAndNamespace({ commit }, podDetails) {
     
     return new Promise((resolve, reject) => {
       getPodByNameAndNamespace(podDetails).then(response => {
+        const { data } = response
+        if (!data) {
+          return reject('获取失败')
+        }
+        resolve(data)
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
+  // 通过名称和命名空间获取对应的 pod yaml 文件
+  getPodYamlByNameAndNamespace({ commit }, podDetails) {
+    
+    return new Promise((resolve, reject) => {
+      getPodYamlByNameAndNamespace(podDetails).then(response => {
         const { data } = response
         if (!data) {
           return reject('获取失败')

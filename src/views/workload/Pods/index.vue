@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-04-07 16:41:51
+ * @LastEditTime: 2021-04-08 11:22:15
 -->
 <template>
   <div>
@@ -13,7 +13,7 @@
         <span>所有 Pod</span>
       </div>
       <el-row :gutter="20">
-        <el-col :span="5">
+        <el-col :span="6">
           <!-- 搜索区域 -->
           <el-select
             v-model="value"
@@ -166,7 +166,7 @@
       :append-to-body="true"
       :lock-scroll="true"
     >
-      <el-tabs value="first"  type="card">
+      <el-tabs value="first" type="card">
         <el-tab-pane label="YAML" name="first">
           <codemirror
             ref="cmJSONEditor"
@@ -188,19 +188,19 @@
           />
         </el-tab-pane>
       </el-tabs>
-      
+
       <!-- <textarea style="width:100%" name="describe" id="pod" cols="30" rows="10">
         {{code}}
       </textarea> -->
       <span slot="footer" class="dialog-footer">
         <el-button @click="editDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="editDialogVisible = false"
+        <el-button type="primary" @click="commitYamlChange"
           >确 定</el-button
         >
       </span>
     </el-dialog>
     <!-- <el-dialog title="编辑 pod" :visible.sync="editDialogVisible">
-      <highlightjs json :code="code" />
+      <highlightjs json :code="codeYaml" />
       <span slot="footer" class="dialog-footer">
         <el-button @click="editDialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="editUser">确 定</el-button>
@@ -211,12 +211,12 @@
 
 <script>
 // import language js
-import 'codemirror/mode/javascript/javascript.js'
+import "codemirror/mode/javascript/javascript.js";
 // import theme style
-import 'codemirror/theme/base16-dark.css'
-import 'codemirror/theme/panda-syntax.css'
+import "codemirror/theme/base16-dark.css";
+import "codemirror/theme/panda-syntax.css";
 
-export default {  
+export default {
   name: "Pods",
 
   data() {
@@ -226,27 +226,28 @@ export default {
       value: "", // 选择框的值
       loading: true, // 获取数据中
       editDialogVisible: false, // 编辑详情框
-      codeJSON: '',
-      codeYaml: '',
+      addDialogVisible: false, // 添加框详情
+      codeJSON: "",
+      codeYaml: "",
       cmOptions: {
         tabSize: 4,
         mode: {
-          name: 'javascript',
-          json: true
+          name: "javascript",
+          json: true,
         },
-        theme: 'panda-syntax',
+        theme: "panda-syntax",
         lineNumbers: true,
         line: true,
         // more CodeMirror options...
       },
       cmOptionsYaml: {
         tabSize: 4,
-        mode: 'text/yaml',
-        theme: 'panda-syntax',
+        mode: "yml",
+        theme: "panda-syntax",
         lineNumbers: true,
         line: true,
         // more CodeMirror options...
-      }
+      },
     };
   },
 
@@ -256,43 +257,39 @@ export default {
 
   computed: {
     codemirrorYaml() {
-      return this.$refs.cmYamlEditor.codemirror
+      return this.$refs.cmYamlEditor.codemirror;
     },
     codemirrorJSON() {
-      return this.$refs.cmJSONEditor.codemirror
-    }
+      return this.$refs.cmJSONEditor.codemirror;
+    },
   },
 
   methods: {
     // 编辑器方法
     /* yaml */
     onYamlCmReady(cm) {
-      console.log('the editor is readied!', cm);
-      setTimeout(()=>{
+      // console.log("the editor is readied!", cm);
+      setTimeout(() => {
         this.codemirrorYaml.refresh();
-      }, 50)
+      }, 50);
     },
-    onYamlCmFocus(cm) {
-      console.log('the editor is focused!', cm)
-    },
+    
     onYamlCmCodeChange(newCode) {
-      console.log('this is new code', newCode)
-      this.code = newCode
+      this.codeYaml = newCode;
     },
     /* JSON */
     onJSONCmReady(cm) {
-      console.log('the editor is readied!', cm);
-      setTimeout(()=>{
+      //console.log("the editor is readied!", cm);
+      setTimeout(() => {
         this.codemirrorJSON.refresh();
-      }, 50)
-      
+      }, 50);
     },
     onJSONCmFocus(cm) {
-      console.log('the editor is focused!', cm)
+      //console.log("the editor is focused!", cm);
     },
     onJSONCmCodeChange(newCode) {
-      console.log('this is new code', newCode)
-      this.code = newCode
+      //console.log("this is new code", newCode);
+      this.codeJSON = newCode;
     },
     // 获取所有 pods
     getPods(namespace) {
@@ -317,6 +314,10 @@ export default {
       this.$store.dispatch("pods/toDetails", podDetails);
     },
 
+    /* 添加部分 */
+    showPodAddDialog() {
+
+    },
     /* 编辑部分 */
     showPodEditDialog(name, namespace) {
       let podDetails = {
@@ -324,17 +325,32 @@ export default {
         podNamespace: namespace,
       };
 
+      // 获取 yaml
+      this.$store
+        .dispatch("pods/getPodYamlByNameAndNamespace", podDetails)
+        .then((res) => {
+          // console.log(res);
+          let json = JSON.stringify(res.data);
+          this.codeJSON = this.beautify(json, {
+            indent_size: 4,
+            space_in_empty_paren: true,
+          });
+          this.codeYaml = res.data;
+          this.editDialogVisible = true; // 打开编辑对话框
+        })
+        .catch((error) => {
+          throw error;
+        });
+
       this.$store
         .dispatch("pods/getPodByNameAndNamespace", podDetails)
         .then((res) => {
-          console.log(res);
+          // console.log(res);
           let json = JSON.stringify(res.data.pod);
           this.codeJSON = this.beautify(json, {
             indent_size: 4,
             space_in_empty_paren: true,
           });
-          this.editDialogVisible = true; // 打开编辑对话框
-          
         })
         .catch((error) => {
           throw error;
@@ -342,10 +358,18 @@ export default {
 
       //this.editForm = res; // 查询结果写入表单
     },
-
-    handleClose(){
-      this.codeJSON = '';
-      this.codeYaml = '';
+    // 提交修改
+    commitYamlChange() {
+      console.log(this.codeYaml)
+      this.$store.dispatch("common/changeResourceByYaml",this.codeYaml).then((res)=>{
+        console.log(res);
+      }).catch((error)=>{
+        throw error;
+      })
+    },
+    handleClose() {
+      //this.$refs.cmYamlEditor.resetFields();
+      //this.$refs.cmJSONEditor.resetFields();
     },
 
     /* 按命名空间查询 */

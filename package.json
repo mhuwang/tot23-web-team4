@@ -21,6 +21,7 @@
     "highlight.js": "^10.7.2",
     "js-beautify": "^1.13.5",
     "js-cookie": "2.2.0",
+    "js-yaml": "^4.0.0",
     "json2yaml": "^1.1.0",
     "normalize.css": "7.0.0",
     "nprogress": "0.2.0",

@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-10 15:03:17
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-04-07 15:42:20
+ * @LastEditTime: 2021-04-07 17:37:43
  */
 import Vue from 'vue'
 
@@ -24,7 +24,8 @@ import 'highlight.js/styles/atom-one-dark.css' // 样式
 import beautify from 'js-beautify'
 
 // 引入 json 2 ymal
-import json2ymal from 'json2yaml'
+import json2yaml from 'json2yaml'
+import jsYaml from 'js-yaml'
 
 // 引入 codemirror
 import VueCodemirror from 'vue-codemirror'
@@ -74,7 +75,8 @@ Vue.prototype.$api = api
 Vue.prototype.$echarts = echarts
 Vue.config.productionTip = false
 Vue.prototype.beautify = beautify.js
-Vue.prototype.YMAL = json2ymal
+// Vue.prototype.YAML = json2yaml
+Vue.prototype.YAML = jsYaml
 
 // 使用 ViewUI 
 Vue.use(ViewUI);
