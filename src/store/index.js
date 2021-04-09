@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-19 16:14:56
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-04-02 12:46:10
+ * @LastEditTime: 2021-04-07 20:23:32
  */
 import Vue from 'vue'
 import Vuex from 'vuex'
@@ -12,6 +12,7 @@ import getters from './getters'
 import app from './modules/app'
 import settings from './modules/settings'
 import user from './modules/user'
+import common from './modules/common'
 
 import nodes from './modules/cluster/nodes'
 import namespaces from './modules/cluster/namespaces'
@@ -45,6 +46,7 @@ const store = new Vuex.Store({
     user,
     nodes,
     namespaces,
+    common,
 
     cronJobs,
     daemonSets,

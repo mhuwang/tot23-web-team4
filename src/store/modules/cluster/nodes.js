@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-25 20:41:52
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-04-02 12:44:26
+ * @LastEditTime: 2021-04-07 20:09:25
  */
 import { getAllNodes, getNodeByName, getUsageRecentTwenty } from '@/api/cluster/nodes'
 import { getToken } from '@/utils/auth'
@@ -26,9 +26,9 @@ const mutations = {
 
 const actions = {
   // getAllNodes
-  getAllNodes({commit}) {
+  getAllNodes({ commit }) {
     return new Promise((resolve, reject) => {
-        getAllNodes().then(response => {
+      getAllNodes().then(response => {
         const { data } = response
         if (!data) {
           return reject('获取失败')
@@ -41,7 +41,7 @@ const actions = {
   },
 
   // 通过node名字获取信息 
-  getNodeByName({commit}, nodeName) {
+  getNodeByName({ commit }, nodeName) {
     return new Promise((resolve, reject) => {
       getNodeByName(nodeName).then(response => {
         const { data } = response
@@ -55,23 +55,23 @@ const actions = {
     })
   },
   // 点击名字进入详情页
-  toDetails({commit}, nodeName) {
+  toDetails({ commit }, nodeName) {
     commit("TO_NODE_DETIALS", nodeName);
   },
 
   // 获取近20分钟的利用率
-  getUsageRecentTwenty({commit}, nodeName) {
+  getUsageRecentTwenty({ commit }, nodeName) {
     return new Promise((resolve, reject) => {
       getUsageRecentTwenty(nodeName).then(response => {
-      const { data } = response
-      if (!data) {
-        return reject('获取失败')
-      }
-      resolve(data)
-    }).catch(error => {
-      reject(error)
+        const { data } = response
+        if (!data) {
+          return reject('获取失败')
+        }
+        resolve(data)
+      }).catch(error => {
+        reject(error)
+      })
     })
-  })
   }
 }
 

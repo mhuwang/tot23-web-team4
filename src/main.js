@@ -1,10 +1,10 @@
 /*
- * @Descripttion: your project
+ * @Description: your project
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-03-10 15:03:17
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-03-26 16:33:32
+ * @LastEditTime: 2021-04-07 17:37:43
  */
 import Vue from 'vue'
 
@@ -16,7 +16,21 @@ import locale from 'element-ui/lib/locale/lang/en' // lang i18n
 
 import '@/styles/index.scss' // global css
 
+// 引入 highlight
+import hljs from 'highlight.js';
+import 'highlight.js/styles/atom-one-dark.css' // 样式
 
+// 引入 beautify
+import beautify from 'js-beautify'
+
+// 引入 json 2 ymal
+import json2yaml from 'json2yaml'
+import jsYaml from 'js-yaml'
+
+// 引入 codemirror
+import VueCodemirror from 'vue-codemirror'
+// 引入基础样式
+import 'codemirror/lib/codemirror.css'
 
 import App from './App'
 import store from './store'
@@ -60,9 +74,18 @@ Vue.prototype.axios = axios
 Vue.prototype.$api = api
 Vue.prototype.$echarts = echarts
 Vue.config.productionTip = false
+Vue.prototype.beautify = beautify.js
+// Vue.prototype.YAML = json2yaml
+Vue.prototype.YAML = jsYaml
 
 // 使用 ViewUI 
 Vue.use(ViewUI);
+
+// 使用 highlight
+Vue.use(hljs.vuePlugin);
+
+// 使用 codemirror
+Vue.use(VueCodemirror);
 
 new Vue({
   el: '#app',

@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-04-02 14:00:48
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-04-06 13:58:14
+ * @LastEditTime: 2021-04-06 17:36:12
 -->
 <template>
   <div>
@@ -14,24 +14,26 @@
       }}</span></el-divider
     >
     <!-- 利用率信息 -->
-    <el-card class="box-card">
-      <div slot="header" class="clearfix">
-        <span style="font-size: 16px">资源利用率</span>
-      </div>
-      <div>
-        <el-row>
-          <el-col :span="24">
-            <div id="cpu-usage"></div>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="24">
-            <div id="memory-usage"></div>
-          </el-col>
-        </el-row>
-      </div>
-    </el-card>
-    <br /><br />
+    <div v-if="usage.length > 0">
+      <el-card class="box-card">
+        <div slot="header" class="clearfix">
+          <span style="font-size: 16px">资源利用率</span>
+        </div>
+        <div>
+          <el-row>
+            <el-col :span="24">
+              <div id="cpu-usage"></div>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="24">
+              <div id="memory-usage"></div>
+            </el-col>
+          </el-row>
+        </div>
+      </el-card>
+      <br /><br />
+    </div>
     <!-- 分配信息 -->
     <!-- <el-card class="box-card">
       <div slot="header" class="clearfix">
@@ -296,6 +298,57 @@
       </el-table>
     </el-card>
     <br /><br />
+    <!-- 容器信息 -->
+    <el-card class="box-card">
+      <div slot="header" class="clearfix">
+        <span style="font-size: 16px">资源信息</span>
+      </div>
+      <List item-layout="horizontal" :split="false">
+        <div class="metadata-item">
+          <p>节点</p>
+          <span>{{ pod.spec.nodeName }}</span>
+        </div>
+        <div class="metadata-item">
+          <p>状态</p>
+          <span>{{ pod.status.phase }}</span>
+        </div>
+        <div class="metadata-item">
+          <p>IP</p>
+          <span>{{ pod.status.podIP }}</span>
+        </div>
+        <div class="metadata-item">
+          <p>QoS类</p>
+          <span>{{ pod.status.qosClass }}</span>
+        </div>
+        <div class="metadata-item">
+          <p>重启次数</p>
+          <span>{{ pod.status.containerStatuses[0].restartCount }}</span>
+        </div>
+      </List>
+    </el-card>
+    <br /><br />
+    <el-divider content-position="left"
+      ><span style="font-weight: bold; font-size: 18px">容器</span></el-divider
+    >
+    <div v-for="(container,index) in pod.status.containerStatuses" :key="index">
+        <el-card>
+            <div slot="header" class="clearfix">
+                <span style="font-size: 16px">{{container.name}}</span>
+            </div>
+            <div class="metadata-item">
+            <p>名字</p>
+            <span>{{ container.name }}</span>
+            </div>
+            <div class="metadata-item">
+            <p>镜像</p>
+            <span>{{ container.image }}</span>
+            </div>
+            <!-- <div class="metadata-item">
+            <p>容器 id</p>
+            <span>{{ container.containerID }}</span>
+            </div> -->
+        </el-card>
+    </div>
   </div>
 </template>
 
@@ -392,114 +445,107 @@ export default {
       podName: sessionStorage.getItem("podName"),
       podNamespace: sessionStorage.getItem("podNamespace"),
     };
-    
+
     this.$store
       .dispatch("pods/getPodByNameAndNamespace", podDetails)
       .then((res) => {
         console.log(res);
         this.pod = res.data.pod;
         this.usage = res.data.podUsagesList;
-        // 获取近20分钟的 cpu 和内存使用率进行画图
-        if (res.data.podUsagesList.length > 0) {
-          //   let cpu = this.usage.status.allocatable.cpu.amount;
-          //   let memory = this.pod.status.allocatable.memory.amount;
-          let cpuArr = [];
-          let memoryArr = [];
-          let timeArr = [];
-          for (let i = 0; i < res.data.podUsagesList.length; i++) {
-            // 格式化 cpu 数据
-            cpuArr.push(
-              (res.data.podUsagesList[i].cpu / 1000 / 1000).toFixed(4)
-            );
-            // 格式化 内存数据
-            memoryArr.push(
-              (res.data.podUsagesList[i].memory / 1024).toFixed(4)
-            );
-            // 格式化时间数据
-            timeArr.push(res.data.podUsagesList[i].time.substring(11, 16));
-          }
-          console.log(cpuArr);
-          console.log(memoryArr);
-          console.log(timeArr);
-
-          // 配置 cpu 图表项
-          let optionCpu = {
-            title: {
-              show: true,
-              text: "CPU",
-              textAlign: "auto",
-              left: "center",
-            },
-            tooltip: {
-              trigger: "axis",
-            },
-            xAxis: {
-              type: "category",
-              boundaryGap: false,
-              data: timeArr,
-              name: "时间",
-            },
-            yAxis: {
-              type: "value",
-              name: "使用量",
-            },
-            series: [
-              {
-                data: cpuArr,
-                type: "line",
-                areaStyle: {},
-              },
-            ],
-          };
-          // 配置内存图表项
-          let optionMemory = {
-            title: {
-              show: true,
-              text: "内存",
-              textAlign: "auto",
-              left: "center",
-            },
-            tooltip: {
-              trigger: "axis",
-            },
-            xAxis: {
-              type: "category",
-              boundaryGap: false,
-              data: timeArr,
-              name: "时间",
-            },
-            yAxis: {
-              type: "value",
-              name: "使用量",
-            },
-            series: [
-              {
-                data: memoryArr,
-                type: "line",
-                areaStyle: {},
-              },
-            ],
-          };
-
-          let cpuDom = document.getElementById("cpu-usage");
-          console.log(cpuDom);
-          let memoryDom = document.getElementById("memory-usage");
-          let cpuChart = this.$echarts.init(cpuDom, null, { renderer: "svg" });
-          let memoryChart = this.$echarts.init(memoryDom, null, {
-            renderer: "svg",
-          });
-          optionCpu && cpuChart.setOption(optionCpu);
-          optionMemory && memoryChart.setOption(optionMemory);
-        }
       })
       .catch((error) => {
         throw error;
       });
   },
-  watch: {
-    usage: function () {
-      console.log("watch", document.getElementById("cpu-usage"));
-    },
+  updated: function () {
+    // 获取近20分钟的 cpu 和内存使用率进行画图
+    if (this.usage.length > 0) {
+      //   let cpu = this.usage.status.allocatable.cpu.amount;
+      //   let memory = this.pod.status.allocatable.memory.amount;
+      let cpuArr = [];
+      let memoryArr = [];
+      let timeArr = [];
+      for (let i = 0; i < this.usage.length; i++) {
+        // 格式化 cpu 数据
+        cpuArr.push((this.usage[i].cpu / 1000 / 1000).toFixed(4));
+        // 格式化 内存数据
+        memoryArr.push((this.usage[i].memory / 1024).toFixed(4));
+        // 格式化时间数据
+        timeArr.push(this.usage[i].time.substring(11, 16));
+      }
+      //   console.log(cpuArr);
+      //   console.log(memoryArr);
+      //   console.log(timeArr);
+
+      // 配置 cpu 图表项
+      let optionCpu = {
+        title: {
+          show: true,
+          text: "CPU",
+          textAlign: "auto",
+          left: "center",
+        },
+        tooltip: {
+          trigger: "axis",
+        },
+        xAxis: {
+          type: "category",
+          boundaryGap: false,
+          data: timeArr,
+          name: "时间",
+        },
+        yAxis: {
+          type: "value",
+          name: "使用量",
+        },
+        series: [
+          {
+            data: cpuArr,
+            type: "line",
+            areaStyle: {},
+          },
+        ],
+      };
+      // 配置内存图表项
+      let optionMemory = {
+        title: {
+          show: true,
+          text: "内存",
+          textAlign: "auto",
+          left: "center",
+        },
+        tooltip: {
+          trigger: "axis",
+        },
+        xAxis: {
+          type: "category",
+          boundaryGap: false,
+          data: timeArr,
+          name: "时间",
+        },
+        yAxis: {
+          type: "value",
+          name: "使用量",
+        },
+        series: [
+          {
+            data: memoryArr,
+            type: "line",
+            areaStyle: {},
+          },
+        ],
+      };
+
+      let cpuDom = document.getElementById("cpu-usage");
+      // console.log(cpuDom);
+      let memoryDom = document.getElementById("memory-usage");
+      let cpuChart = this.$echarts.init(cpuDom, null, { renderer: "svg" });
+      let memoryChart = this.$echarts.init(memoryDom, null, {
+        renderer: "svg",
+      });
+      optionCpu && cpuChart.setOption(optionCpu);
+      optionMemory && memoryChart.setOption(optionMemory);
+    }
   },
   created: function () {
     window.addEventListener("unload", this.savepodInfo);
