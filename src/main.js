@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-10 15:03:17
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-04-07 17:37:43
+ * @LastEditTime: 2021-04-09 11:26:19
  */
 import Vue from 'vue'
 
@@ -85,7 +85,9 @@ Vue.use(ViewUI);
 Vue.use(hljs.vuePlugin);
 
 // 使用 codemirror
-Vue.use(VueCodemirror);
+Vue.use(VueCodemirror,{
+  events: ['refresh']
+});
 
 new Vue({
   el: '#app',

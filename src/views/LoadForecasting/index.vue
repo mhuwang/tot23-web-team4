@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 19:37:31
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-04-07 17:22:25
+ * @LastEditTime: 2021-04-09 10:37:04
 -->
 <template>
   <div>
@@ -23,22 +23,10 @@ export default {
   },
   methods: {
     click: function () {
-      let podDetails = {
-        podName: 'crontab-job-1617094860-dqw74',
-        podNamespace: 'default',
-      };
-      this.$store.dispatch("pods/getPodByNameAndNamespace", podDetails).then((res)=>{
-        request({
-          url: 'http://www.json2yaml.com/api/j2y',
-          method: 'post',
-          params: {
-            p: JSON.stringify(res.data.pod)
-          }
-        }).then((res)=>{
-          console.log(res);
-        })
-      }).catch((error)=>{
-
+      this.$confirm("确认修改？").then(()=>{
+        console.log("确定");
+      }).catch(()=>{
+        console.log("cancel")
       })
       
     },
