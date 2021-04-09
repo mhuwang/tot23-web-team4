@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-04-09 11:34:24
+ * @LastEditTime: 2021-04-09 19:44:46
 -->
 <template>
   <div>
@@ -144,7 +144,7 @@
               type="danger"
               icon="el-icon-delete"
               size="small"
-              @click="delClasterRoles(scope.row.pod)"
+              @click="delPod(scope.row.name, scope.row.namespace)"
               >删除</el-button
             >
           </template>
@@ -187,7 +187,10 @@
         {{code}}
       </textarea> -->
       <span slot="footer" class="dialog-footer">
-        <div class="foot-info"><i class="el-icon-warning"></i> 此操作相当于 kubectl apply -f &ltspec.yaml></div>
+        <div class="foot-info">
+          <i class="el-icon-warning"></i> 此操作相当于 kubectl apply -f
+          &ltspec.yaml>
+        </div>
         <el-button @click="editDialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="commitYamlChange">确 定</el-button>
       </span>
@@ -215,7 +218,10 @@
         {{code}}
       </textarea> -->
       <span slot="footer" class="dialog-footer">
-        <div class="foot-info"><i class="el-icon-warning"></i> 此操作相当于 kubectl apply -f &ltspec.yaml></div>
+        <div class="foot-info">
+          <i class="el-icon-warning"></i> 此操作相当于 kubectl apply -f
+          &ltspec.yaml>
+        </div>
         <el-button @click="addDialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="commitPodAdd">确 定</el-button>
       </span>
@@ -243,9 +249,10 @@ export default {
       addDialogVisible: false, // 添加框详情
       codeJSON: "", // 编辑框的 json 数据
       codeYaml: "", // 编辑框的 yaml 数据
-      addYaml:"",   // 添加框的 yaml 数据
-      
-      cmOptions: { // json codemirror 配置项
+      addYaml: "", // 添加框的 yaml 数据
+
+      cmOptions: {
+        // json codemirror 配置项
         tabSize: 4,
         mode: {
           name: "javascript",
@@ -255,9 +262,10 @@ export default {
         lineNumbers: true,
         line: true,
       },
-      cmOptionsYaml: { // yaml codemirror 配置项
+      cmOptionsYaml: {
+        // yaml codemirror 配置项
         tabSize: 4,
-        mode: 'yaml',
+        mode: "yaml",
         theme: "panda-syntax",
         lineNumbers: true,
         line: true,
@@ -269,9 +277,7 @@ export default {
     this.getPods("all");
   },
 
-  computed: {
-    
-  },
+  computed: {},
 
   methods: {
     // 编辑器方法
@@ -279,7 +285,7 @@ export default {
     onYamlCmReady(cm) {
       setTimeout(() => {
         cm.refresh();
-      }, 50)
+      }, 50);
     },
 
     onYamlCmCodeChange(newCode) {
@@ -289,7 +295,7 @@ export default {
     onAddYamlCmReady(cm) {
       setTimeout(() => {
         cm.refresh();
-      }, 50)
+      }, 50);
     },
 
     onAddYamlCmCodeChange(newCode) {
@@ -300,14 +306,14 @@ export default {
     onJSONCmReady(cm) {
       setTimeout(() => {
         cm.refresh();
-      }, 50)
+      }, 50);
     },
 
     onJSONCmCodeChange(newCode) {
       //console.log("this is new code", newCode);
       this.codeJSON = newCode;
     },
-    
+
     // 获取所有 pods
     getPods(namespace) {
       this.$store
@@ -333,38 +339,41 @@ export default {
 
     /* 添加部分，提交添加 */
     commitPodAdd() {
-      this.$confirm("添加 Pod？",{
+      this.$confirm("添加 Pod？", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
-        type: 'info'
-      }).then(()=>{
-        this.$store
-        .dispatch("common/changeResourceByYaml", this.addYaml)
-        .then((res) => {
-          switch (res.code) {
-            case 1200:
-              this.$message.success("添加成功");
-              this.addDialogVisible = false;
-              break;
-            case 1201:
-              this.$message.error("添加失败，请查看云平台相关错误信息");
-              this.addDialogVisible = false;
-              break;
-            case 1202:
-              this.$message.error("添加失败，请查看 yaml 文件格式，命名空间必须指定");
-              break;
-            default:
-              this.$message.info("提交成功");
-              break;
-          }
-          
-        })
-        .catch((error) => {
-          throw error;
-        });
-      }).catch(()=>{
-        console.log("cancel")
+        type: "info",
       })
+        .then(() => {
+          this.$store
+            .dispatch("common/changeResourceByYaml", this.addYaml)
+            .then((res) => {
+              switch (res.code) {
+                case 1200:
+                  this.$message.success("添加成功");
+                  this.addDialogVisible = false;
+                  break;
+                case 1201:
+                  this.$message.error("添加失败，请查看云平台相关错误信息");
+                  this.addDialogVisible = false;
+                  break;
+                case 1202:
+                  this.$message.error(
+                    "添加失败，请查看 yaml 文件格式，命名空间必须指定"
+                  );
+                  break;
+                default:
+                  this.$message.info("提交成功");
+                  break;
+              }
+            })
+            .catch((error) => {
+              throw error;
+            });
+        })
+        .catch(() => {
+          console.log("cancel");
+        });
     },
     /* 编辑部分 */
     showPodEditDialog(name, namespace) {
@@ -406,50 +415,80 @@ export default {
 
       //this.editForm = res; // 查询结果写入表单
     },
-    
+
     // 提交修改
     commitYamlChange() {
-      this.$confirm("确认修改？",{
+      this.$confirm("确认修改？", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
-        type: 'info'
-      }).then(()=>{
-        this.$store
-        .dispatch("common/changeResourceByYaml", this.codeYaml)
-        .then((res) => {
-          switch (res.code) {
-            case 1200:
-              this.$message.success("修改成功");
-              break;
-            case 1201:
-              this.$message.error("修改失败，请查看 yaml 文件格式");
-              break;
-            case 1202:
-              this.$message.error("创建失败，请查看云平台相关错误信息");
-              break;
-            default:
-              this.$message.info("提交成功");
-              break;
-          }
-          this.editDialogVisible = false;
-        })
-        .catch((error) => {
-          throw error;
-        });
-      }).catch(()=>{
-        console.log("cancel")
+        type: "info",
       })
-      
+        .then(() => {
+          this.$store
+            .dispatch("common/changeResourceByYaml", this.codeYaml)
+            .then((res) => {
+              switch (res.code) {
+                case 1200:
+                  this.$message.success("修改成功");
+                  break;
+                case 1201:
+                  this.$message.error("修改失败，请查看 yaml 文件格式");
+                  break;
+                case 1202:
+                  this.$message.error("创建失败，请查看云平台相关错误信息");
+                  break;
+                default:
+                  this.$message.info("提交成功");
+                  break;
+              }
+              this.editDialogVisible = false;
+            })
+            .catch((error) => {
+              throw error;
+            });
+        })
+        .catch(() => {
+          console.log("cancel");
+        });
     },
 
     // 关闭添加或者修改框
-    handleClose: function(){
+    handleClose: function () {
       this.addYaml = "";
       setTimeout(() => {
-        this.codemorror.refresh()
-      }, 1)
+        this.codemorror.refresh();
+      }, 1);
     },
-    
+
+    /* 删除 Pod */
+    delPod: function (name, namespace) {
+      this.$confirm("确认删除 pod？", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      }).then(() => {
+        let podDetails = {
+          podName: name,
+          podNamespace: namespace,
+        };
+        this.$store
+          .dispatch("pods/delPodByNameAndNamespace", podDetails)
+          .then((res) => {
+            if(res.code == 1200) {
+              this.$message.success("删除成功");
+              this.getPods("all");n
+            } else {
+              this.$message.error("删除失败");
+            }
+          })
+          .catch((error) => {
+            throw error;
+          });
+      }).catch(()=>{
+
+      });
+    },
+
     /* 按命名空间查询 */
 
     // 当选择框聚焦时获取命名空间
