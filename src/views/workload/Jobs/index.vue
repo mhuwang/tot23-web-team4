@@ -60,17 +60,32 @@
       <el-table :data="jobs" style="width: 100%" stripe>
         <el-table-column width="40">
           <!-- <template slot-scope="scope"> -->
-            <!-- <svg-icon :icon-class="scope.row.status.conditions[3].status == 'True'? 'load-success': scope.row.status.conditions[3].status == 'Unknown'?'load-doubt':'load-failed'"/> -->
+          <!-- <svg-icon :icon-class="scope.row.status.conditions[3].status == 'True'? 'load-success': scope.row.status.conditions[3].status == 'Unknown'?'load-doubt':'load-failed'"/> -->
           <!-- </template> -->
         </el-table-column>
         <el-table-column prop="metadata.name" label="名字">
           <template slot-scope="scope">
-            <router-link :to="{name: 'Job 详情', params: {name: scope.row.metadata.name + ',' + scope.row.metadata.namespace}}" @click.native="goToJobsDetails(scope.row)" class="link-type">
-              <span style="color:#409EFF;text-decoration:underline">{{ scope.row.metadata.name }}</span>
+            <router-link
+              :to="{
+                name: 'Job 详情',
+                params: {
+                  name:
+                    scope.row.metadata.name +
+                    ',' +
+                    scope.row.metadata.namespace,
+                },
+              }"
+              @click.native="goToJobsDetails(scope.row)"
+              class="link-type"
+            >
+              <span style="color: #409eff; text-decoration: underline">{{
+                scope.row.metadata.name
+              }}</span>
             </router-link>
           </template>
         </el-table-column>
-        <el-table-column prop="metadata.namespace" label="命名空间"> </el-table-column>
+        <el-table-column prop="metadata.namespace" label="命名空间">
+        </el-table-column>
         <!-- <el-table-column label="标签">
           <template slot-scope="scope">
             <span>k8s-app: {{scope.row.metadata.labels['k8s-app']}}</span>
@@ -83,21 +98,66 @@
         <!-- <el-table-column prop="metadata.uid" label="uid"> </el-table-column> -->
         <!-- <el-table-column prop="spec.nodeName" width="140" label="所属节点"> </el-table-column> -->
         <!-- <el-table-column prop="status.podIP" width="140" label="主机ip地址"> </el-table-column> -->
-        <el-table-column label="启动时间" width="200">
+        <el-table-column label="Pods" width="200">
+          <!-- <template slot-scope="scope">
+            <span>
+              {{}}
+            </span>
+          </template> -->
+        </el-table-column>
+        <el-table-column label="创建时间" width="200">
           <template slot-scope="scope">
-            <span>{{scope.row.status.startTime.replaceAll(/[TZ]/g,' ')}}</span>
+            <span>{{
+              scope.row.status.startTime.replaceAll(/[TZ]/g, " ")
+            }}</span>
           </template>
         </el-table-column>
+        <!-- <el-table-column label="镜像" width="200">
+          <template slot-scope="scope">
+            <li v-for="image in images(scope.row)" :key="image" style = "list-style:none">
+            <li style = "list-style:none; display:inline-block;">
+              <el-tag
+                class="lebel-tag"
+                effect="dark"
+                size="medium"
+                color="#bedcfa"
+                >{{ image }}</el-tag
+              >
+            </li>
+          </template>
+        </el-table-column> -->
+
         <el-table-column label="操作">
           <template slot-scope="scope">
-              <!-- 修改 -->
-              <el-button style="margin-bottom: 5px" type="primary" icon="el-icon-plus" size="small" @click="showClasterRolesAddDialog(scope.row)">增加</el-button>
-              <br />
-              <!-- 删除 -->
-              <el-button style="margin-bottom: 5px" type="warning" icon="el-icon-edit" size="small" @click="showClasterRolesEditDialog(scope.row)">编辑</el-button>
-              <br />
-              <!-- 删除 -->
-              <el-button style="margin-bottom: 5px" type="danger" icon="el-icon-delete" size="small" @click="delClasterRoles(scope.row)">删除</el-button>
+            <!-- 修改 -->
+            <el-button
+              style="margin-bottom: 5px"
+              type="primary"
+              icon="el-icon-plus"
+              size="small"
+              @click="showClasterRolesAddDialog(scope.row)"
+              >增加</el-button
+            >
+            <br />
+            <!-- 删除 -->
+            <el-button
+              style="margin-bottom: 5px"
+              type="warning"
+              icon="el-icon-edit"
+              size="small"
+              @click="showClasterRolesEditDialog(scope.row)"
+              >编辑</el-button
+            >
+            <br />
+            <!-- 删除 -->
+            <el-button
+              style="margin-bottom: 5px"
+              type="danger"
+              icon="el-icon-delete"
+              size="small"
+              @click="delClasterRoles(scope.row)"
+              >删除</el-button
+            >
           </template>
         </el-table-column>
       </el-table>
@@ -119,6 +179,18 @@ export default {
     this.getJobs();
   },
 
+  // computed: {
+  //   // Job中的镜像
+  //   iimages(job) {
+  //     // console.log(job.spec.template.spec.containers[0].image)
+  //     let imageList = [];
+  //     for (let container in job.spec.template.spec.containers) {
+  //       imageList.push(job.spec.template.spec.containers[container].image);
+  //     }
+  //     return imageList;
+  //   },
+  // },
+
   methods: {
     // 获取所有 Jobs
     getJobs() {
@@ -132,10 +204,29 @@ export default {
           console.log(error);
         });
     },
+
+    // Job中的镜像
+    images(job) {
+      // console.log(job.spec.template.spec.containers[0].image)
+      let imageList = [];
+      for (let container in job.spec.template.spec.containers) {
+        imageList.push(job.spec.template.spec.containers[container].image);
+      }
+      return imageList;
+    },
   },
 };
 </script>
 
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
+// 标签
+.lebel-tag {
+  margin-right: 15px;
+  border-radius: 15px;
+  margin-top: 5px;
+  padding: 2px 8px;
+  color: #333;
+  border: none;
+}
 </style>

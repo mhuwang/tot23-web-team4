@@ -8,11 +8,10 @@
 */
 <template>
   <div>
-    <el-divider content-position="left"
-      ><span style="font-weight: bold; font-size: 20px">
+    <el-divider content-position="left">
+      <span style="font-weight: bold; font-size: 20px">
         {{ cronJob.metadata.name }}
-      </span></el-divider
-    >
+      </span></el-divider>
     <!-- 元数据 -->
     <el-card class="box-card">
       <div slot="header" class="clearfix">
@@ -24,20 +23,28 @@
           <span>{{ cronJob.metadata.name }}</span>
         </div>
         <div class="metadata-item">
+          <p>命名空间</p>
+          <span>{{ cronJob.metadata.namespace }}</span>
+        </div>  
+        <div class="metadata-item">
           <p>创建时间</p>
           <span>{{
             cronJob.metadata.creationTimestamp.replaceAll(/[TZ]/g, " ")
           }}</span>
+        </div><div class="metadata-item">
+          <p>持续时间</p>
+          <span>{{duration}}</span>
         </div>
         <div class="metadata-item">
           <p>UID</p>
           <span>{{ cronJob.metadata.uid }}</span>
         </div>
       </List>
+      
       <!-- 元数据 标签 注释部分 -->
-      <List item-layout="horizontal" :split="false">
+      <!-- <List item-layout="horizontal" :split="false">
         <div class="metadata-item">
-          <p>标签</p>
+          <p>标签</p> -->
           <!-- <li v-for="label in this.labels" :key="label">
             <el-tag
               class="lebel-tag"
@@ -47,8 +54,8 @@
               >{{ label.key }}: {{ label.value }}</el-tag
             >
           </li> -->
-        </div>
-        <div class="metadata-item">
+        <!-- </div> -->
+        <!-- <div class="metadata-item">
           <p>注释</p>
           <li v-for="anno in this.annotations" :key="anno">
             <el-tag
@@ -58,8 +65,74 @@
               color="#bedcfa"
               >{{ anno.key }}: {{ anno.value }}</el-tag
             >
-          </li>
+          </li> -->
+        <!-- </div> -->
+      <!-- </List> -->
+    
+    
+    </el-card>
+    <br /><br />
+
+    <!-- 资源信息 -->
+    <el-card class="box-card">
+      <div slot="header" class="clearfix">
+        <span style="font-size: 16px">资源信息</span>
+      </div>
+      <List item-layout="horizontal" :split="false">
+        <div class="metadata-item">
+          <p>调度</p>
+          <span>{{ cronJob.spec.schedule }}</span>
         </div>
+        <div class="metadata-item">
+          <p>运行中的Jobs</p>
+          <span>{{ cronJob.status.active.length }}</span>
+        </div>  
+        <div class="metadata-item">
+          <p>暂停</p>
+          <span>{{
+            cronJob.spec.suspend
+          }}</span>
+        </div><div class="metadata-item">
+          <p>上次调度</p>
+          <span>{{cronJob.status.lastScheduleTime.replaceAll(/[TZ]/g, " ")}}</span>
+        </div>
+        <div class="metadata-item">
+          <p>并发策略</p>
+          <span>{{ cronJob.spec.concurrencyPolicy }}</span>
+        </div>
+      </List>
+    </el-card>
+    <br /><br />
+
+    <!-- 运行中的Jobs -->
+    <el-card class="box-card">
+      <div slot="header" class="clearfix">
+        <span style="font-size: 16px">运行中的Jobs</span>
+      </div>
+      <List item-layout="horizontal" :split="false">
+        
+      </List>
+    </el-card>
+    <br /><br />
+
+    <!-- 非工作的Jobs -->
+    <el-card class="box-card">
+      <div slot="header" class="clearfix">
+        <span style="font-size: 16px">非工作的Jobs</span>
+      </div>
+      <List item-layout="horizontal" :split="false">
+        
+      </List>
+    </el-card>
+    <br /><br />
+    
+    <!-- 活动 -->
+    <el-card class="box-card">
+      <div slot="header" class="clearfix">
+        <span style="font-size: 16px">活动</span>
+      </div>
+      <List item-layout="horizontal" :split="false">
+        
       </List>
     </el-card>
     <br /><br />
@@ -115,7 +188,7 @@ export default {
       name: this.name.split(",")[0],
       namespace: this.name.split(",")[1],
     };
-    console.log('CronJobDetailes.name and namespace =', nameAndNamespace, "="),
+    // console.log('CronJobDetailes.name and namespace =', nameAndNamespace, "="),
     this.$store
       .dispatch("cronJobs/getCronJobByNameAndNamespace", nameAndNamespace)
       .then((res) => {
@@ -128,6 +201,12 @@ export default {
   },
 
   computed: {
+
+    // 元数据中持续的时间
+    duration() {
+      return "9天*"
+    },
+
     // 元数据下的标签
     labels() {
       let labelArr = [];

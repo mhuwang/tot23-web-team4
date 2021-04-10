@@ -13,9 +13,7 @@
     {{namespace}} -->
     <el-divider content-position="left"
       ><span style="font-weight: bold; font-size: 20px">
-        {{
-        deployment.metadata.name
-      }}
+        {{ deployment.metadata.name }}
       </span></el-divider
     >
     <!-- 元数据 -->
@@ -43,7 +41,7 @@
       <List item-layout="horizontal" :split="false">
         <div class="metadata-item">
           <p>标签</p>
-          <li v-for="label in this.labels" :key=label>
+          <li v-for="label in this.labels" :key="label">
             <el-tag
               class="lebel-tag"
               effect="dark"
@@ -55,7 +53,7 @@
         </div>
         <div class="metadata-item">
           <p>注释</p>
-          <li v-for="anno in this.annotations" :key='anno'>
+          <li v-for="anno in this.annotations" :key="anno">
             <el-tag
               class="lebel-tag"
               effect="dark"
@@ -73,7 +71,7 @@
 
 <script>
 export default {
-  props: ['name','namespace'],
+  props: ["name", "namespace"],
   data() {
     return {
       deployment: {},
@@ -83,7 +81,6 @@ export default {
   },
   // 生命周期方法
   mounted: function () {
-
     /* name */
     // // 为空，直接存储
     // if (sessionStorage.getItem("deploymentName") == null) {
@@ -99,7 +96,6 @@ export default {
     //   this.deploymentName = this.$store.state.deployments.deployment.deploymentName;
     // }
 
-    
     // /* namespace */
     // // 为空，直接存储
     // if (sessionStorage.getItem("deploymentNamespace") == null) {
@@ -115,16 +111,15 @@ export default {
     //   this.deploymentNamespace = this.$store.state.deployments.deployment.deploymentNamespace;
     // }
 
-    
     // 获取数据
     let dep = {
       // name: sessionStorage.getItem("deploymentName"),
       // namespace: sessionStorage.getItem("deploymentNamespace"),
-      name: this.name.split(',')[0],
-      namespace: this.name.split(',')[1],
+      name: this.name.split(",")[0],
+      namespace: this.name.split(",")[1],
     };
     this.$store
-      .dispatch("deployments/getDeploymentsByNameAndNamespace", dep)
+      .dispatch("deployments/getDeploymentByNameAndNamespace", dep)
       .then((res) => {
         console.log(res);
         this.deployment = res.data;
@@ -158,8 +153,7 @@ export default {
       }
       return annoArr;
     },
-  }
-  
+  },
 };
 </script>
 <style lang="scss" scoped>
