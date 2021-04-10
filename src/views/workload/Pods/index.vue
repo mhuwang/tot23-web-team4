@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-04-09 19:44:46
+ * @LastEditTime: 2021-04-10 16:30:33
 -->
 <template>
   <div>
@@ -165,7 +165,6 @@
       <el-tabs value="first" type="card">
         <el-tab-pane label="YAML" name="first">
           <codemirror
-            ref="cmJSONEditor"
             :value="codeYaml"
             :options="cmOptionsYaml"
             @ready="onYamlCmReady"
@@ -382,16 +381,16 @@ export default {
         podNamespace: namespace,
       };
 
-      // 获取 yaml
+      // 获取 yaml 格式
       this.$store
         .dispatch("pods/getPodYamlByNameAndNamespace", podDetails)
         .then((res) => {
           // console.log(res);
-          let json = JSON.stringify(res.data);
-          this.codeJSON = this.beautify(json, {
-            indent_size: 4,
-            space_in_empty_paren: true,
-          });
+          // let json = JSON.stringify(res.data);
+          // this.codeJSON = this.beautify(json, {
+          //   indent_size: 4,
+          //   space_in_empty_paren: true,
+          // });
           this.codeYaml = res.data;
           this.editDialogVisible = true; // 打开编辑对话框
         })
@@ -399,6 +398,7 @@ export default {
           throw error;
         });
 
+      // json 格式
       this.$store
         .dispatch("pods/getPodByNameAndNamespace", podDetails)
         .then((res) => {
@@ -476,7 +476,7 @@ export default {
           .then((res) => {
             if(res.code == 1200) {
               this.$message.success("删除成功");
-              this.getPods("all");n
+              this.getPods("all");
             } else {
               this.$message.error("删除失败");
             }
