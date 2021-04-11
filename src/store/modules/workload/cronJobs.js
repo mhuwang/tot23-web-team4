@@ -6,7 +6,7 @@
  * @LastEditors: zqy
  * @LastEditTime: 2021.03.29 16:14
  */
-import { getAllCronJobs, getCronJobByNameAndNamespace } from '@/api/workload/cronJobs'
+import { getAllCronJobs, getCronJobByNameAndNamespace, deleteCronJobByNameAndNamespace } from '@/api/workload/cronJobs'
 import { getToken } from '@/utils/auth'
 
 const getDefaultState = () => {
@@ -48,6 +48,21 @@ const actions = {
         }
         resolve(data)
       }).catch(error => {
+        reject(error)
+      })
+    })
+  },
+
+  //通过名字和命名空间删除 CronJob
+  deleteCronJobByNameAndNamespace({commit}, nameAndNamespace) {
+    return new Promise((resolve, reject) => {
+      deleteCronJobByNameAndNamespace(nameAndNamespace).then((response) => {
+        const { data } = response
+        if (!data){
+          return reject('删除失败')
+        }
+        resolve(data)
+      }).catch((error) => {
         reject(error)
       })
     })

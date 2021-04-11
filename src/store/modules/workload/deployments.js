@@ -6,7 +6,7 @@
  * @LastEditors: Rex Joush
  * @LastEditTime: 2021-03-30 21:53:43
  */
-import { getAllDeployments, getDeploymentsByNameAndNamespace } from '@/api/workload/deployments'
+import { getAllDeployments, getDeploymentByNameAndNamespace } from '@/api/workload/deployments'
 import { getToken } from '@/utils/auth'
 
 
@@ -43,9 +43,9 @@ const actions = {
         })
     },
     // getDeploymentsByNameAndNamesapce
-    getDeploymentsByNameAndNamespace({ commit }, dep) {
+    getDeploymentByNameAndNamespace({ commit }, dep) {
         return new Promise((resolve, reject) => {
-            getDeploymentsByNameAndNamespace(dep).then(response => {
+            getDeploymentByNameAndNamespace(dep).then(response => {
                 const { data } = response
                 if (!data) {
                     return reject('获取失败')

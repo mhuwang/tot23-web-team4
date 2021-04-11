@@ -6,7 +6,7 @@
  * @LastEditors: zqy
  * @LastEditTime: 2021.03.29 16:25
  */
-import { getAllDaemonSets } from '@/api/workload/daemonSets'
+import { getAllDaemonSets, getDaemonSetByNameAndNamespace } from '@/api/workload/daemonSets'
 import { getToken } from '@/utils/auth'
 
 const getDefaultState = () => {
@@ -28,6 +28,20 @@ const actions = {
   getAllDaemonSets({commit}) {
     return new Promise((resolve, reject) => {
       getAllDaemonSets().then(response => {
+        const { data } = response
+        if (!data) {
+          return reject('获取失败')
+        }
+        resolve(data)
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
+  //通过名字和命名空间获取DaemonSet
+  getDaemonSetByNameAndNamespace({ commit }, nameAndNamespace) {
+    return new Promise((resolve, reject) => {
+      getDaemonSetByNameAndNamespace(nameAndNamespace).then(response => {
         const { data } = response
         if (!data) {
           return reject('获取失败')
