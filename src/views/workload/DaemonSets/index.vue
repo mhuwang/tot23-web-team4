@@ -3,8 +3,8 @@
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
- * @LastEditors: Rex Joush
- * @LastEditTime: 2021-03-19 16:07:51
+ * @LastEditors: zqy
+ * @LastEditTime: 2021-04-11 19:11:38
 -->
 <!--<template>-->
 <!--  <h1>Daemon Sets</h1>-->
@@ -138,5 +138,21 @@ export default {
 </script>
 
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
+//el-table中资源表格和查找框的分割线
+.el-table {
+  margin: 15px 0px;
+  border-top: 1px solid #ccc;
+}
+
+// 编辑窗底部命令提示信息
+.foot-info {
+  position: absolute;
+  margin-bottom: 5px;
+  padding: 5px 5px;
+  background-color: #ccc;
+  left: 0%;
+  color: #606266;
+  font-size: 15px;
+}
 </style>
