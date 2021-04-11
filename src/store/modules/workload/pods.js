@@ -4,9 +4,9 @@
  * @Author: Rex Joush
  * @Date: 2021-03-22 17:20:12
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-04-07 19:39:50
+ * @LastEditTime: 2021-04-09 19:35:00
  */
-import { getAllPods, getPodsByNode, getPodByNameAndNamespace, getPodYamlByNameAndNamespace } from '@/api/workload/pods'
+import { getAllPods, getPodsByNode, getPodByNameAndNamespace, getPodYamlByNameAndNamespace, delPodByNameAndNamespace } from '@/api/workload/pods'
 import { getToken } from '@/utils/auth'
 
 
@@ -86,6 +86,22 @@ const actions = {
       })
     })
   },
+
+  // 通过名称和命名空间删除 pod
+  delPodByNameAndNamespace({ commit }, podDetails) {
+    return new Promise((resolve, reject) => {
+      delPodByNameAndNamespace(podDetails).then(response => {
+        const { data } = response
+        if (!data) {
+          return reject('获取失败')
+        }
+        resolve(data)
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
+  
   // 点击名字进入详情页
   toDetails({commit}, podDetails) {
     console.log("actions", podDetails);

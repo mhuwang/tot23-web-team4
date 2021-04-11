@@ -15,3 +15,13 @@ export function getAllReplicationControllers(data) {
     method: 'get',
   })
 }
+export function getReplicationControllerByNameAndNamespace(nameAndNamespace) {
+  return request({
+    url: baseUrl + '/replicationControllers/getReplicationControllerByNameAndNamespace',
+    method: 'get',
+    params: {
+      name: nameAndNamespace.name,
+      namespace: nameAndNamespace.namespace
+    }
+  })
+}

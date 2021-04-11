@@ -15,3 +15,13 @@ export function getAllStatefulSets(data) {
     method: 'get',
   })
 }
+export function getStatefulSetByNameAndNamespace(nameAndNamespace) {
+  return request({
+    url: baseUrl + '/statefulSets/getStatefulSetByNameAndNamespace',
+    method: 'get',
+    params: {
+      name: nameAndNamespace.name,
+      namespace: nameAndNamespace.namespace
+    }
+  })
+}

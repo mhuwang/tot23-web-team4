@@ -15,3 +15,13 @@ export function getAllReplicaSets(data) {
     method: 'get',
   })
 }
+export function getReplicaSetByNameAndNamespace(nameAndNamespace) {
+  return request({
+    url: baseUrl + '/replicaSets/getReplicaSetByNameAndNamespace',
+    method: 'get',
+    params: {
+      name: nameAndNamespace.name,
+      namespace: nameAndNamespace.namespace
+    }
+  })
+}

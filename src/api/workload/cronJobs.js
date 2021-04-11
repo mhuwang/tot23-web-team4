@@ -26,3 +26,14 @@ export function getCronJobByNameAndNamespace(nameAndNamespace) {
     }
   })
 }
+
+export function deleteCronJobByNameAndNamespace(nameAndNamespace) {
+  return request({
+    url: baseUrl + '/cronJobs/deleteCronJobByNameAndNamespace',
+    method: 'get',
+    params: {
+      name: nameAndNamespace.name,
+      namespace: nameAndNamespace.namespace
+    }
+  })
+}

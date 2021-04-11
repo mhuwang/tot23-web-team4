@@ -15,7 +15,7 @@ export function getAllDeployments(data) {
     method: 'get',
   })
 }
-export function getDeploymentsByNameAndNamespace(dep) {
+export function getDeploymentByNameAndNamespace(dep) {
   return request({
     url: baseUrl + '/deployments/getDeploymentByNameAndNamespace',
     method: 'get',

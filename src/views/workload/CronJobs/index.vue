@@ -1,11 +1,12 @@
 <!--
- * @Descripttion: your project
+ * @Description: your project
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
- * @LastEditors: Rex Joush
- * @LastEditTime: 2021-03-19 16:07:48
+ * @LastEditors: zqy
+ * @LastEditTime: 2021-04-10 17:17:40
 -->
+
 <template>
   <div>
     <el-card class="box-card">
@@ -168,6 +169,21 @@ export default {
         // }).catch((error) => {
         //   console.log(error);
         // })
+    },
+    delCronJobs(job) {
+      let nameAndNamespace = {
+        name: job.metadata.name,
+        namespace: job.metadata.namespace
+      }
+      // console.log(nameAndNamespace, "++++====")
+      this.$store.dispatch("cronJobs/deleteCronJobByNameAndNamespace", nameAndNamespace).then((res) =>{
+          console.log(res.data);
+          //if 成功刷新页面
+          //...
+          // this.cronJobs = res.data;
+      }).catch((error) =>{
+        console.log(error);
+      });
     },
   },
 };

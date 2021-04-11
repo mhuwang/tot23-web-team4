@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-04-08 11:22:15
+ * @LastEditTime: 2021-04-10 16:30:33
 -->
 <template>
   <div>
@@ -127,11 +127,6 @@
         </el-table-column>
         <el-table-column prop="podIP" width="120" label="主机ip地址">
         </el-table-column>
-        <!-- <el-table-column label="启动时间" width="200">
-          <template slot-scope="scope">
-            <span>{{scope.row.status.startTime.replaceAll(/[TZ]/g,' ')}}</span>
-          </template>
-        </el-table-column> -->
         <el-table-column label="操作">
           <template slot-scope="scope">
             <!-- 修改 -->
@@ -149,7 +144,7 @@
               type="danger"
               icon="el-icon-delete"
               size="small"
-              @click="delClasterRoles(scope.row.pod)"
+              @click="delPod(scope.row.name, scope.row.namespace)"
               >删除</el-button
             >
           </template>
@@ -162,18 +157,17 @@
       title="编辑 pod"
       :visible.sync="editDialogVisible"
       width="70%"
-      :before-close="handleClose"
+      @closed="handleClose"
+      @close="editDialogVisible = false"
       :append-to-body="true"
       :lock-scroll="true"
     >
       <el-tabs value="first" type="card">
         <el-tab-pane label="YAML" name="first">
           <codemirror
-            ref="cmJSONEditor"
             :value="codeYaml"
             :options="cmOptionsYaml"
             @ready="onYamlCmReady"
-            @focus="onYamlCmFocus"
             @input="onYamlCmCodeChange"
           />
         </el-tab-pane>
@@ -183,7 +177,6 @@
             :value="codeJSON"
             :options="cmOptions"
             @ready="onJSONCmReady"
-            @focus="onJSONCmFocus"
             @input="onJSONCmCodeChange"
           />
         </el-tab-pane>
@@ -193,27 +186,53 @@
         {{code}}
       </textarea> -->
       <span slot="footer" class="dialog-footer">
+        <div class="foot-info">
+          <i class="el-icon-warning"></i> 此操作相当于 kubectl apply -f
+          &ltspec.yaml>
+        </div>
         <el-button @click="editDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="commitYamlChange"
-          >确 定</el-button
-        >
+        <el-button type="primary" @click="commitYamlChange">确 定</el-button>
       </span>
     </el-dialog>
-    <!-- <el-dialog title="编辑 pod" :visible.sync="editDialogVisible">
-      <highlightjs json :code="codeYaml" />
+
+    <!-- 添加框 -->
+    <el-dialog
+      title="添加 pod"
+      :visible.sync="addDialogVisible"
+      width="70%"
+      @closed="handleClose"
+      @close="addDialogVisible = false"
+      :append-to-body="true"
+      :lock-scroll="true"
+    >
+      <codemirror
+        ref="cmYamlAdd"
+        :value="addYaml"
+        :options="cmOptionsYaml"
+        @ready="onAddYamlCmReady"
+        @input="onAddYamlCmCodeChange"
+      />
+
+      <!-- <textarea style="width:100%" name="describe" id="pod" cols="30" rows="10">
+        {{code}}
+      </textarea> -->
       <span slot="footer" class="dialog-footer">
-        <el-button @click="editDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="editUser">确 定</el-button>
+        <div class="foot-info">
+          <i class="el-icon-warning"></i> 此操作相当于 kubectl apply -f
+          &ltspec.yaml>
+        </div>
+        <el-button @click="addDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="commitPodAdd">确 定</el-button>
       </span>
-    </el-dialog> -->
+    </el-dialog>
   </div>
 </template>
 
 <script>
 // import language js
 import "codemirror/mode/javascript/javascript.js";
+import "codemirror/mode/yaml/yaml.js";
 // import theme style
-import "codemirror/theme/base16-dark.css";
 import "codemirror/theme/panda-syntax.css";
 
 export default {
@@ -227,9 +246,12 @@ export default {
       loading: true, // 获取数据中
       editDialogVisible: false, // 编辑详情框
       addDialogVisible: false, // 添加框详情
-      codeJSON: "",
-      codeYaml: "",
+      codeJSON: "", // 编辑框的 json 数据
+      codeYaml: "", // 编辑框的 yaml 数据
+      addYaml: "", // 添加框的 yaml 数据
+
       cmOptions: {
+        // json codemirror 配置项
         tabSize: 4,
         mode: {
           name: "javascript",
@@ -238,15 +260,14 @@ export default {
         theme: "panda-syntax",
         lineNumbers: true,
         line: true,
-        // more CodeMirror options...
       },
       cmOptionsYaml: {
+        // yaml codemirror 配置项
         tabSize: 4,
-        mode: "yml",
+        mode: "yaml",
         theme: "panda-syntax",
         lineNumbers: true,
         line: true,
-        // more CodeMirror options...
       },
     };
   },
@@ -255,42 +276,43 @@ export default {
     this.getPods("all");
   },
 
-  computed: {
-    codemirrorYaml() {
-      return this.$refs.cmYamlEditor.codemirror;
-    },
-    codemirrorJSON() {
-      return this.$refs.cmJSONEditor.codemirror;
-    },
-  },
+  computed: {},
 
   methods: {
     // 编辑器方法
     /* yaml */
     onYamlCmReady(cm) {
-      // console.log("the editor is readied!", cm);
       setTimeout(() => {
-        this.codemirrorYaml.refresh();
+        cm.refresh();
       }, 50);
     },
-    
+
     onYamlCmCodeChange(newCode) {
       this.codeYaml = newCode;
     },
-    /* JSON */
-    onJSONCmReady(cm) {
-      //console.log("the editor is readied!", cm);
+    // 添加的 yaml 框
+    onAddYamlCmReady(cm) {
       setTimeout(() => {
-        this.codemirrorJSON.refresh();
+        cm.refresh();
       }, 50);
     },
-    onJSONCmFocus(cm) {
-      //console.log("the editor is focused!", cm);
+
+    onAddYamlCmCodeChange(newCode) {
+      this.addYaml = newCode;
     },
+
+    /* JSON */
+    onJSONCmReady(cm) {
+      setTimeout(() => {
+        cm.refresh();
+      }, 50);
+    },
+
     onJSONCmCodeChange(newCode) {
       //console.log("this is new code", newCode);
       this.codeJSON = newCode;
     },
+
     // 获取所有 pods
     getPods(namespace) {
       this.$store
@@ -314,9 +336,43 @@ export default {
       this.$store.dispatch("pods/toDetails", podDetails);
     },
 
-    /* 添加部分 */
-    showPodAddDialog() {
-
+    /* 添加部分，提交添加 */
+    commitPodAdd() {
+      this.$confirm("添加 Pod？", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "info",
+      })
+        .then(() => {
+          this.$store
+            .dispatch("common/changeResourceByYaml", this.addYaml)
+            .then((res) => {
+              switch (res.code) {
+                case 1200:
+                  this.$message.success("添加成功");
+                  this.addDialogVisible = false;
+                  break;
+                case 1201:
+                  this.$message.error("添加失败，请查看云平台相关错误信息");
+                  this.addDialogVisible = false;
+                  break;
+                case 1202:
+                  this.$message.error(
+                    "添加失败，请查看 yaml 文件格式，命名空间必须指定"
+                  );
+                  break;
+                default:
+                  this.$message.info("提交成功");
+                  break;
+              }
+            })
+            .catch((error) => {
+              throw error;
+            });
+        })
+        .catch(() => {
+          console.log("cancel");
+        });
     },
     /* 编辑部分 */
     showPodEditDialog(name, namespace) {
@@ -325,16 +381,16 @@ export default {
         podNamespace: namespace,
       };
 
-      // 获取 yaml
+      // 获取 yaml 格式
       this.$store
         .dispatch("pods/getPodYamlByNameAndNamespace", podDetails)
         .then((res) => {
           // console.log(res);
-          let json = JSON.stringify(res.data);
-          this.codeJSON = this.beautify(json, {
-            indent_size: 4,
-            space_in_empty_paren: true,
-          });
+          // let json = JSON.stringify(res.data);
+          // this.codeJSON = this.beautify(json, {
+          //   indent_size: 4,
+          //   space_in_empty_paren: true,
+          // });
           this.codeYaml = res.data;
           this.editDialogVisible = true; // 打开编辑对话框
         })
@@ -342,6 +398,7 @@ export default {
           throw error;
         });
 
+      // json 格式
       this.$store
         .dispatch("pods/getPodByNameAndNamespace", podDetails)
         .then((res) => {
@@ -358,18 +415,78 @@ export default {
 
       //this.editForm = res; // 查询结果写入表单
     },
+
     // 提交修改
     commitYamlChange() {
-      console.log(this.codeYaml)
-      this.$store.dispatch("common/changeResourceByYaml",this.codeYaml).then((res)=>{
-        console.log(res);
-      }).catch((error)=>{
-        throw error;
+      this.$confirm("确认修改？", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "info",
       })
+        .then(() => {
+          this.$store
+            .dispatch("common/changeResourceByYaml", this.codeYaml)
+            .then((res) => {
+              switch (res.code) {
+                case 1200:
+                  this.$message.success("修改成功");
+                  break;
+                case 1201:
+                  this.$message.error("修改失败，请查看 yaml 文件格式");
+                  break;
+                case 1202:
+                  this.$message.error("创建失败，请查看云平台相关错误信息");
+                  break;
+                default:
+                  this.$message.info("提交成功");
+                  break;
+              }
+              this.editDialogVisible = false;
+            })
+            .catch((error) => {
+              throw error;
+            });
+        })
+        .catch(() => {
+          console.log("cancel");
+        });
     },
-    handleClose() {
-      //this.$refs.cmYamlEditor.resetFields();
-      //this.$refs.cmJSONEditor.resetFields();
+
+    // 关闭添加或者修改框
+    handleClose: function () {
+      this.addYaml = "";
+      setTimeout(() => {
+        this.codemorror.refresh();
+      }, 1);
+    },
+
+    /* 删除 Pod */
+    delPod: function (name, namespace) {
+      this.$confirm("确认删除 pod？", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      }).then(() => {
+        let podDetails = {
+          podName: name,
+          podNamespace: namespace,
+        };
+        this.$store
+          .dispatch("pods/delPodByNameAndNamespace", podDetails)
+          .then((res) => {
+            if(res.code == 1200) {
+              this.$message.success("删除成功");
+              this.getPods("all");
+            } else {
+              this.$message.error("删除失败");
+            }
+          })
+          .catch((error) => {
+            throw error;
+          });
+      }).catch(()=>{
+
+      });
     },
 
     /* 按命名空间查询 */
@@ -396,6 +513,17 @@ export default {
 
 <style lang="scss" scoped>
 $cpu-usage-background: #aaa;
+
+// 底部命令提示信息
+.foot-info {
+  position: absolute;
+  margin-bottom: 5px;
+  padding: 5px 5px;
+  background-color: #ccc;
+  left: 0%;
+  color: #606266;
+  font-size: 15px;
+}
 
 .el-table {
   margin: 15px 0px;

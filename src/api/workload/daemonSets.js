@@ -15,3 +15,13 @@ export function getAllDaemonSets(data) {
     method: 'get',
   })
 }
+export function getDaemonSetByNameAndNamespace(nameAndNamespace) {
+  return request({
+    url: baseUrl + '/daemonSets/getDaemonSetByNameAndNamespace',
+    method: 'get',
+    params: {
+      name: nameAndNamespace.name,
+      namespace: nameAndNamespace.namespace
+    }
+  })
+}
