@@ -2,47 +2,26 @@
  * @Description: your project
  * @version: 1.0
  * @Author: zqy
- * @Date: 2021.03.29 16:26
+ * @Date: 2021.03.29 16:18
  * @LastEditors: zqy
- * @LastEditTime: 2021.03.29 16:26
+ * @LastEditTime: 2021.03.29 16:18
  */
-import { getAllReplicaSets } from '@/api/workload/replicaSets'
-import { getToken } from '@/utils/auth'
+import request from "@/utils/request";
+let baseUrl = "http://localhost:8081"
 
-const getDefaultState = () => {
-  return {
-    token: getToken(),
-    name: '',
-    avatar: ''
-  }
+export function getAllReplicaSets(data) {
+  return request({
+    url: baseUrl + '/replicaSets/getAllReplicaSets',
+    method: 'get',
+  })
 }
-
-const state = getDefaultState()
-
-const mutations = {
-
-}
-
-const actions = {
-  // getAllReplicaSets
-  getAllReplicaSets({ commit }) {
-    return new Promise((resolve, reject) => {
-      getAllReplicaSets().then(response => {
-        const { data } = response
-        if (!data) {
-          return reject('获取失败')
-        }
-        resolve(data)
-      }).catch(error => {
-        reject(error)
-      })
-    })
-  },
-}
-
-export default {
-  namespaced: true,
-  state,
-  mutations,
-  actions
+export function getReplicaSetByNameAndNamespace(nameAndNamespace) {
+  return request({
+    url: baseUrl + '/replicaSets/getReplicaSetByNameAndNamespace',
+    method: 'get',
+    params: {
+      name: nameAndNamespace.name,
+      namespace: nameAndNamespace.namespace
+    }
+  })
 }

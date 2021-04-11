@@ -2,61 +2,26 @@
  * @Description: your project
  * @version: 1.0
  * @Author: zqy
- * @Date: 2021.03.29 16:25
+ * @Date: 2021.03.29 16:18
  * @LastEditors: zqy
- * @LastEditTime: 2021.03.29 16:25
+ * @LastEditTime: 2021.03.29 16:18
  */
-import { getAllDaemonSets, getDaemonSetByNameAndNamespace } from '@/api/workload/daemonSets'
-import { getToken } from '@/utils/auth'
+import request from "@/utils/request";
+let baseUrl = "http://localhost:8081"
 
-const getDefaultState = () => {
-  return {
-    token: getToken(),
-    name: '',
-    avatar: ''
-  }
+export function getAllDaemonSets(data) {
+  return request({
+    url: baseUrl + '/daemonSets/getAllDaemonSets',
+    method: 'get',
+  })
 }
-
-const state = getDefaultState()
-
-const mutations = {
-
-}
-
-const actions = {
-  // getAllDaemonSets
-  getAllDaemonSets({commit}) {
-    return new Promise((resolve, reject) => {
-      getAllDaemonSets().then(response => {
-        const { data } = response
-        if (!data) {
-          return reject('获取失败')
-        }
-        resolve(data)
-      }).catch(error => {
-        reject(error)
-      })
-    })
-  },
-  //通过名字和命名空间获取DaemonSet
-  getDaemonSetByNameAndNamespace({ commit }, nameAndNamespace) {
-    return new Promise((resolve, reject) => {
-      getDaemonSetByNameAndNamespace(nameAndNamespace).then(response => {
-        const { data } = response
-        if (!data) {
-          return reject('获取失败')
-        }
-        resolve(data)
-      }).catch(error => {
-        reject(error)
-      })
-    })
-  },
-}
-
-export default {
-  namespaced: true,
-  state,
-  mutations,
-  actions
+export function getDaemonSetByNameAndNamespace(nameAndNamespace) {
+  return request({
+    url: baseUrl + '/daemonSets/getDaemonSetByNameAndNamespace',
+    method: 'get',
+    params: {
+      name: nameAndNamespace.name,
+      namespace: nameAndNamespace.namespace
+    }
+  })
 }

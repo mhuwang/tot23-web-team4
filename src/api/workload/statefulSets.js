@@ -2,47 +2,26 @@
  * @Description: your project
  * @version: 1.0
  * @Author: zqy
- * @Date: 2021.03.29 16:26
+ * @Date: 2021.03.29 16:19
  * @LastEditors: zqy
- * @LastEditTime: 2021.03.29 16:26
+ * @LastEditTime: 2021.03.29 16:19
  */
-import { getAllStatefulSets } from '@/api/workload/statefulSets'
-import { getToken } from '@/utils/auth'
+import request from '@/utils/request'
+let baseUrl = "http://localhost:8081"
 
-const getDefaultState = () => {
-  return {
-    token: getToken(),
-    name: '',
-    avatar: ''
-  }
+export function getAllStatefulSets(data) {
+  return request({
+    url: baseUrl + '/statefulSets/getAllStatefulSets',
+    method: 'get',
+  })
 }
-
-const state = getDefaultState()
-
-const mutations = {
-
-}
-
-const actions = {
-  // getAllStatefulSets
-  getAllStatefulSets({ commit }) {
-    return new Promise((resolve, reject) => {
-      getAllStatefulSets().then(response => {
-        const { data } = response
-        if (!data) {
-          return reject('获取失败')
-        }
-        resolve(data)
-      }).catch(error => {
-        reject(error)
-      })
-    })
-  },
-}
-
-export default {
-  namespaced: true,
-  state,
-  mutations,
-  actions
+export function getStatefulSetByNameAndNamespace(nameAndNamespace) {
+  return request({
+    url: baseUrl + '/statefulSets/getStatefulSetByNameAndNamespace',
+    method: 'get',
+    params: {
+      name: nameAndNamespace.name,
+      namespace: nameAndNamespace.namespace
+    }
+  })
 }

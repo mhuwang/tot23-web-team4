@@ -2,76 +2,38 @@
  * @Description: your project
  * @version: 1.0
  * @Author: zqy
- * @Date: 2021.03.29 16:14
+ * @Date: 2021.03.29 16:16
  * @LastEditors: zqy
- * @LastEditTime: 2021.03.29 16:14
+ * @LastEditTime: 2021.03.29 16:16
  */
-import { getAllCronJobs, getCronJobByNameAndNamespace, deleteCronJobByNameAndNamespace } from '@/api/workload/cronJobs'
-import { getToken } from '@/utils/auth'
+import request from '@/utils/request'
+let baseUrl = "http://localhost:8081"
 
-const getDefaultState = () => {
-  return {
-    token: getToken(),
-    name: '',
-    avatar: ''
-  }
+export function getAllCronJobs(data) {
+  return request({
+    url: baseUrl + '/cronJobs/getAllCronJobs',
+    method: 'get',
+  })
 }
 
-const state = getDefaultState()
-
-const mutations = {
-
+export function getCronJobByNameAndNamespace(nameAndNamespace) {
+  return request({
+    url: baseUrl + '/cronJobs/getCronJobByNameAndNamespace',
+    method: 'get',
+    params: {
+      name: nameAndNamespace.name,
+      namespace: nameAndNamespace.namespace
+    }
+  })
 }
 
-const actions = {
-  // getAllCronJobs
-  getAllCronJobs({ commit }) {
-    return new Promise((resolve, reject) => {
-      getAllCronJobs().then(response => {
-        const { data } = response
-        if (!data) {
-          return reject('获取失败')
-        }
-        resolve(data)
-      }).catch(error => {
-        reject(error)
-      })
-    })
-  },
-  //通过名字和命名空间获取CronJob
-  getCronJobByNameAndNamespace({ commit }, nameAndNamespace) {
-    return new Promise((resolve, reject) => {
-      getCronJobByNameAndNamespace(nameAndNamespace).then(response => {
-        const { data } = response
-        if (!data) {
-          return reject('获取失败')
-        }
-        resolve(data)
-      }).catch(error => {
-        reject(error)
-      })
-    })
-  },
-
-  //通过名字和命名空间删除 CronJob
-  deleteCronJobByNameAndNamespace({commit}, nameAndNamespace) {
-    return new Promise((resolve, reject) => {
-      deleteCronJobByNameAndNamespace(nameAndNamespace).then((response) => {
-        const { data } = response
-        if (!data){
-          return reject('删除失败')
-        }
-        resolve(data)
-      }).catch((error) => {
-        reject(error)
-      })
-    })
-  },
-}
-
-export default {
-  namespaced: true,
-  state,
-  mutations,
-  actions
+export function deleteCronJobByNameAndNamespace(nameAndNamespace) {
+  return request({
+    url: baseUrl + '/cronJobs/deleteCronJobByNameAndNamespace',
+    method: 'get',
+    params: {
+      name: nameAndNamespace.name,
+      namespace: nameAndNamespace.namespace
+    }
+  })
 }

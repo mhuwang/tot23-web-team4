@@ -1,77 +1,60 @@
 /*
- * @Description: your project
+ * @Descripttion: your project
  * @version: 1.0
  * @Author: Rex Joush
- * @Date: 2021-03-22 17:20:12
+ * @Date: 2021-03-22 17:20:47
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-03-31 14:42:30
+ * @LastEditTime: 2021-04-09 19:34:22
  */
-import { getAllPods, getPodsByNode } from '@/api/workload/pods'
-import { getToken } from '@/utils/auth'
+import request from '@/utils/request'
+let baseUrl = "http://localhost:8081"
 
-const getDefaultState = () => {
-  return {
-    token: getToken(),
-    name: '',
-    avatar: ''
-  }
+export function getAllPods(data) {
+  return request({
+    url: baseUrl + '/pods/getAllPods',
+    method: 'get',
+    params: {
+      namespace: data
+    }
+  })
+}
+export function getPodsByNode(data) {
+  return request({
+    url: baseUrl + '/pods/getPodsByNode',
+    method: 'get',
+    params: {
+      nodeName: data,
+    }
+  })
+}
+export function getPodByNameAndNamespace(data) {
+  return request({
+    url: baseUrl + '/pods/getPodByNameAndNamespace',
+    method: 'get',
+    params: {
+      name: data.podName,
+      namespace: data.podNamespace,
+    }
+  })
 }
 
-const state = getDefaultState()
-
-const mutations = {
-  
+export function getPodYamlByNameAndNamespace(data) {
+  return request({
+    url: baseUrl + '/pods/getPodYamlByNameAndNamespace',
+    method: 'get',
+    params: {
+      name: data.podName,
+      namespace: data.podNamespace,
+    }
+  })
 }
-
-const actions = {
-  // 获取所有 pods
-  getAllPods({commit}, namespace) {
-    return new Promise((resolve, reject) => {
-        getAllPods(namespace).then(response => {
-        const { data } = response
-        if (!data) {
-          return reject('获取失败')
-        }
-        resolve(data)
-      }).catch(error => {
-        reject(error)
-      })
-    })
-  },
-  // 通过 node 名称获取对应的 pod
-  getPodsByNode({commit}, nodeName) {
-    return new Promise((resolve, reject) => {
-      getPodsByNode(nodeName).then(response => {
-        const { data } = response
-        if (!data) {
-          return reject('获取失败')
-        }
-        resolve(data)
-      }).catch(error => {
-        reject(error)
-      })
-    })
-  },
-  // 获取所有 pods
-  getAllPods({commit}, namespace) {
-    return new Promise((resolve, reject) => {
-        getAllPods(namespace).then(response => {
-        const { data } = response
-        if (!data) {
-          return reject('获取失败')
-        }
-        resolve(data)
-      }).catch(error => {
-        reject(error)
-      })
-    })
-  },
+export function delPodByNameAndNamespace(data) {
+  return request({
+    url: baseUrl + '/pods/delPodByNameAndNamespace',
+    method: 'get',
+    params: {
+      name: data.podName,
+      namespace: data.podNamespace,
+    }
+  })
 }
-
-export default {
-  namespaced: true,
-  state,
-  mutations,
-  actions
-}
-

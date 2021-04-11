@@ -1,62 +1,28 @@
-
 /*
  * @Description: your project
  * @version: 1.0
  * @Author: zqy
- * @Date: 2021.03.29 16:25
+ * @Date: 2021.03.29 16:18
  * @LastEditors: zqy
- * @LastEditTime: 2021.03.29 16:25
+ * @LastEditTime: 2021.03.29 16:18
  */
-import { getAllJobs, getJobByNameAndNamespace } from '@/api/workload/jobs'
-import { getToken } from '@/utils/auth'
+import request from "@/utils/request"
+let baseUrl = "http://localhost:8081"
 
-const getDefaultState = () => {
-  return {
-    token: getToken(),
-    name: '',
-    avatar: ''
-  }
+export function getAllJobs(data) {
+  return request({
+    url: baseUrl + '/jobs/getAllJobs',
+    method: 'get',
+  })
 }
-
-const state = getDefaultState()
-
-const mutations = {
-
-}
-
-const actions = {
-  // getAllJobs
-  getAllJobs({ commit }) {
-    return new Promise((resolve, reject) => {
-      getAllJobs().then(response => {
-        const { data } = response
-        if (!data) {
-          return reject('获取失败')
-        }
-        resolve(data)
-      }).catch(error => {
-        reject(error)
-      })
-    })
-  },// getJobByNameAndNamespace
-  getJobByNameAndNamespace({ commit }, nameAndNamespace) {
-    return new Promise((resolve, reject) => {
-      getJobByNameAndNamespace(nameAndNamespace).then(response => {
-        const { data } = response
-        if (!data) {
-          return reject('获取失败')
-        }
-        resolve(data)
-      }).catch(error => {
-        reject(error)
-      })
-    })
-  },
-}
-
-export default {
-  namespaced: true,
-  state,
-  mutations,
-  actions
+export function getJobByNameAndNamespace(nameAndNamespace) {
+  // console.log(nameAndNamespace, "in api job.js")
+  return request({
+    url: baseUrl + '/jobs/getJobByNameAndNamespace',
+    method: 'get',
+    params: {
+      name: nameAndNamespace.name,
+      namespace: nameAndNamespace.namespace
+    }
+  })
 }
