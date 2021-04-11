@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-26 13:17:55
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-03-27 13:41:58
+ * @LastEditTime: 2021-04-11 16:22:10
 -->
 <template>
     <h1>NameSpace Details</h1>
@@ -13,11 +13,15 @@
 <script>
 export default {
     name: 'NameSpaceDetails',
-    created: function(){
-        console.log(this.$store.state.namespaces.namespaceDetails);
+    mounted: function(){
+        console.log(this.getNameSpace());
     },
     methods: {
-
+        getNameSpace(){
+            // 获取最后一个 / 的位置
+            let index = this.$route.path.lastIndexOf('/');
+            return this.$route.path.substring(index + 1, this.$route.path.length);
+        }
     }
 }
 </script>

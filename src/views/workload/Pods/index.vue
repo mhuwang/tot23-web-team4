@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-04-10 16:30:33
+ * @LastEditTime: 2021-04-11 16:32:45
 -->
 <template>
   <div>
@@ -273,7 +273,7 @@ export default {
   },
 
   mounted() {
-    this.getPods("all");
+    this.getPods();
   },
 
   computed: {},
@@ -476,7 +476,7 @@ export default {
           .then((res) => {
             if(res.code == 1200) {
               this.$message.success("删除成功");
-              this.getPods("all");
+              this.getPods();
             } else {
               this.$message.error("删除失败");
             }
@@ -505,7 +505,7 @@ export default {
     // 选择框清空事件
     clearSelect() {
       this.loading = true;
-      this.getPods("all");
+      this.getPods();
     },
   },
 };
