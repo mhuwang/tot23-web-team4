@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-04-11 16:32:45
+ * @LastEditTime: 2021-04-11 17:09:47
 -->
 <template>
   <div>
@@ -314,7 +314,7 @@ export default {
     },
 
     // 获取所有 pods
-    getPods(namespace) {
+    getPods(namespace = "") {
       this.$store
         .dispatch("pods/getAllPods", namespace)
         .then((res) => {

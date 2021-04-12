@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-04-09 20:03:12
+ * @LastEditTime: 2021-04-12 13:57:44
 -->
 <template>
   <div>
@@ -19,9 +19,9 @@
           <template slot-scope="scope">
             <svg-icon
               :icon-class="
-                scope.row.node.status.conditions[3].status == 'True'
+                scope.row.status == 'True'
                   ? 'load-success'
-                  : scope.row.node.status.conditions[3].status == 'Unknown'
+                  : scope.row.status == 'Unknown'
                   ? 'load-doubt'
                   : 'load-failed'
               "
@@ -31,12 +31,12 @@
         <el-table-column label="名字" width="120">
           <template slot-scope="scope">
             <router-link
-              :to="'/summary/nodes/' + scope.row.node.metadata.name"
-              @click.native="goToNodeDetails(scope.row.node.metadata.name)"
+              :to="'/summary/nodes/' + scope.row.name"
+              @click.native="goToNodeDetails(scope.row.name)"
               class="link-type"
             >
               <span style="color: #409eff; text-decoration: underline">{{
-                scope.row.node.metadata.name
+                scope.row.name
               }}</span>
             </router-link>
           </template>
@@ -48,45 +48,27 @@
             <span>pod-template-hash: {{scope.row.metadata.labels['pod-template-hash']}}</span>
           </template>
         </el-table-column> -->
-        <el-table-column
-          prop="node.status.conditions[3].status"
-          width="100"
-          label="准备就绪"
-        >
+        <el-table-column prop="status" width="100" label="准备就绪">
         </el-table-column>
-        <el-table-column prop="usage.cpu" label="CPU 利用率" width="200">
+        <el-table-column label="CPU 利用率" width="200">
           <template slot-scope="scope">
             <el-progress
               class="my-progress"
               color="#fc8621"
               :text-inside="true"
               :stroke-width="20"
-              :percentage="
-                (
-                  scope.row.usage.cpu /
-                  1000 /
-                  1000 /
-                  scope.row.node.status.allocatable.cpu.amount /
-                  10
-                ).toFixed(2) * 1.0
-              "
+              :percentage="scope.row.cpuUsage.toFixed(2)*1"
             ></el-progress>
           </template>
         </el-table-column>
-        <el-table-column prop="usage.memory" label="内存利用率" width="200">
+        <el-table-column label="内存利用率" width="200">
           <template slot-scope="scope">
             <el-progress
               class="my-progress"
               color="#c24914"
               :text-inside="true"
               :stroke-width="20"
-              :percentage="
-                (
-                  (scope.row.usage.memory /
-                    scope.row.node.status.allocatable.memory.amount) *
-                  100
-                ).toFixed(2) * 1.0
-              "
+              :percentage="scope.row.memoryUsage.toFixed(2)*1"
             ></el-progress>
           </template>
         </el-table-column>
@@ -97,7 +79,7 @@
         >
           <template slot-scope="scope">
             <span>{{
-              scope.row.node.metadata.creationTimestamp.replaceAll(/[TZ]/g, " ")
+              scope.row.time.replaceAll(/[TZ]/g, " ")
             }}</span>
           </template>
         </el-table-column>
@@ -106,8 +88,8 @@
           <template slot-scope="scope">
             <!-- {{scope.row}} 每一行封存的数据 -->
             <el-switch
-              v-model="!scope.row.node.spec.unschedulable"
-              @change="userStateChange(scope.row.node)"
+              v-model="scope.row.schedule"
+              @change="changeSchedule(scope.row.name)"
             ></el-switch>
           </template>
         </el-table-column>
@@ -119,7 +101,7 @@
               type="primary"
               icon="el-icon-edit"
               size="small"
-              @click="showNodeEditDialog(scope.row.node)"
+              @click="showNodeEditDialog(scope.row.name)"
               >编辑</el-button
             >
             <br />
@@ -128,7 +110,7 @@
               type="danger"
               icon="el-icon-delete"
               size="small"
-              @click="delNode(scope.row.node)"
+              @click="delNode(scope.row.name)"
               >删除</el-button
             >
           </template>

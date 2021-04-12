@@ -4,9 +4,9 @@
  * @Author: Rex Joush
  * @Date: 2021-03-26 13:23:01
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-03-31 15:09:34
+ * @LastEditTime: 2021-04-11 17:22:04
  */
-import { getAllNamespaces, getAllNamespaceName } from '@/api/cluster/namespaces'
+import { getAllNamespaces, getAllNamespaceName, getNamespaceDetails } from '@/api/cluster/namespaces'
 import { getToken } from '@/utils/auth'
 
 const state = {
@@ -59,6 +59,22 @@ const actions = {
       })
     })
   },
+
+  // 获取命名空间详情
+  getNamespaceDetails({ commit }, namespace) {
+    return new Promise((resolve, reject) => {
+      getNamespaceDetails(namespace).then(response => {
+        const { data } = response
+        if (!data) {
+          return reject('获取失败')
+        }
+        resolve(data)
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
+  
 
   // 点击名字进入详情页
   toDetails({commit, state}, namespaceDetails) {
