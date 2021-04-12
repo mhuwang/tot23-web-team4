@@ -3,14 +3,15 @@
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
- * @LastEditors: Rex Joush
- * @LastEditTime: 2021-03-19 16:08:02
+ * @LastEditors: zqy
+ * @LastEditTime: 2021-04-11 19:45:55
 -->
 <!--<template>
   <h1>Jobs</h1>
 </template>-->
 <template>
   <div>
+    <!-- Job 主体部分 -->
     <el-card class="box-card">
       <div slot="header" class="clearfix">
         <span>所有 Job</span>
@@ -99,11 +100,11 @@
         <!-- <el-table-column prop="spec.nodeName" width="140" label="所属节点"> </el-table-column> -->
         <!-- <el-table-column prop="status.podIP" width="140" label="主机ip地址"> </el-table-column> -->
         <el-table-column label="Pods" width="200">
-          <!-- <template slot-scope="scope">
+          <template slot-scope="scope">
             <span>
-              {{}}
+              ?/{{scope.row.spec.completions}}
             </span>
-          </template> -->
+          </template>
         </el-table-column>
         <el-table-column label="创建时间" width="200">
           <template slot-scope="scope">
@@ -129,23 +130,16 @@
 
         <el-table-column label="操作">
           <template slot-scope="scope">
-            <!-- 修改 -->
+            <!-- 编辑 -->
             <el-button
               style="margin-bottom: 5px"
               type="primary"
-              icon="el-icon-plus"
-              size="small"
-              @click="showClasterRolesAddDialog(scope.row)"
-              >增加</el-button
-            >
-            <br />
-            <!-- 删除 -->
-            <el-button
-              style="margin-bottom: 5px"
-              type="warning"
               icon="el-icon-edit"
               size="small"
-              @click="showClasterRolesEditDialog(scope.row)"
+              @click="showJobEditDialog(
+                  scope.row.metadata.name,
+                  scope.row.metadata.namespace
+                )"
               >编辑</el-button
             >
             <br />
@@ -155,13 +149,59 @@
               type="danger"
               icon="el-icon-delete"
               size="small"
-              @click="delClasterRoles(scope.row)"
+              @click="delJob(
+                  scope.row.metadata.name,
+                  scope.row.metadata.namespace
+                )"
               >删除</el-button
             >
           </template>
         </el-table-column>
       </el-table>
     </el-card>
+
+    <!-- Job 编辑框 -->
+    <el-dialog
+      title="编辑 Job"
+      :visible.sync="editDialogVisible"
+      width="70%"
+      @closed="handleClose"
+      @close="editDialogVisible = false"
+      :append-to-body="true"
+      :lock-scroll="true"
+    >
+      <el-tabs value="first" type="card">
+        <el-tab-pane label="YAML" name="first">
+          <codemirror
+            :value="codeYaml"
+            :options="cmOptionsYaml"
+            @ready="onYamlCmReady"
+            @input="onYamlCmCodeChange"
+          />
+        </el-tab-pane>
+        <el-tab-pane label="JSON" name="second">
+          <codemirror
+            ref="cmYamlEditor"
+            :value="codeJSON"
+            :options="cmOptions"
+            @ready="onJSONCmReady"
+            @input="onJSONCmCodeChange"
+          />
+        </el-tab-pane>
+      </el-tabs>
+
+      <!-- <textarea style="width:100%" name="describe" id="pod" cols="30" rows="10">
+        {{code}}
+      </textarea> -->
+      <span slot="footer" class="dialog-footer">
+        <div class="foot-info">
+          <i class="el-icon-warning"></i> 此操作相当于 kubectl apply -f
+          &ltspec.yaml>
+        </div>
+        <el-button @click="editDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="commitYamlChange">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -172,6 +212,32 @@ export default {
   data() {
     return {
       jobs: [],
+      loading: true, // 获取数据中
+      editDialogVisible: false, // 编辑详情框
+      addDialogVisible: false, // 添加框详情
+      codeJSON: "", // 编辑框的 json 数据
+      codeYaml: "", // 编辑框的 yaml 数据
+      addYaml: "", // 添加框的 yaml 数据
+
+      cmOptions: {
+        // json codemirror 配置项
+        tabSize: 4,
+        mode: {
+          name: "javascript",
+          json: true,
+        },
+        theme: "panda-syntax",
+        lineNumbers: true,
+        line: true,
+      },
+      cmOptionsYaml: {
+        // yaml codemirror 配置项
+        tabSize: 4,
+        mode: "yaml",
+        theme: "panda-syntax",
+        lineNumbers: true,
+        line: true,
+      },
     };
   },
 
@@ -214,13 +280,103 @@ export default {
       }
       return imageList;
     },
+
+
+    //编辑 Job
+    showJobEditDialog(name, namespace) {
+      let jobDetails = {
+        name: name,
+        namespace: namespace,
+      };
+
+      // 获取 yaml 格式
+      this.$store
+        .dispatch("jobs/getJobYamlByNameAndNamespace", jobDetails)
+        .then((res) => {
+          this.codeYaml = res.data;
+          this.editDialogVisible = true; // 打开编辑对话框
+        })
+        .catch((error) => {
+          throw error;
+        });
+
+      // json 格式
+      this.$store
+        .dispatch("jobs/getJobByNameAndNamespace", jobDetails)
+        .then((res) => {
+          // console.log(res);
+          let json = JSON.stringify(res.data.job);
+          this.codeJSON = this.beautify(json, {
+            indent_size: 4,
+            space_in_empty_paren: true,
+          });
+        })
+        .catch((error) => {
+          throw error;
+        });
+
+      //this.editForm = res; // 查询结果写入表单
+    },
+
+
+    //删除 Job
+    delJob(name, namespace) {
+      this.$confirm("确认删除 Job？", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      }).then(() => {
+        let nameAndNamespace = {
+          name: name,
+          namespace: namespace,
+        };
+        this.$store
+          .dispatch(
+            "jobs/deleteJobByNameAndNamespace",
+            nameAndNamespace
+          )
+          .then((res) => {
+            if(res.data){
+              this.$message.success("删除成功");
+              this.getJobs();
+            }
+            else{
+              this.$message.error("删除失败");
+            }
+            console.log(res.data);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }).catch(() => {
+
+      });
+    },
   },
 };
 </script>
 
 
+
 <style lang="scss" scoped>
-// 标签
+//el-table中资源表格和查找框的分割线
+.el-table {
+  margin: 15px 0px;
+  border-top: 1px solid #ccc;
+}
+
+// 编辑窗底部命令提示信息
+.foot-info {
+  position: absolute;
+  margin-bottom: 5px;
+  padding: 5px 5px;
+  background-color: #ccc;
+  left: 0%;
+  color: #606266;
+  font-size: 15px;
+}
+
+// 镜像标签格式
 .lebel-tag {
   margin-right: 15px;
   border-radius: 15px;
