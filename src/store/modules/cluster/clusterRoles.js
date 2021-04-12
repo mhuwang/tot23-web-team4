@@ -4,9 +4,9 @@
  * @Author: Rex Joush
  * @Date: 2021-03-27 13:46:48
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-03-27 13:50:12
+ * @LastEditTime: 2021-04-12 15:45:58
  */
-import { getAllClusterRoles } from '@/api/cluster/clusterRoles'
+import { getAllClusterRoles, getClusterRoleDetails } from '@/api/cluster/clusterRoles'
 import { getToken } from '@/utils/auth'
 
 const state = {
@@ -43,7 +43,22 @@ const actions = {
   // 点击名字进入详情页
   toDetails({commit, state}, clusterRolesDetails) {
     commit("TO_CLUSTERROLES_DETIALS", clusterRolesDetails);
-  }
+  },
+
+  // 获取 Cluster Role 详情
+  getClusterRoleDetails({ commit }, clusterRole) {
+    return new Promise((resolve, reject) => {
+      getClusterRoleDetails(clusterRole).then(response => {
+        const { data } = response
+        if (!data) {
+          return reject('获取失败')
+        }
+        resolve(data)
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
 }
 
 export default {

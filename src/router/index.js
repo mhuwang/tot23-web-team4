@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-10 15:03:17
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-04-06 16:30:09
+ * @LastEditTime: 2021-04-12 15:37:55
  */
 import Vue from 'vue'
 import Router from 'vue-router'
@@ -67,17 +67,24 @@ export const constantRoutes = [
         meta: { title: '集群信息', icon: 'summary' }
       },
       {
-        path: 'summary/nodes/:name([a-z0-9-]+)',
+        path: 'summary/nodes/:name',
         component: () => import('@/views/summary/details/Node/index'),
         name: 'Node 详情',
         meta: { title: 'Node Details', noCache: true, activeMenu: '/summary' },
         hidden: true
       },
       {
-        path: 'summary/namespaces/:name([a-z0-9-]+)',
+        path: 'summary/namespaces/:name',
         component: () => import('@/views/summary/details/Namespace/index'),
         name: 'Namespace 详情',
         meta: { title: 'Namespace Details', noCache: true, activeMenu: '/summary' },
+        hidden: true
+      },
+      {
+        path: 'summary/clusterroles/:name',
+        component: () => import('@/views/summary/details/ClusterRole/index'),
+        name: 'Cluster Role 详情',
+        meta: { title: 'Cluster Role Details', noCache: true, activeMenu: '/summary' },
         hidden: true
       }
     ]
@@ -159,7 +166,7 @@ export const constantRoutes = [
       },
       // pod 详情
       {
-        path: 'pods/:name([a-z0-9-]+)',
+        path: 'pods/:name',
         component: () => import('@/views/workload/Pods/details/index'),
         name: 'Pod 详情',
         meta: { title: 'Pod Details', noCache: true, activeMenu: '/pods'},
@@ -230,7 +237,7 @@ export const constantRoutes = [
       },
       // ingresses 详情
       {
-        path: 'ingresses/:name([a-z0-9-]+)',
+        path: 'ingresses/:name',
         component: () => import('@/views/ExploreBalancing/Ingresses/details/index'),
         name: 'Ingress 详情',
         meta: { title: 'Ingress Details', noCache: true, activeMenu: '/ingresses' },
@@ -244,7 +251,7 @@ export const constantRoutes = [
       },
       // services 详情
       {
-        path: 'services/:name([a-z0-9-]+)',
+        path: 'services/:name',
         component: () => import('@/views/ExploreBalancing/Services/details/index'),
         name: 'Service 详情',
         meta: { title: 'Service Details', noCache: true, activeMenu: '/services' },
@@ -353,7 +360,7 @@ export const constantRoutes = [
         meta: { title: '边缘节点', icon: 'edge' }
       },
       {
-        path: 'edgenodes/:name([a-z0-9-]+)',
+        path: 'edgenodes/:name',
         component: () => import('@/views/edge/details/index'),
         name: '边缘节点详情',
         meta: { title: 'Edge Node Details', noCache: true, activeMenu: '/edge' },
