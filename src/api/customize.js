@@ -4,7 +4,7 @@
  * @Author: Bernie
  * @Date: 2021-03-29 17:51
  * @LastEditors: Bernie
- * @LastEditTime: 
+ * @LastEditTime: 2021-04-12 10:16:19
  */
 import request from '@/utils/request'
 let baseUrl = "http://localhost:8081"
@@ -33,4 +33,27 @@ export function getCustomResourceDefinitionObjectListbyName(customResourceDefini
       crdName: customResourceDefinitionName,
     }
   })
+  
+}
+//getCrdYamlByName
+export function getCrdYamlByName(name) {
+  return request({
+    url: baseUrl + '/customize/getCrdYamlByName',
+    method: 'get',
+    params: {
+      crdName: name,
+    }
+  })
+  
+}
+//delCrd
+export function delCrd(name) {
+  return request({
+    url: baseUrl + '/customize/deleteCustomResourceDefinition',
+    method: 'del',
+    params: {
+      crdName: name,
+    }
+  })
+  
 }

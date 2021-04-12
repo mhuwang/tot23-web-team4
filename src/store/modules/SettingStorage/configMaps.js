@@ -2,23 +2,15 @@
  * @Description: your project
  * @version: 1.0
  * @Author: Anna667
- * @Date: 2021-04-06 21:42:03
+ * @Date: 
  * @LastEditors: Anna667
- * @LastEditTime: 2021-04-06 21:42:03
+ * @LastEditTime: 
  */
-import { getAllConfigMaps, getConfigMapByNameAndNamespace} from '@/api/SettingStorage/configMaps'
+import { getAllConfigMaps, getConfigMapByNameAndNamespace, getConfigMapYamlByNameAndNamespace, delConfigMapByNameAndNamespace } from '@/api/SettingStorage/configMaps'
 import { getToken } from '@/utils/auth'
 
-//------------
-// const getDefaultState = () => {
-//     return {
-//         token: getToken(),
-//         name: '',
-//         avatar: ''
-//     }
-// }
 
-//const state = getDefaultState()
+
 const state = {
     token: getToken(),
     configMap: {
@@ -29,7 +21,7 @@ const state = {
 
 const mutations = {
     // 跳转 configMap 详情页面
-    TO_CONFIGMAPS_DETIALS: (state, configMapsDetails) => {        
+    TO_CONFIGMAPS_DETIALS: (state, configMapsDetails) => {
         // 赋值
         state.configMap.configMapName = configMapsDetails.configMapName;
         state.configMap.configMapNamespace = configMapsDetails.configMapNamespace;
@@ -38,10 +30,10 @@ const mutations = {
 }
 
 const actions = {
-    // getAllConfigMaps
-    getAllConfigMaps({ commit }) {
+    // 获取所有 ConfigMaps
+    getAllConfigMaps({ commit }, namespace) {
         return new Promise((resolve, reject) => {
-            getAllConfigMaps().then(response => {
+            getAllConfigMaps(namespace).then(response => {
                 const { data } = response
                 if (!data) {
                     return reject('获取失败')
@@ -52,10 +44,42 @@ const actions = {
             })
         })
     },
-    // getConfigMapByNameAndNamesapce
+    // 通过名称和命名空间获取对应的 configMap 的详情，带利用率信息
     getConfigMapByNameAndNamespace({ commit }, con) {
+
         return new Promise((resolve, reject) => {
             getConfigMapByNameAndNamespace(con).then(response => {
+                const { data } = response
+                if (!data) {
+                    return reject('获取失败')
+                }
+                resolve(data)
+            }).catch(error => {
+                reject(error)
+            })
+        })
+    },
+
+    // 通过名称和命名空间获取对应的 configMap yaml 文件
+    getConfigMapYamlByNameAndNamespace({ commit }, configMapsDetails) {
+        console.log("actions", configMapsDetails)
+        return new Promise((resolve, reject) => {
+            getConfigMapYamlByNameAndNamespace(configMapsDetails).then(response => {
+                const { data } = response
+                if (!data) {
+                    return reject('获取失败')
+                }
+                resolve(data)
+            }).catch(error => {
+                reject(error)
+            })
+        })
+    },
+
+    // 通过名称和命名空间删除 configMap
+    delConfigMapByNameAndNamespace({ commit }, configMapDetails) {
+        return new Promise((resolve, reject) => {
+            delConfigMapByNameAndNamespace(configMapDetails).then(response => {
                 const { data } = response
                 if (!data) {
                     return reject('获取失败')
@@ -71,7 +95,6 @@ const actions = {
     toDetails({ commit }, configMapsDetails) {
         //console.log("1111",configMapsDetails.configMapName);
         commit("TO_CONFIGMAPS_DETIALS", configMapsDetails);
-
     },
 
 }

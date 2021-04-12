@@ -47,15 +47,9 @@
             <span>pod-template-hash: {{scope.row.metadata.labels['pod-template-hash']}}</span>
           </template>
         </el-table-column> -->
-        <el-table-column
-          prop="status.conditions[0].status"
-          label="准备就绪"
-        >
+        <el-table-column prop="status.conditions[0].status" label="准备就绪">
         </el-table-column>
-        <el-table-column
-          prop="metadata.creationTimestamp"
-          label="创建时间"
-        >
+        <el-table-column prop="metadata.creationTimestamp" label="创建时间">
           <template slot-scope="scope">
             <span>{{
               scope.row.metadata.creationTimestamp.replaceAll(/[TZ]/g, " ")
@@ -96,7 +90,7 @@
         </el-table-column>
       </el-table>
     </el-card>
-    <br><br>
+    <br /><br />
     <!-- 设备列表 -->
     <el-card class="box-card">
       <div slot="header" class="clearfix">
@@ -127,8 +121,12 @@
                 scope.row.metadata.name
               }}</span>
             </router-link> -->
-            <a style="color: #409eff; text-decoration: underline" href="http://172.18.7.17:8089" target="_blank">{{ scope.row.metadata.name }}</a>
-
+            <a
+              style="color: #409eff; text-decoration: underline"
+              href="http://172.18.7.17:8089"
+              target="_blank"
+              >{{ scope.row.metadata.name }}</a
+            >
           </template>
         </el-table-column>
         <!-- <el-table-column label="标签">
@@ -138,20 +136,11 @@
             <span>pod-template-hash: {{scope.row.metadata.labels['pod-template-hash']}}</span>
           </template>
         </el-table-column> -->
-        <el-table-column
-          prop="metadata.namespace"
-          label="命名空间"
-        >
+        <el-table-column prop="metadata.namespace" label="命名空间">
         </el-table-column>
-        <el-table-column
-          prop="status.twins[0].desired.value"
-          label="状态"
-        >
+        <el-table-column prop="status.twins[0].desired.value" label="状态">
         </el-table-column>
-        <el-table-column
-          prop="metadata.creationTimestamp"
-          label="创建时间"
-        >
+        <el-table-column prop="metadata.creationTimestamp" label="创建时间">
           <template slot-scope="scope">
             <span>{{
               scope.row.metadata.creationTimestamp.replaceAll(/[TZ]/g, " ")
@@ -193,31 +182,25 @@
       </el-table>
     </el-card>
   </div>
-
 </template>
 
 <script>
 export default {
-  data(){
+  data() {
     return {
-      nodes:[],
-      devices:[],
-    }
+      nodes: [],
+      devices: [],
+    };
   },
-  
+
   // 初始化方法
   created: function () {
     this.getAllEdgeNodes();
     this.getAllDevices();
   },
-  
-  methods: {
-    // 获取 node 节点详情页
-    goToEdgeDevices: function(nodeName){
-      this.$store.dispatch("edge/toDetails", nodeName);
-    },
 
-    // 获取所有节点信息
+  methods: {
+    // 获取 edge 节点信息
     getAllEdgeNodes: function () {
       this.$store
         .dispatch("edge/getAllEdgeNodes")
@@ -230,9 +213,10 @@ export default {
           throw error;
         });
     },
+    //获取所有设备
     getAllDevices() {
       this.$store
-        .dispatch("edge/getAllDevices","devices.devices.kubeedge.io")
+        .dispatch("edge/getAllDevices", "devices.devices.kubeedge.io")
         .then((res) => {
           console.log(res.data);
           this.devices = res.data.items;
@@ -241,12 +225,11 @@ export default {
           console.log(error);
         });
     },
-    goToEdgeNodeDetails: function(edgenodeName){
+
+    goToEdgeNodeDetails: function (edgenodeName) {
       this.$store.dispatch("edge/toDetails", edgenodeName);
     },
-    
-  }
- 
+  },
 };
 </script>
 

@@ -3,8 +3,8 @@
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-04-07 20:07:51
- * @LastEditors: Rex Joush
- * @LastEditTime: 2021-04-07 20:10:39
+ * @LastEditors: zqy
+ * @LastEditTime: 2021-04-11 21:05:02
  */
 import { changeResourceByYaml } from '@/api/common'
 import { getToken } from '@/utils/auth'

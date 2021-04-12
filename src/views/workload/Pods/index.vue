@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-04-11 17:09:47
+ * @LastEditTime: 2021-04-12 21:44:36
 -->
 <template>
   <div>
@@ -385,12 +385,12 @@ export default {
       this.$store
         .dispatch("pods/getPodYamlByNameAndNamespace", podDetails)
         .then((res) => {
-          // console.log(res);
           // let json = JSON.stringify(res.data);
           // this.codeJSON = this.beautify(json, {
-          //   indent_size: 4,
+            //   indent_size: 4,
           //   space_in_empty_paren: true,
           // });
+          console.log(res, "\n最初获取的Yaml\n");
           this.codeYaml = res.data;
           this.editDialogVisible = true; // 打开编辑对话框
         })
@@ -418,6 +418,7 @@ export default {
 
     // 提交修改
     commitYamlChange() {
+      console.log("提交修改的 yaml", this.codeYaml);
       this.$confirm("确认修改？", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",

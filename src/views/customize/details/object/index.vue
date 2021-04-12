@@ -1,6 +1,14 @@
 <!--
  * @Description: your project
  * @version: 1.0
+ * @Author: Bernie
+ * @Date: 2021-04-12 10:43:03
+ * @LastEditors: Bernie
+ * @LastEditTime: 2021-04-12 10:51:16
+-->
+<!--
+ * @Description: your project
+ * @version: 1.0
  * @Author: Rex Bernie
  * @Date: 2021-04-4 13:57
  * @LastEditors: Rex Bernie
@@ -68,169 +76,16 @@
       </List>
     </el-card>
     <br /><br />
-    <!-- 资源信息 -->
-    <el-card class="box-card">
-      <div slot="header" class="clearfix">
-        <span style="font-size: 16px">资源信息</span>
-      </div>
-      <List item-layout="horizontal" :split="false">
-        <div class="metadata-item">
-          <p>版本</p>
-          <span>{{ customResourceDefinition.spec.versions[0].name }}</span>
-        </div>
-        <div class="metadata-item">
-          <p>范围</p>
-          <span>{{ customResourceDefinition.spec.scope }}</span>
-        </div>
-        <div class="metadata-item">
-          <p>Group</p>
-          <span>{{ customResourceDefinition.spec.group }}</span>
-        </div>
-      </List>
-    </el-card>
-    <br /><br />
-    <!-- 允许的名称 -->
-    <el-card class="box-card">
-      <div slot="header" class="clearfix">
-        <span style="font-size: 16px">允许的名称</span>
-      </div>
-      <List item-layout="horizontal" :split="false">
-        <div class="metadata-item">
-          <p>复数</p>
-          <span>{{ customResourceDefinition.spec.names.plural }}</span>
-        </div>
-        <div class="metadata-item">
-          <p>单数</p>
-          <span>{{ customResourceDefinition.spec.names.singular }}</span>
-        </div>
-        <div class="metadata-item">
-          <p>种类</p>
-          <span>{{ customResourceDefinition.spec.names.kind }}</span>
-        </div>
-        <div class="metadata-item">
-          <p>列出种类</p>
-          <span>{{ customResourceDefinition.spec.names.listKind }}</span>
-        </div>
-        <div class="metadata-item">
-          <p>短名称</p>
-          <span>{{ customResourceDefinition.spec.names.shortNames[0] }}</span>
-        </div>
-      </List>
-    </el-card>
-    <br /><br />
-    <!-- Objects -->
-    <el-card class="box-card">
-      <div slot="header" class="clearfix">
-        <span style="font-size: 20px">Objects</span>
-      </div>
-      <el-table :data="objects" style="width: 100%" stripe>
-        <!-- <el-table-column width="40">
-          <template slot-scope="scope">
-            <svg-icon
-              :icon-class="
-                scope.row.status.conditions[0].status == 'True'
-                  ? 'load-success'
-                  : scope.row.status.conditions[0].status == 'Unknown'
-                  ? 'load-doubt'
-                  : 'load-failed'
-              "
-            />
-          </template>
-        </el-table-column> -->
-        <el-table-column label="名字">
-          <template slot-scope="scope">
-            <router-link
-              :to="'/edge/edgenodes/' + scope.row.metadata.name"
-              @click.native="goToEdgeNodeDetails(scope.row.metadata.name)"
-              class="link-type"
-            >
-              <span style="color: #409eff; text-decoration: underline">{{
-                scope.row.metadata.name
-              }}</span>
-            </router-link>
-          </template>
-        </el-table-column>
-        <!-- <el-table-column label="标签">
-          <template slot-scope="scope">
-            <span>k8s-app: {{scope.row.metadata.labels['k8s-app']}}</span>
-            <br>
-            <span>pod-template-hash: {{scope.row.metadata.labels['pod-template-hash']}}</span>
-          </template>
-        </el-table-column> -->
-        <el-table-column prop="metadata.namespace" label="命名空间">
-        </el-table-column>
-        <!-- <el-table-column
-          prop="status.twins[0].desired.value"
-          label="状态"
-        >
-        </el-table-column> -->
-        <el-table-column prop="metadata.creationTimestamp" label="创建时间">
-          <template slot-scope="scope">
-            <span>{{
-              scope.row.metadata.creationTimestamp.replaceAll(/[TZ]/g, " ")
-            }}</span>
-          </template>
-        </el-table-column>
-        <!-- <el-table-column label="是否可调度" width="100">
-          作用域插槽
-          <template slot-scope="scope">
-            {{scope.row}} 每一行封存的数据
-            <el-switch
-              v-model="!scope.row.spec.unschedulable"
-              @change="userStateChange(scope.row)"
-            ></el-switch>
-          </template>
-        </el-table-column> -->
-        <el-table-column label="操作">
-          <template slot-scope="scope">
-            <!-- 修改 -->
-            <el-button
-              style="margin-bottom: 5px"
-              type="primary"
-              icon="el-icon-edit"
-              size="small"
-              @click="showNodeEditDialog(scope.row)"
-              >编辑</el-button
-            >
-            <br />
-            <!-- 删除 -->
-            <el-button
-              type="danger"
-              icon="el-icon-delete"
-              size="small"
-              @click="delNode(scope.row)"
-              >删除</el-button
-            >
-          </template>
-        </el-table-column>
-      </el-table>
-    </el-card>
-    <br /><br />
+   <!-- 数据-->
+   <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
+    <el-tab-pane label="用户管理" name="first">用户管理</el-tab-pane>
+    <el-tab-pane label="配置管理" name="second">配置管理</el-tab-pane>
+    <el-tab-pane label="角色管理" name="third">角色管理</el-tab-pane>
+    <el-tab-pane label="定时任务补偿" name="fourth">定时任务补偿</el-tab-pane>
+  </el-tabs>
 
-    <!-- 状态-->
-    <el-card class="box-card">
-      <div slot="header" class="clearfix">
-        <span style="font-size: 16px">状态</span>
-      </div>
-      <el-table
-        :data="customResourceDefinition.status.conditions"
-        style="width: 100%"
-        stripe
-      >
-        <el-table-column prop="type" label="类别"> </el-table-column>
-        <el-table-column prop="status" label="状态" width="120">
-        </el-table-column>
-        <el-table-column label="最后迁移时间">
-          <template slot-scope="scope">
-            <span>{{
-              scope.row.lastTransitionTime.replaceAll(/[TZ]/g, " ")
-            }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column prop="reason" label="原因"> </el-table-column>
-        <el-table-column prop="message" label="信息"> </el-table-column>
-      </el-table>
-    </el-card>
+
+    
     <br /><br />
 
     <br /><br />
