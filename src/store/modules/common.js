@@ -3,10 +3,10 @@
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-04-07 20:07:51
- * @LastEditors: zqy
- * @LastEditTime: 2021-04-11 21:05:02
+ * @LastEditors: Leo
+ * @LastEditTime: 2021-04-12 20:49:57
  */
-import { changeResourceByYaml } from '@/api/common'
+import { changeResourceByYaml, changeServicesByYaml } from '@/api/common'
 import { getToken } from '@/utils/auth'
 
 const getDefaultState = () => {
@@ -35,7 +35,21 @@ const actions = {
         reject(error)
       })
     })
-  }
+  },
+  // 根据 yaml 文件编辑 service
+  changeServicesByYaml({ commit }, yaml) {
+    return new Promise((resolve, reject) => {
+      changeServicesByYaml(yaml).then(response => {
+        const { data } = response
+        if (!data) {
+          return reject('修改失败')
+        }
+        resolve(data)
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
 }
 
 export default {

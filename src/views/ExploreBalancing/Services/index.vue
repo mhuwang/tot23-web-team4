@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: Leo
- * @LastEditTime: 2021-04-12 10:34:58
+ * @LastEditTime: 2021-04-12 20:53:31
 
  -->
 <template>
@@ -56,7 +56,7 @@
         </el-col>
       </el-row>
       <el-table :data="services" style="width: 100%" stripe>
-        <el-table-column width="40">
+        <!-- <el-table-column width="40">
           <template slot-scope="scope">
             <svg-icon
               :icon-class="
@@ -66,7 +66,22 @@
               "
             />
           </template>
-        </el-table-column>
+        </el-table-column> -->
+        <!-- 修改前 -->
+        <!-- <el-table-column width="40">
+          <template slot-scope="scope">
+            <svg-icon
+              :icon-class="
+                scope.row.status.conditions[0].status == 'True'
+                  ? 'load-success'
+                  : scope.row.status.conditions[0].status == 'Unknown'
+                  ? 'load-doubt'
+                  : 'load-failed'
+              "
+            />
+          </template>
+        </el-table-column> -->
+
         <el-table-column prop="metadata.name" label="名字">
           <template slot-scope="scope">
             <router-link
@@ -100,7 +115,7 @@
         <!-- <el-table-column prop="metadata.uid" label="uid"> </el-table-column> -->
         <!-- <el-table-column prop="spec.nodeName" width="140" label="所属节点"> </el-table-column>
         <el-table-column prop="status.serviceIP" width="140" label="主机ip地址"> </el-table-column> -->
-        <el-table-column label="创建时间" width="200">
+        <el-table-column label="创建时间" width="300">
           <template slot-scope="scope">
             <span>{{
               scope.row.metadata.creationTimestamp.replaceAll(/[TZ]/g, " ")
@@ -116,7 +131,7 @@
               style="margin-bottom: 5px"
               size="small"
               @click="
-                showServiceEditDialog(scope.row.name, scope.row.namespace)
+                showServiceEditDialog(scope.row.metadata.name, scope.row.metadata.namespace)
               "
               >编辑</el-button
             >
@@ -126,7 +141,7 @@
               type="danger"
               icon="el-icon-delete"
               size="small"
-              @click="delService(scope.row.name, scope, row.namespace)"
+              @click="delService(scope.row.metadata.name, scope.row.metadata.namespace)"
               >删除</el-button
             >
           </template>
@@ -328,7 +343,7 @@ export default {
       })
         .then(() => {
           this.$store
-            .dispatch("common/changeResourceByYaml", this.addYaml)
+            .dispatch("common/changeServicesByYaml", this.addYaml)
             .then((res) => {
               switch (res.code) {
                 case 1200:
@@ -367,24 +382,24 @@ export default {
 
       // 获取 yaml 格式
       this.$store
-        .dispatch("service/getServiceYamlByNameAndNamespace", serviceDetails)
+        .dispatch("services/getServiceYamlByNameAndNamespace", serviceDetails)
         .then((res) => {
           // console.log(res);
           // let json = JSON.stringify(res.data);
           // this.codeJSON = this.beautify(json, {
           //   indent_size: 4,
           //   space_in_empty_paren: true,
-          // });
+          // }); 
           this.codeYaml = res.data;
           this.editDialogVisible = true; // 打开编辑对话框
         })
         .catch((error) => {
           throw error;
         });
-
+        
       // json 格式
       this.$store
-        .dispatch("service/getServiceByNameAndNamespace", serviceDetails)
+        .dispatch("services/getServiceByNameAndNamespace", serviceDetails)
         .then((res) => {
           // console.log(res);
           let json = JSON.stringify(res.data.service);
@@ -409,7 +424,7 @@ export default {
       })
         .then(() => {
           this.$store
-            .dispatch("common/changeResourceByYaml", this.codeYaml)
+            .dispatch("common/changeServicesByYaml", this.codeYaml)
             .then((res) => {
               switch (res.code) {
                 case 1200:
@@ -457,7 +472,7 @@ export default {
             serviceNamespace: namespace,
           };
           this.$store
-            .dispatch("service/delServiceByNameAndNamespace", serviceDetails)
+            .dispatch("services/delServiceByNameAndNamespace", serviceDetails)
             .then((res) => {
               if (res.code == 1200) {
                 this.$message.success("删除成功");
