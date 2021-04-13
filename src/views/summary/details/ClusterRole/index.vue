@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-27 13:41:50
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-04-12 21:43:08
+ * @LastEditTime: 2021-04-13 11:07:19
 -->
 <template>
   <div>
@@ -71,29 +71,17 @@
       </div>
       <el-table :data="rules" stripe>
         <!-- <el-table-column type="index"></el-table-column> -->
-        <el-table-column prop="resources" label="资源"></el-table-column>
         <el-table-column
-          align="center"
-          :formatter="resourcesFormate()"
-          label="非资源 URL"
-        >
-          <template slot-scope="scope">
-            {{
-              scope.row.nonResourceURLs.length > 0
-                ? scope.row.nonResourceURLs
-                : "-"
-            }}
-          </template>
+          :formatter="formatterResources"
+          label="资源"
+        ></el-table-column>
+        <el-table-column align="center" :formatter="formatterNonResourceURLs" label="非资源 URL">
         </el-table-column>
-        <el-table-column prop="resourceNames" label="资源名">
-          <template align="center" slot-scope="scope">
-            {{
-              scope.row.resourceNames.length > 0 ? scope.row.resourceNames : "-"
-            }}
-          </template>
+        <el-table-column :formatter="formatterResourceNames" label="资源名">
+          
         </el-table-column>
-        <el-table-column prop="verbs" label="动作"> </el-table-column>
-        <el-table-column prop="apiGroups" label="API 组"> </el-table-column>
+        <el-table-column :formatter="formatterVerbs" label="动作"> </el-table-column>
+        <el-table-column :formatter="formatterApiGroups" label="API 组"> </el-table-column>
       </el-table>
     </el-card>
 
@@ -123,6 +111,12 @@ export default {
       annoDetails: "",
       annoDetailsVisible: false, // 注释的详情框
       rules: [], // 所有事件
+
+    //   resourcesActicity: "", // 活动中的资源
+    //   nonResourceURLs: "", // 活动中的非资源 URL
+    //   resourceNames: "", // 活动中的资源名
+    //   verbs: "", // 活动中的动作
+    //   apiGroups: "", // 活动中的 api 组
     };
   },
 
@@ -183,11 +177,36 @@ export default {
     },
 
     // 格式化活动的内容
-    resourcesFormate({row, column, cellValue, index}) {
-      console.log("row");
-      console.log("column", column);
-      console.log("cellValue", cellValue);
-      console.log("index", index);
+    formatterResources(row, column) {
+      return row.resources.join(", ");
+    },
+    formatterNonResourceURLs(row, column) {
+        if (row.nonResourceURLs.length > 0){
+            return row.nonResourceURLs.join(", ")
+        } else {
+            return "--"
+        }
+    },
+    formatterResourceNames(row, column) {
+        if (row.resourceNames.length > 0){
+            return row.resourceNames.join(", ")
+        } else {
+            return "--"
+        }
+    },
+    formatterVerbs(row, column) {
+        if (row.verbs.length > 0){
+            return row.verbs.join(", ")
+        } else {
+            return "--"
+        }
+    },
+    formatterApiGroups(row, column) {
+        if (row.apiGroups.length > 0){
+            return row.apiGroups.join(", ")
+        } else {
+            return "--"
+        }
     },
 
     // 显示注解的详情
