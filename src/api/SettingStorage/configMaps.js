@@ -23,13 +23,13 @@ export function getConfigMapByNameAndNamespace(con) {
     url: baseUrl + '/configMaps/getConfigMapByNameAndNamespace',
     method: 'get',
     params: {
-      name: con.configMapName,
-      namespace: con.configMapNamespace
+      name: con.name,  //不能改
+      namespace: con.namespace
     }
   })
 }
 export function getConfigMapYamlByNameAndNamespace(con) {
-  console.log("apis", con);
+  //console.log("apis", con);
   return request({
     url: baseUrl + '/configMaps/getConfigMapYamlByNameAndNamespace',
     method: 'get',

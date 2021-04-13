@@ -1,3 +1,11 @@
+<!--
+ * @Description: your project
+ * @version: 1.0
+ * @Author: Anna667
+ * @Date: 
+ * @LastEditors: Anna667
+ * @LastEditTime: 
+-->
 <template>
   <!-- <h1>ConfigMaps Details</h1> -->
   <div>
@@ -43,7 +51,9 @@
               effect="dark"
               size="medium"
               color="#bedcfa"
-              >{{ label.key }}: {{ label.value }}</el-tag
+              style="color: #409eff"
+              @click="showAnnoDetails(anno.key)"
+              >{{ label.key }}</el-tag
             >
           </li>
         </div>
@@ -88,6 +98,9 @@ export default {
       configMapName: "",
       configMapNamespace: "",
       caShow: false,
+      annoKey: "",
+      annoDetails: "",
+      annoDetailsVisible: false, // 注释的详情框
     };
   },
 
@@ -161,6 +174,18 @@ export default {
       }
       return labelArr;
     },
+    methods: {
+    // 显示注解的详情
+    showAnnoDetails(key) {
+      this.annoDetailsVisible = true;
+      // console.log(key);
+      this.annoKey = key;
+      this.annoDetails = this.beautify(this.configMap.metadata.annotations[key], {
+        indent_size: 2,
+        space_in_empty_paren: true,
+      });
+    },
+  },
 
     // 元数据下的注释
     annotations() {
@@ -265,5 +290,9 @@ export default {
     font-style: normal;
     color: #3f414d;
   }
+}
+
+#anno_hover:hover {
+  cursor: pointer;
 }
 </style>

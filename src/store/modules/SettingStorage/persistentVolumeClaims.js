@@ -2,23 +2,15 @@
  * @Description: your project
  * @version: 1.0
  * @Author: Anna667
- * @Date: 2021-03-29 11:11:03
+ * @Date: 
  * @LastEditors: Anna667
- * @LastEditTime: 2021-03-29 11:11:03
+ * @LastEditTime: 
  */
-import { getAllPVC, getPVCByNameAndNamespace} from '@/api/SettingStorage/persistentVolumeClaims'
+import { getAllPVC, getPVCByNameAndNamespace, getPVCYamlByNameAndNamespace, delPVCByNameAndNamespace} from '@/api/SettingStorage/persistentVolumeClaims'
 import { getToken } from '@/utils/auth'
 
-////------------
-// const getDefaultState = () => {
-//     return {
-//         token: getToken(),
-//         name: '',
-//         avatar: ''
-//     }
-// }
 
-//const state = getDefaultState()
+
 const state = {
     token: getToken(),
     persistentVolumeClaim: {
@@ -40,9 +32,9 @@ const mutations = {
 
 const actions = {
     // getAllPVC
-    getAllPVC({ commit }) {
+    getAllPVC({ commit }, namespace) {
         return new Promise((resolve, reject) => {
-            getAllPVC().then(response => {
+            getAllPVC(namespace).then(response => {
                 const { data } = response
                 if (!data) {
                     return reject('获取失败')
@@ -53,10 +45,41 @@ const actions = {
             })
         })
     },
-    // getPVCByNameAndNamespace
+    // 通过名称和命名空间获取对应的 persistentVolumeClaim 的详情，带利用率信息 
     getPVCByNameAndNamespace({ commit }, per) {
         return new Promise((resolve, reject) => {
             getPVCByNameAndNamespace(per).then(response => {
+                const { data } = response
+                if (!data) {
+                    return reject('获取失败')
+                }
+                resolve(data)
+            }).catch(error => {
+                reject(error)
+            })
+        })
+    },
+
+    // 通过名称和命名空间获取对应的 persistentVolumeClaim yaml 文件
+    getPVCYamlByNameAndNamespace({ commit }, pvcDetails) {
+        console.log("actions", pvcDetails)
+        return new Promise((resolve, reject) => {
+            getPVCYamlByNameAndNamespace(pvcDetails).then(response => {
+                const { data } = response
+                if (!data) {
+                    return reject('获取失败')
+                }
+                resolve(data)
+            }).catch(error => {
+                reject(error)
+            })
+        })
+    },
+
+    // 通过名称和命名空间删除 persistentVolumeClaim
+    delPVCByNameAndNamespace({ commit }, pvcDetails) {
+        return new Promise((resolve, reject) => {
+            delPVCByNameAndNamespace(pvcDetails).then(response => {
                 const { data } = response
                 if (!data) {
                     return reject('获取失败')

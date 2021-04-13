@@ -10,10 +10,10 @@
   <div>
     <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <span>所有 Persistent Volume Claims</span>
+        <span>所有 Config Map</span>
       </div>
       <el-row :gutter="20">
-        <el-col :span="5">
+        <el-col :span="6">
           <!-- 搜索区域 -->
           <el-select
             v-model="value"
@@ -43,47 +43,44 @@
             ></el-button> -->
         </el-col>
       </el-row>
-      <el-table 
-        :data="persistentVolumeClaims" 
-        style="width: 100%" 
+      <el-table
+        :data="configMaps"
+        style="width: 100%"
         stripe
-        >
+        v-loading="loading"
+        element-loading-text="获取数据中..."
+      >
         <!-- <el-table-column width="40">
           <template slot-scope="scope">
-            <svg-icon :icon-class="scope.row.status.conditions[3].status == 'True'? 'load-success': scope.row.status.conditions[3].status == 'Unknown'?'load-doubt':'load-failed'"/>
+            <svg-icon 
+              :icon-class="
+                scope.row.phase == 'Running' || scope.row.phase == 'Succeeded'
+                  ? 'load-success'
+                  : 'load-failed'
+              "
+            />
           </template>
-        </el-table-column> -->
-        <el-table-column prop="metadata.name" label="名字" width="200">
+        </el-table-column>  -->
+        <el-table-column prop="metadata.name" label="名字">
           <template slot-scope="scope">
-            <router-link 
-            :to="'/SettingStorage/persistentVolumeClaims/'+scope.row.metadata.name" 
-            @click.native="
-            goToPersistentVolumeClaimsDetails(
-              scope.row.metadata.name,
-              scope.row.metadata.namespace
-              )
-            " 
-            class="link-type"
-          >
-              <span style="color:#409EFF;text-decoration:underline">{{ 
-                scope.row.metadata.name 
-                }}</span>
+            <router-link
+              :to="'/settingstorage/configmaps/' + scope.row.metadata.name"
+              @click.native="
+                goToConfigMapsDetails(
+                  scope.row.metadata.name,
+                  scope.row.metadata.namespace
+                )
+              "
+              class="link-type"
+            >
+              <span style="color: #409eff; text-decoration: underline">{{
+                scope.row.metadata.name
+              }}</span>
             </router-link>
           </template>
         </el-table-column>
-        <el-table-column prop="metadata.namespace" label="命名空间" width="150"> </el-table-column>
-
-        <el-table-column prop="status.phase" label="状态" width="100"> </el-table-column>
-        <el-table-column prop="spec.volumeName" label="Volume" width="100"> </el-table-column>
-        <el-table-column label="容量" width="120">
-          <template slot-scope="scope">
-            <span>{{scope.row.status.capacity.storage.amount}} {{scope.row.status.capacity.storage.format}}</span>
-          </template>
+        <el-table-column prop="metadata.namespace" label="命名空间">
         </el-table-column>
-        <el-table-column prop="spec.accessModes[0]" label="访问模式" width="150"> </el-table-column>
-        <el-table-column prop="spec.storageClassName" label="存储类" width="120"> </el-table-column>
-
-
         <!-- <el-table-column label="标签">
           <template slot-scope="scope">
             <span>k8s-app: {{scope.row.metadata.labels['k8s-app']}}</span>
@@ -94,10 +91,13 @@
         <!-- <el-table-column prop="apiVersion" label="apiVersion"> </el-table-column> -->
         <!-- <el-table-column prop="kind" label="kind"> </el-table-column> -->
         <!-- <el-table-column prop="metadata.uid" label="uid"> </el-table-column> -->
-        
+        <!-- <el-table-column prop="spec.nodeName" width="140" label="所属节点"> </el-table-column>
+        <el-table-column prop="status.podIP" width="140" label="主机ip地址"> </el-table-column> -->
         <el-table-column label="创建时间" width="200">
           <template slot-scope="scope">
-            <span>{{scope.row.metadata.creationTimestamp.replaceAll(/[TZ]/g,' ')}}</span>
+            <span>{{
+              scope.row.metadata.creationTimestamp.replaceAll(/[TZ]/g, " ")
+            }}</span>
           </template>
         </el-table-column>
         <el-table-column label="操作">
@@ -106,26 +106,28 @@
             <el-button
               type="primary"
               icon="el-icon-edit"
-              style="margin-bottom:5px"
+              style="margin-bottom: 5px"
               size="small"
-              @click="showPVCEditDialog(
-                scope.row.metadata.name,
-                scope.row.metadata.namespace
+              @click="
+                showConfigMapEditDialog(
+                  scope.row.metadata.name,
+                  scope.row.metadata.namespace
                 )
-                "
+              "
               >编辑</el-button
             >
-            <br>
+            <br />
             <!-- 删除 -->
             <el-button
               type="danger"
               icon="el-icon-delete"
               size="small"
-              @click="delPVC(
-                scope.row.metadata.name,
-                scope.row.metadata.namespace
+              @click="
+                delConfigMap(
+                  scope.row.metadata.name,
+                  scope.row.metadata.namespace
                 )
-                "
+              "
               >删除</el-button
             >
           </template>
@@ -135,7 +137,7 @@
 
     <!-- 编辑框 -->
     <el-dialog
-      title="编辑 persistentVolumeClaim"
+      title="编辑 configMap"
       :visible.sync="editDialogVisible"
       width="70%"
       @closed="handleClose"
@@ -152,7 +154,7 @@
             @input="onYamlCmCodeChange"
           />
         </el-tab-pane>
-        <!-- <el-tab-pane label="JSON" name="second">
+        <el-tab-pane label="JSON" name="second">
           <codemirror
             ref="cmYamlEditor"
             :value="codeJSON"
@@ -160,7 +162,7 @@
             @ready="onJSONCmReady"
             @input="onJSONCmCodeChange"
           />
-        </el-tab-pane> -->
+        </el-tab-pane>
       </el-tabs>
 
       <!-- <textarea style="width:100%" name="describe" id="pod" cols="30" rows="10">
@@ -186,11 +188,11 @@ import "codemirror/mode/yaml/yaml.js";
 import "codemirror/theme/panda-syntax.css";
 
 export default {
-  name: "PersistentVolumeClaims",
+  name: "ConfigMaps",
 
   data() {
     return {
-      persistentVolumeClaims: [],
+      configMaps: [], // configMap 列表
       namespaces: [], // 命名空间选择框
       value: "", // 选择框的值
       loading: true, // 获取数据中
@@ -221,7 +223,7 @@ export default {
   },
 
   mounted() {
-    this.getPersistentVolumeClaims();
+    this.getConfigMaps();
   },
 
   methods: {
@@ -236,26 +238,25 @@ export default {
     onYamlCmCodeChange(newCode) {
       this.codeYaml = newCode;
     },
-    
 
-    // 前往  persistentVolumeClaims 详情页
-    goToPersistentVolumeClaimsDetails: function (persistentVolumeClaimName, persistentVolumeClaimNamespace) {
-      // console.log("persistentVolumeClaims index namespace", persistentVolumeClaimNamespace);
-      let pvcsDetails = {
-        persistentVolumeClaimName: persistentVolumeClaimName,
-        persistentVolumeClaimNamespace: persistentVolumeClaimNamespace
-      }
-      this.$store
-        .dispatch("persistentVolumeClaims/toDetails", pvcsDetails);
+    // 前往 configMaps 详情页
+    goToConfigMapsDetails: function (configMapName, configMapNamespace) {
+      // console.log("configMaps index namespace", configMapNamespace);
+      let configMapsDetails = {
+        configMapName: configMapName,
+        configMapNamespace: configMapNamespace,
+      };
+      this.$store.dispatch("configMaps/toDetails", configMapsDetails);
     },
 
-    // 获取所有 persistentVolumeClaims
-    getPersistentVolumeClaims(namespace) { 
+    // 获取所有 configMaps
+    getConfigMaps(namespace = "") {
       this.$store
-        .dispatch("persistentVolumeClaims/getAllPVC", namespace)
+        .dispatch("configMaps/getAllConfigMaps", namespace)
         .then((res) => {
-          console.log(res.data);
-          this.persistentVolumeClaims = res.data;
+          console.log(res);
+          this.configMaps = res.data;
+          this.loading = false;
         })
         .catch((error) => {
           console.log(error);
@@ -263,25 +264,20 @@ export default {
     },
 
     /* 编辑部分 */
-    showPVCEditDialog(name, namespace) {
-      let pvcsDetails = {
-        persistentVolumeClaimName: name,
-        persistentVolumeClaimNamespace: namespace,
+    showConfigMapEditDialog(name, namespace) {
+      let configMapsDetails = {
+        configMapName: name,
+        configMapNamespace: namespace,
       };
+      //console.log("6666",configMapsDetails.configMapName);
 
       // 获取 yaml 格式
       this.$store
         .dispatch(
-          "persistentVolumeClaims/getPVCYamlByNameAndNamespace",
-          pvcsDetails
+          "configMaps/getConfigMapYamlByNameAndNamespace",
+          configMapsDetails
         )
         .then((res) => {
-          // console.log(res);
-          // let json = JSON.stringify(res.data);
-          // this.codeJSON = this.beautify(json, {
-          //   indent_size: 4,
-          //   space_in_empty_paren: true,
-          // });
           this.codeYaml = res.data;
           this.editDialogVisible = true; // 打开编辑对话框
         })
@@ -326,8 +322,7 @@ export default {
         });
     },
 
-
-    // 关闭修改框
+    // 关闭添加或者修改框
     handleClose: function () {
       this.addYaml = "";
       setTimeout(() => {
@@ -335,27 +330,27 @@ export default {
       }, 1);
     },
 
-    /* 删除 PersistentVolumeClaim */
-    delPVC: function (name, namespace) {
-      this.$confirm("确认删除 PersistentVolumeClaim", {
+    /* 删除 ConfigMap */
+    delConfigMap: function (name, namespace) {
+      this.$confirm("确认删除 configMap", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
       })
         .then(() => {
-          let pvcsDetails = {
-            persistentVolumeClaimName: name,
-            persistentVolumeClaimNamespace: namespace,
+          let configMapsDetails = {
+            configMapName: name,
+            configMapNamespace: namespace,
           };
           this.$store
             .dispatch(
-              "persistentVolumeClaims/delPVCByNameAndNamespace",
-              pvcsDetails
+              "configMaps/delConfigMapByNameAndNamespace",
+              configMapsDetails
             )
             .then((res) => {
               if (res.code == 1200) {
                 this.$message.success("删除成功");
-                this.getPersistentVolumeClaims();
+                this.getConfigMaps();
               } else {
                 this.$message.error("删除失败");
               }
@@ -378,12 +373,12 @@ export default {
     // 选择框变化事件
     selectChange(value) {
       this.loading = true;
-      this.getPersistentVolumeClaims(value);
+      this.getConfigMaps(value);
     },
     // 选择框清空事件
     clearSelect() {
       this.loading = true;
-      this.getPersistentVolumeClaims();
+      this.getConfigMaps();
     },
   },
 };

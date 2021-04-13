@@ -2,23 +2,15 @@
  * @Description: your project
  * @version: 1.0
  * @Author: Anna667
- * @Date: 2021-03-28 21:00:03
+ * @Date: 
  * @LastEditors: Anna667
- * @LastEditTime: 2021-03-28 21:00:03
+ * @LastEditTime: 
  */
-import { getAllSecrets, getSecretByNameAndNamespace} from '@/api/SettingStorage/secrets'
+import { getAllSecrets, getSecretByNameAndNamespace, getSecretYamlByNameAndNamespace, delSecretByNameAndNamespace} from '@/api/SettingStorage/secrets'
 import { getToken } from '@/utils/auth'
 
-//------------
-// const getDefaultState = () => {
-//     return {
-//         token: getToken(),
-//         name: '',
-//         avatar: ''
-//     }
-// }
 
-//const state = getDefaultState()
+
 const state = {
     token: getToken(),
     secret: {
@@ -39,10 +31,10 @@ const mutations = {
 }
 
 const actions = {
-    // getAllSecrets
-    getAllSecrets({ commit }) {
+    // 获取所有 Secrets
+    getAllSecrets({ commit }, namespace) {
         return new Promise((resolve, reject) => {
-            getAllSecrets().then(response => {
+            getAllSecrets(namespace).then(response => {
                 const { data } = response
                 if (!data) {
                     return reject('获取失败')
@@ -53,10 +45,42 @@ const actions = {
             })
         })
     },
-    // getSecretByNameAndNamespace
+    // 通过名称和命名空间获取对应的 secret 的详情，带利用率信息
     getSecretByNameAndNamespace({ commit }, ser) {
+
         return new Promise((resolve, reject) => {
             getSecretByNameAndNamespace(ser).then(response => {
+                const { data } = response
+                if (!data) {
+                    return reject('获取失败')
+                }
+                resolve(data)
+            }).catch(error => {
+                reject(error)
+            })
+        })
+    },
+
+    // 通过名称和命名空间获取对应的 secret yaml 文件
+    getSecretYamlByNameAndNamespace({ commit }, secretsDetails) {
+        console.log("actions", secretsDetails)
+        return new Promise((resolve, reject) => {
+            getSecretYamlByNameAndNamespace(secretsDetails).then(response => {
+                const { data } = response
+                if (!data) {
+                    return reject('获取失败')
+                }
+                resolve(data)
+            }).catch(error => {
+                reject(error)
+            })
+        })
+    },
+
+    // 通过名称和命名空间删除 secret
+    delSecretByNameAndNamespace({ commit }, secretsDetails) {
+        return new Promise((resolve, reject) => {
+            delSecretByNameAndNamespace(secretsDetails).then(response => {
                 const { data } = response
                 if (!data) {
                     return reject('获取失败')

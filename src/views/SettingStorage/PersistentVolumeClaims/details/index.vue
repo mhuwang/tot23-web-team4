@@ -1,4 +1,3 @@
-
 <template>
   <div>
     <el-divider content-position="left"
@@ -55,12 +54,27 @@
               effect="dark"
               size="medium"
               color="#bedcfa"
-              >{{ anno.key }}: {{ anno.value }}</el-tag
+              style="color: #409eff"
+              @click="showAnnoDetails(anno.key)"
+              >{{ anno.key }}</el-tag
             >
           </li>
         </div>
       </List>
     </el-card>
+    <br/>
+    <!-- 注释的详情框 -->
+    <el-dialog
+      :title="annoKey"
+      :visible.sync="annoDetailsVisible"
+      width="50%"
+      :modal="false"
+    >
+      <highlightjs javascript :code="annoDetails" />
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="annoDetailsVisible = false">关闭</el-button>
+      </span>
+    </el-dialog>
     <br /><br />
     <!-- 资源信息 -->
     <el-card class="box-card">
@@ -101,6 +115,9 @@ export default {
       persistentVolumeClaim: {},
       persistentVolumeClaimName: "",
       persistentVolumeClaimNamespace: "",
+      annoKey: "",
+      annoDetails: "",
+      annoDetailsVisible: false, // 注释的详情框
     };
   },
 
@@ -155,7 +172,18 @@ export default {
         throw error;
       });
   },
-
+  methods: {
+    // 显示注解的详情
+    showAnnoDetails(key) {
+      this.annoDetailsVisible = true;
+      // console.log(key);
+      this.annoKey = key;
+      this.annoDetails = this.beautify(this.persistentVolumeClaim.metadata.annotations[key], {
+        indent_size: 2,
+        space_in_empty_paren: true,
+      });
+    },
+  },
   computed: {
     // 元数据下的标签
     labels() {
@@ -181,6 +209,7 @@ export default {
       return annoArr;
     },
   }
+
   
 };
 </script>
@@ -272,5 +301,9 @@ export default {
     font-style: normal;
     color: #3f414d;
   }
+}
+
+#anno_hover:hover {
+  cursor: pointer;
 }
 </style>
