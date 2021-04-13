@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: Leo
- * @LastEditTime: 2021-04-12 20:53:31
+ * @LastEditTime: 2021-04-13 09:16:37
 
  -->
 <template>
@@ -102,6 +102,8 @@
         </el-table-column>
         <!-- <el-table-column prop="apiVersion" label="版本"> </el-table-column> -->
         <el-table-column prop="metadata.namespace" label="命名空间">
+        </el-table-column>
+        <el-table-column prop="spec.type" label="类型">
         </el-table-column>
         <!-- <el-table-column label="标签">
           <template slot-scope="scope">

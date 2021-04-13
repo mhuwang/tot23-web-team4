@@ -3,104 +3,224 @@
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-03-30 19:58:14
- * @LastEditors: Rex Joush
- * @LastEditTime: 2021-03-30 22:32:48
+ * @LastEditors: Leo
+ * @LastEditTime: 2021-04-13 14:50:52
 -->
 
 <template>
-    <h1>
-      Ingress Details
-    </h1>
+  <div>
+    <el-divider content-position="left"
+      ><span style="font-weight: bold; font-size: 20px">
+        {{ ingress.metadata.name }}
+      </span></el-divider
+    >
+    <!-- 元数据 -->
+    <el-card class="box-card">
+      <div slot="header" class="clearfix">
+        <span style="font-size: 16px">元数据</span>
+      </div>
+      <List item-layout="horizontal" :split="false">
+        <div class="metadata-item">
+          <p>名字</p>
+          <span>{{ ingress.metadata.name }}</span>
+        </div>
+        <div class="metadata-item">
+          <p>创建时间</p>
+          <span>{{
+            ingress.metadata.creationTimestamp.replaceAll(/[TZ]/g, " ")
+          }}</span>
+        </div>
+        <div class="metadata-item">
+          <p>UID</p>
+          <span>{{ ingress.metadata.uid }}</span>
+        </div>
+      </List>
+      <!-- 元数据 标签 注释部分 -->
+      <List item-layout="horizontal" :split="false">
+        <div v-if="labels.length > 0" class="metadata-item">
+          <p>标签</p>
+          <li v-for="(label, index) in this.labels" :key="index">
+            <el-tag
+              class="lebel-tag"
+              effect="dark"
+              size="medium"
+              color="#bedcfa"
+              >{{ label.key }}: {{ label.value }}</el-tag
+            >
+          </li>
+        </div>
+        <div v-if="annotations.length > 0" class="metadata-item">
+          <p>注释</p>
+          <li v-for="(anno, index) in this.annotations" :key="index">
+            <el-tag
+              class="lebel-tag"
+              id="anno_hover"
+              effect="dark"
+              size="medium"
+              color="#bedcfa"
+              style="color: #409eff"
+              @click="showAnnoDetails(anno.key)"
+              >{{ anno.key }}</el-tag
+            >
+          </li>
+        </div>
+      </List>
+    </el-card>
+    <br />
+    <!-- 注释的详情框 -->
+    <el-dialog
+      :title="annoKey"
+      :visible.sync="annoDetailsVisible"
+      width="50%"
+      :modal="false"
+    >
+      <highlightjs javascript :code="annoDetails" />
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="annoDetailsVisible = false">关闭</el-button>
+      </span>
+    </el-dialog>
+  </div>
 </template>
 
 <script>
-// export default {
-//   data() {
-//     return {
-//       ingress: {},
-//       ingress: "",
-//       ingresstNamespace: "",
-//     };
-//   },
+export default {
+  props: ["name", "namespace"],
+  data() {
+    return {
+      ingress: {},
+      ingressName: "",
+      ingressNamespace: "",
+      annoKey: "",
+      annoDetails: "",
+      annoDetailsVisible: false, // 注释的详情框
+    };
+  },
 
-//   // 生命周期方法
-//   mounted: function () {
+  // 生命周期方法
+  mounted: function () {
+    /* name */
+    // 为空，直接存储
+    if (sessionStorage.getItem("ingressName") == null) {
+      sessionStorage.setItem(
+        "ingressName",
+        this.$store.state.ingresses.ingress.ingressName
+      );
+      this.ingressName = this.$store.state.ingresses.ingress.ingressName;
+    }
+    // 不为空，且当前 ingressName 有值，同时和之前的不一样，更新 ingressName
+    else if (
+      this.$store.state.ingresses.ingress.ingressName != "" &&
+      sessionStorage.getItem("ingressName") !=
+        this.$store.state.ingresses.ingress.ingressName
+    ) {
+      sessionStorage.setItem(
+        "ingressName",
+        this.$store.state.ingresses.ingress.ingressName
+      );
+      this.ingressName = this.$store.state.ingresses.ingress.ingressName;
+    }
 
-//     /* name */
-//     // 为空，直接存储
-//     if (sessionStorage.getItem("ingressName") == null) {
-//       sessionStorage.setItem("ingressName", this.$store.state.ingresses.ingress.ingressName);
-//       this.ingressName = this.$store.state.ingresses.ingress.ingressName;
-//     }
-//     // 不为空，且当前 ingressName 有值，同时和之前的不一样，更新 ingressName
-//     else if (
-//       this.$store.state.ingresses.ingress.ingressName != "" &&
-//       sessionStorage.getItem("ingressName") != this.$store.state.ingresses.ingress.ingressName
-//     ) {
-//       sessionStorage.setItem("ingressName", this.$store.state.ingresses.ingress.ingressName);
-//       this.ingressName = this.$store.state.ingresses.ingress.ingressName;
-//     }
+    /* namespace */
+    // 为空，直接存储
+    if (sessionStorage.getItem("ingressNamespace") == null) {
+      sessionStorage.setItem(
+        "ingressNamespace",
+        this.$store.state.ingresses.ingress.ingressNamespace
+      );
+      this.ingressNamespace = this.$store.state.ingresses.ingress.ingressNamespace;
+    }
+    // 不为空，且当前 ingressNamespace 有值，同时和之前的不一样，更新 ingressNamespace
+    else if (
+      this.$store.state.ingresses.ingress.ingressNamespace != "" &&
+      sessionStorage.getItem("ingressNamespace") !=
+        this.$store.state.ingresses.ingress.ingressNamespace
+    ) {
+      sessionStorage.setItem(
+        "ingressNamespace",
+        this.$store.state.ingresses.ingress.ingressNamespace
+      );
+      this.ingressNamespace = this.$store.state.ingresses.ingress.ingressNamespace;
+    }
 
-    
-//     /* namespace */
-//     // 为空，直接存储
-//     if (sessionStorage.getItem("deploymentNamespace") == null) {
-//       sessionStorage.setItem("deploymentNamespace", this.$store.state.deployments.deployment.deploymentNamespace);
-//       this.deploymentNamespace = this.$store.state.deployments.deployment.deploymentNamespace;
-//     }
-//     // 不为空，且当前 deploymentNamespace 有值，同时和之前的不一样，更新 deploymentNamespace
-//     else if (
-//       this.$store.state.deployments.deployment.deploymentNamespace != "" &&
-//       sessionStorage.getItem("deploymentNamespace") != this.$store.state.deployments.deployment.deploymentNamespace
-//     ) {
-//       sessionStorage.setItem("deploymentNamespace", this.$store.state.deployments.deployment.deploymentNamespace);
-//       this.deploymentNamespace = this.$store.state.deployments.deployment.deploymentNamespace;
-//     }
+    // 获取数据
+    let ing = {
+      name: sessionStorage.getItem("ingressName"),
+      namespace: sessionStorage.getItem("ingressNamespace"),
+    };
+    this.$store
+      .dispatch("ingresses/getIngressesByNameAndNamespace", ing)
+      .then((res) => {
+        console.log(res);
+        this.ingress = res.data;
+      })
+      .catch((error) => {
+        throw error;
+      });
+  },
 
-    
-//     // 获取数据
-//     let ing = {
-//       name: sessionStorage.getItem("deploymentName"),
-//       namespace: sessionStorage.getItem("deploymentNamespace"),
-//     };
-//     this.$store
-//       .dispatch("deployments/getDeploymentsByNameAndNamespace", ing)
-//       .then((res) => {
-//         console.log(res);
-//         this.deployment = res.data;
-//       })
-//       .catch((error) => {
-//         throw error;
-//       });
-//   },
+  computed: {
+    // 元数据下的标签
+    labels() {
+      let labelArr = [];
+      for (let pro in this.ingress.metadata.labels) {
+        labelArr.push({
+          key: pro,
+          value: this.ingress.metadata.labels[pro],
+        });
+      }
+      return labelArr;
+    },
 
-//   computed: {
-//     // 元数据下的标签
-//     labels() {
-//       let labelArr = [];
-//       for (let pro in this.deployment.metadata.labels) {
-//         labelArr.push({
-//           key: pro,
-//           value: this.deployment.metadata.labels[pro],
-//         });
-//       }
-//       return labelArr;
-//     },
+    // 元数据下的注释
+    annotations() {
+      let annoArr = [];
+      for (let anno in this.ingress.metadata.annotations) {
+        annoArr.push({
+          key: anno,
+          value: this.ingress.metadata.annotations[anno],
+        });
+      }
+      return annoArr;
+    },
+  },
+  methods: {
+    // 显示注解的详情
+    showAnnoDetails(key) {
+      this.annoDetailsVisible = true;
+      // console.log(key);
+      this.annoKey = key;
+      this.annoDetails = this.beautify(this.ingress.metadata.annotations[key], {
+        indent_size: 2,
+        space_in_empty_paren: true,
+      });
+    },
+  },
+  computed: {
+    // 元数据下的标签
+    labels() {
+      let labelArr = [];
+      for (let pro in this.ingress.metadata.labels) {
+        labelArr.push({
+          key: pro,
+          value: this.ingress.metadata.labels[pro],
+        });
+      }
+      return labelArr;
+    },
 
-//     // 元数据下的注释
-//     annotations() {
-//       let annoArr = [];
-//       for (let anno in this.deployment.metadata.annotations) {
-//         annoArr.push({
-//           key: anno,
-//           value: this.deployment.metadata.annotations[anno],
-//         });
-//       }
-//       return annoArr;
-//     },
-//   }
-  
-// };
+    // 元数据下的注释
+    annotations() {
+      let annoArr = [];
+      for (let anno in this.ingress.metadata.annotations) {
+        annoArr.push({
+          key: anno,
+          value: this.ingress.metadata.annotations[anno],
+        });
+      }
+      return annoArr;
+    },
+  },
+};
 </script>
 <style lang="scss" scoped>
 #cpu-usage,
@@ -189,5 +309,9 @@
     font-style: normal;
     color: #3f414d;
   }
+}
+
+#anno_hover:hover {
+  cursor: pointer;
 }
 </style>

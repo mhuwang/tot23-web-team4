@@ -6,7 +6,7 @@
  * @LastEditors: Leo
  * @LastEditTime: 2021-04-12 20:49:57
  */
-import { changeResourceByYaml, changeServicesByYaml } from '@/api/common'
+import { changeResourceByYaml, changeServicesByYaml, changeIngressesByYaml } from '@/api/common'
 import { getToken } from '@/utils/auth'
 
 const getDefaultState = () => {
@@ -25,7 +25,7 @@ const actions = {
   // 根据 yaml 文件编辑资源
   changeResourceByYaml({ commit }, yaml) {
     return new Promise((resolve, reject) => {
-        changeResourceByYaml(yaml).then(response => {
+      changeResourceByYaml(yaml).then(response => {
         const { data } = response
         if (!data) {
           return reject('修改失败')
@@ -40,6 +40,20 @@ const actions = {
   changeServicesByYaml({ commit }, yaml) {
     return new Promise((resolve, reject) => {
       changeServicesByYaml(yaml).then(response => {
+        const { data } = response
+        if (!data) {
+          return reject('修改失败')
+        }
+        resolve(data)
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
+  // 根据 yaml 文件编辑 ingress
+  changeIngressesByYaml({ commit }, yaml) {
+    return new Promise((resolve, reject) => {
+      changeIngressesByYaml(yaml).then(response => {
         const { data } = response
         if (!data) {
           return reject('修改失败')

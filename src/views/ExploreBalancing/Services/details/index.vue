@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-30 19:58:14
  * @LastEditors: Leo
- * @LastEditTime: 2021-04-11 19:43:51
+ * @LastEditTime: 2021-04-13 09:07:08
 -->
 
 <template>
@@ -54,10 +54,13 @@
           <li v-for="(anno, index) in this.annotations" :key="index">
             <el-tag
               class="lebel-tag"
+              id="anno_hover"
               effect="dark"
               size="medium"
               color="#bedcfa"
-              >{{ anno.key }}: {{ anno.value }}</el-tag
+              style="color: #409eff"
+              @click="showAnnoDetails(anno.key)"
+              >{{ anno.key }}</el-tag
             >
           </li>
         </div>
@@ -252,7 +255,19 @@
         </el-table-column>
       </el-table>
     </el-card>
-    <br />
+
+    <!-- 注释的详情框 -->
+    <el-dialog
+      :title="annoKey"
+      :visible.sync="annoDetailsVisible"
+      width="50%"
+      :modal="false"
+    >
+      <highlightjs javascript :code="annoDetails" />
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="annoDetailsVisible = false">关闭</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -268,6 +283,10 @@ export default {
       event: [],
       pods: [],
       podsAmount: 0,
+      
+      annoKey: "",
+      annoDetails: "",
+      annoDetailsVisible: false, // 注释的详情框
     };
   },
 
@@ -343,6 +362,18 @@ export default {
       });
   },
 
+  methods: {
+    // 显示注解的详情
+    showAnnoDetails(key) {
+      this.annoDetailsVisible = true;
+      console.log(key);
+      this.annoKey = key;
+      this.annoDetails = this.beautify(
+        this.service.metadata.annotations[key],
+        { indent_size: 2, space_in_empty_paren: true }
+      );
+    },
+  },
   computed: {
     // 元数据下的标签
     labels() {
@@ -468,5 +499,9 @@ export default {
     font-style: normal;
     color: #3f414d;
   }
+}
+
+#anno_hover:hover {
+  cursor: pointer;
 }
 </style>
