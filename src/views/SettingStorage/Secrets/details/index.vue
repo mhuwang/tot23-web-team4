@@ -54,9 +54,9 @@
             >
           </li>
         </div>
-        <div class="metadata-item">
+        <div v-if="annotations.length > 0" class="metadata-item">
           <p>注释</p>
-          <li v-for="anno in this.annotations" :key='anno'>
+          <li v-for="(anno, index) in this.annotations" :key='index'>
             <el-tag
               class="lebel-tag"
               effect="dark"
@@ -112,8 +112,6 @@
         <highlightjs v-show="caShow3" style="width:100%" language='plaintext' :code="secret.data['token']" />
       </List>
     </el-card>
-    <br /><br />
-
   </div>
 </template>
 
@@ -143,7 +141,17 @@ export default {
     },
     showCa3: function(){
       this.caShow3 = !this.caShow3;
-    }
+    },
+    // 显示注解的详情
+    showAnnoDetails(key) {
+      this.annoDetailsVisible = true;
+      // console.log(key);
+      this.annoKey = key;
+      this.annoDetails = this.beautify(this.secret.metadata.annotations[key], {
+        indent_size: 2,
+        space_in_empty_paren: true,
+      });
+    },
   },
 
   // 生命周期方法
@@ -198,18 +206,7 @@ export default {
         throw error;
       });
   },
-  methods: {
-    // 显示注解的详情
-    showAnnoDetails(key) {
-      this.annoDetailsVisible = true;
-      // console.log(key);
-      this.annoKey = key;
-      this.annoDetails = this.beautify(this.secret.metadata.annotations[key], {
-        indent_size: 2,
-        space_in_empty_paren: true,
-      });
-    },
-  },
+
   computed: {
     // 元数据下的标签
     labels() {

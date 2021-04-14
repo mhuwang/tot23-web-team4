@@ -1,3 +1,11 @@
+<!--
+ * @Description: your project
+ * @version: 1.0
+ * @Author: Anna667
+ * @Date: 
+ * @LastEditors: Anna667
+ * @LastEditTime: 
+-->
 <template>
   <div>
     <el-divider content-position="left"
@@ -48,7 +56,7 @@
         </div>
         <div class="metadata-item">
           <p>注释</p>
-          <li v-for="anno in this.annotations" :key='anno'>
+          <li v-for="(anno, index) in this.annotations" :key='index'>
             <el-tag
               class="lebel-tag"
               effect="dark"
@@ -182,8 +190,9 @@ export default {
         indent_size: 2,
         space_in_empty_paren: true,
       });
-    },
+    }
   },
+
   computed: {
     // 元数据下的标签
     labels() {
@@ -209,7 +218,6 @@ export default {
       return annoArr;
     },
   }
-
   
 };
 </script>
