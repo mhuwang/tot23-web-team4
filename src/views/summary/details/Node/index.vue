@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-25 22:13:37
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-04-04 17:04:53
+ * @LastEditTime: 2021-04-14 21:49:29
 -->
 <template>
   <div>
@@ -152,14 +152,27 @@
                     :size="150"
                     :trail-width="trailWidth"
                     :stroke-width="strokeWidth"
-                    :percent="(podsAmount / node.status.allocatable.pods.amount * 100).toFixed(2)"
+                    :percent="
+                      (
+                        (podsAmount / node.status.allocatable.pods.amount) *
+                        100
+                      ).toFixed(2)
+                    "
                     stroke-linecap="square"
                     stroke-color="#b4aee8"
                   >
                     <div class="demo-Circle-custom">
-                      <h2>{{ (podsAmount / node.status.allocatable.pods.amount * 100).toFixed(2) }} % </h2>
+                      <h2>
+                        {{
+                          (
+                            (podsAmount / node.status.allocatable.pods.amount) *
+                            100
+                          ).toFixed(2)
+                        }}
+                        %
+                      </h2>
                       <span> Requests </span>
-                      <p>Pods: {{podsAmount}}</p>
+                      <p>Pods: {{ podsAmount }}</p>
                     </div>
                   </i-circle>
                 </ListItem>
@@ -326,49 +339,13 @@
       <div slot="header" class="clearfix">
         <span>Pod</span>
       </div>
-      <!-- <el-row :gutter="20">
-        <el-col :span="5">
-          搜索区域
-          <el-select
-            v-model="value"
-            filterable
-            clearable
-            size="large"
-            style="width: 100%"
-            @change="selectChange"
-            @clear="clearSelect"
-            @focus="initNamespace"
-            placeholder="请选择命名空间"
-          >
-            <el-option
-              v-for="item in namespaces"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            >
-            </el-option>
-          </el-select>
-          搜索按钮
-            <el-button
-              slot="append"
-              size="large"
-              icon="el-icon-plus"
-              @click="getPods"
-            ></el-button> 
-        </el-col>
-        添加按钮
-        <el-col :span="4">
-          <el-button
-            type="primary"
-            size="large"
-            icon="el-icon-plus"
-            @click="addDialogVisible = true"
-          >
-            添加 Pod
-          </el-button>
-        </el-col>
-      </el-row> -->
-      <el-table :data="pods" style="width: 100%" stripe v-loading="loading" element-loading-text="获取数据中...">
+      <el-table
+        :data="pods"
+        style="width: 100%"
+        stripe
+        v-loading="loading"
+        element-loading-text="获取数据中..."
+      >
         <el-table-column width="40">
           <template slot-scope="scope">
             <svg-icon
@@ -402,18 +379,15 @@
           <template slot-scope="scope">
             <!-- {{ scope.row.cpuUsage }} -->
             <div v-if="scope.row.cpuUsage != -1">
-                
-                <div class="usage-cpu-tag-zero" v-if="scope.row.cpuUsage == 0">
-                  0 m
-                </div>
-                <div class="usage-cpu-tag-success" v-else>
-                  {{(scope.row.cpuUsage / 1000 / 1000).toFixed(2)}} m
-                </div>
+              <div class="usage-cpu-tag-zero" v-if="scope.row.cpuUsage == 0">
+                0 m
+              </div>
+              <div class="usage-cpu-tag-success" v-else>
+                {{ (scope.row.cpuUsage / 1000 / 1000).toFixed(2) }} m
+              </div>
             </div>
-                        
-            <div class="usage-cpu-tag-failed" v-else>
-              --
-            </div>
+
+            <div class="usage-cpu-tag-failed" v-else>--</div>
           </template>
         </el-table-column>
         <el-table-column align="center" label="内存利用率" width="140">
@@ -652,6 +626,7 @@ export default {
         throw error;
       });
   },
+
   created: function () {
     window.addEventListener("unload", this.saveNodeInfo);
     // console.log(sessionStorage.getItem("nodeName"));
@@ -667,12 +642,21 @@ export default {
       alert("RELOAD", this.nodeName);
       sessionStorage.setItem("nodeName");
     },
+    
+    // 前往 pod 详情页
+    goToPodsDetails: function (name, namespace) {
+      console.log("aaa", name, namespace);
+      let podDetails = {
+        podName: name,
+        podNamespace: namespace,
+      };
+      this.$store.dispatch("pods/toDetails", podDetails);
+    },
   },
 };
 </script>
 
 <style lang="scss" scoped>
-
 .usage-cpu-tag-success {
   color: white;
   text-align: center;
@@ -685,13 +669,15 @@ export default {
   background-color: #28527a;
   border-radius: 10px;
 }
-.usage-cpu-tag-zero, .usage-memory-tag-zero {
+.usage-cpu-tag-zero,
+.usage-memory-tag-zero {
   color: white;
   text-align: center;
   background-color: #aaa;
   border-radius: 10px;
 }
-.usage-cpu-tag-failed, .usage-memory-tag-failed {
+.usage-cpu-tag-failed,
+.usage-memory-tag-failed {
   color: #333;
   text-align: center;
   border-radius: 10px;

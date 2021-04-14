@@ -1,10 +1,10 @@
 /*
- * @Descripttion: your project
+ * @Description: your project
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-03-19 16:14:56
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-04-07 20:23:32
+ * @LastEditTime: 2021-04-14 21:21:12
  */
 import Vue from 'vue'
 import Vuex from 'vuex'

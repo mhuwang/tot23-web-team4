@@ -3,8 +3,8 @@
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
- * @LastEditors: Leo
- * @LastEditTime: 2021-04-14 21:53:31
+ * @LastEditors: Rex Joush
+ * @LastEditTime: 2021-04-14 21:55:56
 -->
 <template>
   <div>
@@ -455,7 +455,6 @@ export default {
 
     // 提交修改
     commitYamlChange() {
-      console.log("提交修改的 yaml", this.codeYaml);
       this.$confirm("确认修改？", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
