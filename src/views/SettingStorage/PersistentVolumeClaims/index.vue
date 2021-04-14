@@ -47,6 +47,8 @@
         :data="persistentVolumeClaims" 
         style="width: 100%" 
         stripe
+        v-loading="loading"
+        element-loading-text="获取数据中..."
         >
         <!-- <el-table-column width="40">
           <template slot-scope="scope">
@@ -256,6 +258,7 @@ export default {
         .then((res) => {
           console.log(res.data);
           this.persistentVolumeClaims = res.data;
+          this.loading = false;
         })
         .catch((error) => {
           console.log(error);

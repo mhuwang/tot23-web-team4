@@ -29,7 +29,7 @@ export function getPVCByNameAndNamespace(per) {
   })
 }
 export function getPVCYamlByNameAndNamespace(per) {
-  console.log("apis", per);
+  //console.log("apis", per);
   return request({
     url: baseUrl + '/persistentVolumeClaims/getPVCYamlByNameAndNamespace',
     method: 'get',

@@ -154,7 +154,7 @@
             @input="onYamlCmCodeChange"
           />
         </el-tab-pane>
-        <el-tab-pane label="JSON" name="second">
+        <!-- <el-tab-pane label="JSON" name="second">
           <codemirror
             ref="cmYamlEditor"
             :value="codeJSON"
@@ -162,7 +162,7 @@
             @ready="onJSONCmReady"
             @input="onJSONCmCodeChange"
           />
-        </el-tab-pane>
+        </el-tab-pane> -->
       </el-tabs>
 
       <!-- <textarea style="width:100%" name="describe" id="pod" cols="30" rows="10">
