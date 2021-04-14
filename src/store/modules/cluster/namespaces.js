@@ -3,10 +3,10 @@
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-03-26 13:23:01
- * @LastEditors: Rex Joush
- * @LastEditTime: 2021-04-11 17:22:04
+ * @LastEditors: Leo
+ * @LastEditTime: 2021-04-14 20:51:26
  */
-import { getAllNamespaces, getAllNamespaceName, getNamespaceDetails } from '@/api/cluster/namespaces'
+import { getAllNamespaces, getAllNamespaceName, getNamespaceDetails, getNamespaceYamlByName } from '@/api/cluster/namespaces'
 import { getToken } from '@/utils/auth'
 
 const state = {
@@ -74,6 +74,21 @@ const actions = {
       })
     })
   },
+
+    //通过名字获取命名空间对应的 yaml文件
+    getNamespaceYamlByName({ commit }, namespace) {
+      return new Promise((resolve, reject) => {
+        getNamespaceYamlByName(namespace).then(response => {
+          const { data } = response
+          if (!data) {
+            return reject('获取失败')
+          }
+          resolve(data)
+        }).catch(error => {
+          reject(error)
+        })
+      })
+    },
   
 
   // 点击名字进入详情页

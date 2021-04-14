@@ -4,9 +4,9 @@
  * @Author: Rex Joush
  * @Date: 2021-04-07 20:07:51
  * @LastEditors: Leo
- * @LastEditTime: 2021-04-12 20:49:57
+ * @LastEditTime: 2021-04-14 20:55:31
  */
-import { changeResourceByYaml, changeServicesByYaml, changeIngressesByYaml } from '@/api/common'
+import { changeResourceByYaml } from '@/api/common'
 import { getToken } from '@/utils/auth'
 
 const getDefaultState = () => {
@@ -36,34 +36,34 @@ const actions = {
       })
     })
   },
-  // 根据 yaml 文件编辑 service
-  changeServicesByYaml({ commit }, yaml) {
-    return new Promise((resolve, reject) => {
-      changeServicesByYaml(yaml).then(response => {
-        const { data } = response
-        if (!data) {
-          return reject('修改失败')
-        }
-        resolve(data)
-      }).catch(error => {
-        reject(error)
-      })
-    })
-  },
-  // 根据 yaml 文件编辑 ingress
-  changeIngressesByYaml({ commit }, yaml) {
-    return new Promise((resolve, reject) => {
-      changeIngressesByYaml(yaml).then(response => {
-        const { data } = response
-        if (!data) {
-          return reject('修改失败')
-        }
-        resolve(data)
-      }).catch(error => {
-        reject(error)
-      })
-    })
-  },
+  // // 根据 yaml 文件编辑 service
+  // changeServicesByYaml({ commit }, yaml) {
+  //   return new Promise((resolve, reject) => {
+  //     changeServicesByYaml(yaml).then(response => {
+  //       const { data } = response
+  //       if (!data) {
+  //         return reject('修改失败')
+  //       }
+  //       resolve(data)
+  //     }).catch(error => {
+  //       reject(error)
+  //     })
+  //   })
+  // },
+  // // 根据 yaml 文件编辑 ingress
+  // changeIngressesByYaml({ commit }, yaml) {
+  //   return new Promise((resolve, reject) => {
+  //     changeIngressesByYaml(yaml).then(response => {
+  //       const { data } = response
+  //       if (!data) {
+  //         return reject('修改失败')
+  //       }
+  //       resolve(data)
+  //     }).catch(error => {
+  //       reject(error)
+  //     })
+  //   })
+  // },
 }
 
 export default {

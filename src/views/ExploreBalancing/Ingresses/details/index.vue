@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-30 19:58:14
  * @LastEditors: Leo
- * @LastEditTime: 2021-04-13 14:50:52
+ * @LastEditTime: 2021-04-14 10:05:21
 -->
 
 <template>
@@ -195,31 +195,31 @@ export default {
       });
     },
   },
-  computed: {
-    // 元数据下的标签
-    labels() {
-      let labelArr = [];
-      for (let pro in this.ingress.metadata.labels) {
-        labelArr.push({
-          key: pro,
-          value: this.ingress.metadata.labels[pro],
-        });
-      }
-      return labelArr;
-    },
+  // computed: {
+  //   // 元数据下的标签
+  //   labels() {
+  //     let labelArr = [];
+  //     for (let pro in this.ingress.metadata.labels) {
+  //       labelArr.push({
+  //         key: pro,
+  //         value: this.ingress.metadata.labels[pro],
+  //       });
+  //     }
+  //     return labelArr;
+  //   },
 
-    // 元数据下的注释
-    annotations() {
-      let annoArr = [];
-      for (let anno in this.ingress.metadata.annotations) {
-        annoArr.push({
-          key: anno,
-          value: this.ingress.metadata.annotations[anno],
-        });
-      }
-      return annoArr;
-    },
-  },
+  //   // 元数据下的注释
+  //   annotations() {
+  //     let annoArr = [];
+  //     for (let anno in this.ingress.metadata.annotations) {
+  //       annoArr.push({
+  //         key: anno,
+  //         value: this.ingress.metadata.annotations[anno],
+  //       });
+  //     }
+  //     return annoArr;
+  //   },
+  // },
 };
 </script>
 <style lang="scss" scoped>

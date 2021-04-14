@@ -3,8 +3,8 @@
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
- * @LastEditors: Rex Joush
- * @LastEditTime: 2021-04-13 20:02:05
+ * @LastEditors: Leo
+ * @LastEditTime: 2021-04-14 21:53:31
 -->
 <template>
   <div>
@@ -57,7 +57,7 @@
               color="#fc8621"
               :text-inside="true"
               :stroke-width="20"
-              :percentage="scope.row.cpuUsage.toFixed(2)*1"
+              :percentage="scope.row.cpuUsage.toFixed(2) * 1"
             ></el-progress>
           </template>
         </el-table-column>
@@ -68,7 +68,7 @@
               color="#c24914"
               :text-inside="true"
               :stroke-width="20"
-              :percentage="scope.row.memoryUsage.toFixed(2)*1"
+              :percentage="scope.row.memoryUsage.toFixed(2) * 1"
             ></el-progress>
           </template>
         </el-table-column>
@@ -78,9 +78,7 @@
           label="创建时间"
         >
           <template slot-scope="scope">
-            <span>{{
-              scope.row.time.replaceAll(/[TZ]/g, " ")
-            }}</span>
+            <span>{{ scope.row.time.replaceAll(/[TZ]/g, " ") }}</span>
           </template>
         </el-table-column>
         <el-table-column label="是否可调度" width="100">
@@ -173,6 +171,7 @@
             <el-button
               type="primary"
               icon="el-icon-edit"
+              style="margin-bottom: 5px"
               size="small"
               @click="showNamespaceEditDialog(scope.row.metadata.name)"
               >编辑</el-button
@@ -182,7 +181,7 @@
               type="danger"
               icon="el-icon-delete"
               size="small"
-              @click="delNamespace(scope.row)"
+              @click="delNamespace(scope.row.metadata.name)"
               >删除</el-button
             >
           </template>
@@ -255,7 +254,7 @@
       </el-table>
     </el-card>
 
-    <!-- 编辑框 -->
+    <!-- 编辑框 Node -->
     <el-dialog
       title="编辑 Node"
       :visible.sync="editDialogVisible"
@@ -277,6 +276,40 @@
       </el-tabs>
 
       <!-- <textarea style="width:100%" name="describe" id="pod" cols="30" rows="10">
+        {{code}}
+      </textarea> -->
+      <span slot="footer" class="dialog-footer">
+        <div class="foot-info">
+          <i class="el-icon-warning"></i> 此操作相当于 kubectl apply -f
+          &ltspec.yaml>
+        </div>
+        <el-button @click="editDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="commitYamlChange">确 定</el-button>
+      </span>
+    </el-dialog>
+
+    <!-- 编辑框 Namespace-->
+    <el-dialog
+      title="编辑 namespace"
+      :visible.sync="editDialogVisible"
+      width="70%"
+      @closed="handleClose"
+      @close="editDialogVisible = false"
+      :append-to-body="true"
+      :lock-scroll="true"
+    >
+      <el-tabs value="first" type="card">
+        <el-tab-pane label="YAML" name="first">
+          <codemirror
+            :value="codeYaml"
+            :options="cmOptionsYaml"
+            @ready="onYamlCmReady"
+            @input="onYamlCmCodeChange"
+          />
+        </el-tab-pane>
+      </el-tabs>
+
+      <!-- <textarea style="width:100%" name="describe" id="ingress" cols="30" rows="10">
         {{code}}
       </textarea> -->
       <span slot="footer" class="dialog-footer">
@@ -390,11 +423,10 @@ export default {
         });
     },
 
-
     /* 编辑部分 */
-    
+
     // 打开 node 编辑框
-    showNodeEditDialog(name){
+    showNodeEditDialog(name) {
       this.$store
         .dispatch("nodes/getNodeYamlByName", name)
         .then((res) => {
@@ -405,7 +437,21 @@ export default {
         .catch((error) => {
           throw error;
         });
-    },    
+    },
+
+    // 打开 namespace 编辑框
+    showNamespaceEditDialog(name) {
+      this.$store
+        .dispatch("namespaces/getNamespaceYamlByName", name)
+        .then((res) => {
+          console.log(res);
+          this.codeYaml = res.data;
+          this.editDialogVisible = true; // 打开编辑对话框
+        })
+        .catch((error) => {
+          throw error;
+        });
+    },
 
     // 提交修改
     commitYamlChange() {
@@ -417,7 +463,7 @@ export default {
       })
         .then(() => {
           this.$store
-            .dispatch("common/changeServicesByYaml", this.codeYaml)
+            .dispatch("common/changeResourceByYaml", this.codeYaml)
             .then((res) => {
               switch (res.code) {
                 case 1200:
@@ -456,7 +502,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
 // 底部命令提示信息
 .foot-info {
   position: absolute;
