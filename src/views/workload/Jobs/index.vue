@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: zqy
- * @LastEditTime: 2021-04-11 19:45:55
+ * @LastEditTime: 2021-04-14 12:20:51
 -->
 <!--<template>
   <h1>Jobs</h1>
@@ -64,7 +64,7 @@
           <!-- <svg-icon :icon-class="scope.row.status.conditions[3].status == 'True'? 'load-success': scope.row.status.conditions[3].status == 'Unknown'?'load-doubt':'load-failed'"/> -->
           <!-- </template> -->
         </el-table-column>
-        <el-table-column prop="metadata.name" label="名字">
+        <el-table-column prop="metadata.name" label="名称">
           <template slot-scope="scope">
             <router-link
               :to="{
@@ -206,11 +206,17 @@
 </template>
 
 <script>
+import "codemirror/mode/javascript/javascript.js";
+import "codemirror/mode/yaml/yaml.js";
+// import theme style
+import "codemirror/theme/panda-syntax.css";
+
 export default {
   name: "Jobs",
 
   data() {
     return {
+      namespaces: [],
       jobs: [],
       loading: true, // 获取数据中
       editDialogVisible: false, // 编辑详情框
@@ -259,9 +265,9 @@ export default {
 
   methods: {
     // 获取所有 Jobs
-    getJobs() {
+    getJobs(namespace = "") {
       this.$store
-        .dispatch("jobs/getAllJobs")
+        .dispatch("jobs/getAllJobs", namespace)
         .then((res) => {
           console.log(res.data);
           this.jobs = res.data;
@@ -269,6 +275,25 @@ export default {
         .catch((error) => {
           console.log(error);
         });
+    },
+
+    /* 按命名空间查询 */
+    // 当选择框聚焦时获取命名空间
+    initNamespace() {
+      if (this.namespaces.length == 0) {
+        this.namespaces = this.$store.state.namespaces.namespaces;
+      }
+    },
+    // 选择框变化事件
+    selectChange(value) {
+      // console.log("selectChange", value, "++++\n\n")
+      this.loading = true;
+      this.getJobs(value);
+    },
+    // 选择框清空事件
+    clearSelect() {
+      this.loading = true;
+      this.getJobs();
     },
 
     // Job中的镜像
@@ -288,11 +313,12 @@ export default {
         name: name,
         namespace: namespace,
       };
-
+      console.log("获取值之前的yaml：\n", this.codeYaml, "\n")
       // 获取 yaml 格式
       this.$store
         .dispatch("jobs/getJobYamlByNameAndNamespace", jobDetails)
         .then((res) => {
+          console.log("showJobEditDialog\n")
           this.codeYaml = res.data;
           this.editDialogVisible = true; // 打开编辑对话框
         })
@@ -316,6 +342,18 @@ export default {
         });
 
       //this.editForm = res; // 查询结果写入表单
+    },
+
+    // 编辑器方法
+    /* yaml */
+    onYamlCmReady(cm) {
+      setTimeout(() => {
+        cm.refresh();
+      }, 50);
+    },
+    onYamlCmCodeChange(newCode) {
+      console.log("onYamlCmCodeChange\n")
+      this.codeYaml = newCode;
     },
 
 
@@ -351,6 +389,51 @@ export default {
       }).catch(() => {
 
       });
+    },
+
+    //点击确认按钮触发此修改 Job 事件
+    commitYamlChange() {
+      this.$confirm("确认修改？", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "info",
+      })
+        .then(() => {
+          this.$store
+            .dispatch("common/changeResourceByYaml", this.codeYaml)
+            .then((res) => {
+              switch (res.code) {
+                case 1200:
+                  this.$message.success("修改成功");
+                  break;
+                case 1201:
+                  this.$message.error("修改失败，请查看 yaml 文件格式");
+                  break;
+                case 1202:
+                  this.$message.error("创建失败，请查看云平台相关错误信息");
+                  break;
+                default:
+                  this.$message.info("提交成功");
+                  break;
+              }
+              this.editDialogVisible = false;
+            })
+            .catch((error) => {
+              throw error;
+            });
+        })
+        .catch(() => {
+          console.log("cancel");
+        });
+    },
+
+    // 关闭修改框
+    handleClose: function () {
+      console.log("handleClose\n")
+      this.addYaml = "";
+      setTimeout(() => {
+        this.codemorror.refresh();
+      }, 1);
     },
   },
 };

@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-22 17:20:47
  * @LastEditors: zqy
- * @LastEditTime: 2021-04-11 16:50:34
+ * @LastEditTime: 2021-04-14 21:25:41
  */
 import request from '@/utils/request'
 let baseUrl = "http://localhost:8081"
@@ -56,5 +56,11 @@ export function delPodByNameAndNamespace(data) {
       name: data.podName,
       namespace: data.podNamespace,
     }
+  })
+}
+export function getCompletePodsList(data) {
+  return request({
+    url: baseUrl + '/pods/getCompletePodsList',
+    method: 'get'
   })
 }

@@ -3,8 +3,8 @@
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
- * @LastEditors: Rex Joush
- * @LastEditTime: 2021-04-12 21:44:36
+ * @LastEditors: zqy
+ * @LastEditTime: 2021-04-14 19:25:03
 -->
 <template>
   <div>
@@ -274,6 +274,7 @@ export default {
 
   mounted() {
     this.getPods();
+    this.getCompletePodsList();
   },
 
   computed: {},
@@ -321,6 +322,17 @@ export default {
           console.log(res);
           this.pods = res.data;
           this.loading = false;
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+
+    getCompletePodsList() {
+      this.$store
+        .dispatch("pods/getCompletePodsList")
+        .then((res) => {
+          console.log(res);
         })
         .catch((error) => {
           console.log(error);

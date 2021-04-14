@@ -11,7 +11,8 @@
     <el-divider content-position="left">
       <span style="font-weight: bold; font-size: 20px">
         {{ cronJob.metadata.name }}
-      </span></el-divider>
+      </span></el-divider
+    >
     <!-- 元数据 -->
     <el-card class="box-card">
       <div slot="header" class="clearfix">
@@ -25,27 +26,24 @@
         <div class="metadata-item">
           <p>命名空间</p>
           <span>{{ cronJob.metadata.namespace }}</span>
-        </div>  
+        </div>
         <div class="metadata-item">
           <p>创建时间</p>
           <span>{{
             cronJob.metadata.creationTimestamp.replaceAll(/[TZ]/g, " ")
           }}</span>
-        </div><div class="metadata-item">
-          <p>持续时间</p>
-          <span>{{duration}}</span>
         </div>
         <div class="metadata-item">
           <p>UID</p>
           <span>{{ cronJob.metadata.uid }}</span>
         </div>
       </List>
-      
+
       <!-- 元数据 标签 注释部分 -->
-      <!-- <List item-layout="horizontal" :split="false">
-        <div class="metadata-item">
-          <p>标签</p> -->
-          <!-- <li v-for="label in this.labels" :key="label">
+      <List item-layout="horizontal" :split="false">
+        <div :labels="this.labels" v-if="labels.length > 0" class="metadata-item">
+          <p>标签</p>
+          <li v-for="label in labels" :key="label">
             <el-tag
               class="lebel-tag"
               effect="dark"
@@ -53,23 +51,35 @@
               color="#bedcfa"
               >{{ label.key }}: {{ label.value }}</el-tag
             >
-          </li> -->
-        <!-- </div> -->
-        <!-- <div class="metadata-item">
+          </li>
+        </div>
+        <br />
+        <div :annotation="this.annotation" v-if="annotations.length > 0" class="metadata-item">
           <p>注释</p>
-          <li v-for="anno in this.annotations" :key="anno">
+          <li v-for="(anno, index) in annotations" :key="index">
+            <el-tag
+              class="lebel-tag"
+              id="anno_hover"
+              effect="dark"
+              size="medium"
+              color="#bedcfa"
+              style="color: #409eff"
+              v-if="anno.value.length > 50"
+              @click="showAnnoDetails(anno.key)"
+            >
+              {{ anno.key }}
+            </el-tag>
             <el-tag
               class="lebel-tag"
               effect="dark"
               size="medium"
               color="#bedcfa"
+              v-else
               >{{ anno.key }}: {{ anno.value }}</el-tag
             >
-          </li> -->
-        <!-- </div> -->
-      <!-- </List> -->
-    
-    
+          </li>
+        </div>
+      </List>
     </el-card>
     <br /><br />
 
@@ -86,15 +96,16 @@
         <div class="metadata-item">
           <p>运行中的Jobs</p>
           <span>{{ cronJob.status.active.length }}</span>
-        </div>  
+        </div>
         <div class="metadata-item">
           <p>暂停</p>
-          <span>{{
-            cronJob.spec.suspend
-          }}</span>
-        </div><div class="metadata-item">
+          <span>{{ cronJob.spec.suspend }}</span>
+        </div>
+        <div class="metadata-item">
           <p>上次调度</p>
-          <span>{{cronJob.status.lastScheduleTime.replaceAll(/[TZ]/g, " ")}}</span>
+          <span>{{
+            cronJob.status.lastScheduleTime.replaceAll(/[TZ]/g, " ")
+          }}</span>
         </div>
         <div class="metadata-item">
           <p>并发策略</p>
@@ -109,9 +120,7 @@
       <div slot="header" class="clearfix">
         <span style="font-size: 16px">运行中的Jobs</span>
       </div>
-      <List item-layout="horizontal" :split="false">
-        
-      </List>
+      <List item-layout="horizontal" :split="false"> </List>
     </el-card>
     <br /><br />
 
@@ -120,22 +129,33 @@
       <div slot="header" class="clearfix">
         <span style="font-size: 16px">非工作的Jobs</span>
       </div>
-      <List item-layout="horizontal" :split="false">
-        
-      </List>
+      <List item-layout="horizontal" :split="false"> </List>
     </el-card>
     <br /><br />
-    
+
     <!-- 活动 -->
     <el-card class="box-card">
       <div slot="header" class="clearfix">
         <span style="font-size: 16px">活动</span>
       </div>
-      <List item-layout="horizontal" :split="false">
-        
-      </List>
+      <List item-layout="horizontal" :split="false"> </List>
     </el-card>
     <br /><br />
+
+    <!-- anno 详情 -->
+    <el-dialog
+      :title="annoKey"
+      :visible.sync="annoDialogVisible"
+      width="50%"
+      @close="handleClose"
+      :modal="false"
+      :show-close="true"
+    >
+      <highlightjs javascript :code="annoDetails" />
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="annoDialogVisible=false">关闭</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -147,6 +167,9 @@ export default {
       cronJob: {},
       cronJobName: "",
       cronJobNamespace: "",
+      annoKey: "",
+      annoDialogVisible: false,
+      annoDetails: "",
     };
   },
   // 生命周期方法
@@ -201,11 +224,8 @@ export default {
   },
 
   computed: {
-
     // 元数据中持续的时间
-    duration() {
-      return "9天*"
-    },
+    duration() {},
 
     // 元数据下的标签
     labels() {
@@ -229,6 +249,23 @@ export default {
         });
       }
       return annoArr;
+    },
+  },
+
+  methods: {
+    showAnnoDetails(key) {
+      this.annoDialogVisible = true;
+      console.log(this.cronJob.metadata);
+      this.annoKey = key;
+      this.annoDetails = this.beautify(this.cronJob.metadata.annotations[key], {
+        indent_size: 2,
+        space_in_empty_paren: true,
+      });
+    },
+    handleClose() {
+      console.log(this.annoKey, "inhandleClose");
+      this.annoKey = "";
+      this.annoDialogVisible = false;
     },
   },
 };
@@ -321,5 +358,8 @@ export default {
     font-style: normal;
     color: #3f414d;
   }
+}
+#anno_hover:hover {
+  cursor: pointer;
 }
 </style>

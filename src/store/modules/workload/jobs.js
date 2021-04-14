@@ -5,9 +5,9 @@
  * @Author: zqy
  * @Date: 2021.03.29 16:25
  * @LastEditors: zqy
- * @LastEditTime: 2021-04-11 19:32:58
+ * @LastEditTime: 2021-04-14 21:24:41
  */
-import { getAllJobs, getJobByNameAndNamespace, deleteJobByNameAndNamespace, getJobYamlByNameAndNamespace } from '@/api/workload/jobs'
+import { getAllJobs, getJobByNameAndNamespace, deleteJobByNameAndNamespace, getJobPodsByNameAndNamespace, getJobYamlByNameAndNamespace } from '@/api/workload/jobs'
 import { getToken } from '@/utils/auth'
 
 const getDefaultState = () => {
@@ -26,9 +26,9 @@ const mutations = {
 
 const actions = {
   // getAllJobs
-  getAllJobs({ commit }) {
+  getAllJobs({ commit }, namesapce) {
     return new Promise((resolve, reject) => {
-      getAllJobs().then(response => {
+      getAllJobs(namesapce).then(response => {
         const { data } = response
         if (!data) {
           return reject('获取失败')
@@ -70,10 +70,25 @@ const actions = {
     })
   },
 
-  // 通过名字和命名空间获取 Yaml 格式的 Cronjob
+  // 通过名字和命名空间获取 Yaml 格式的 Job
   getJobYamlByNameAndNamespace({commit}, nameAndNamespace) {
     return new Promise((resolve, reject) => {
       getJobYamlByNameAndNamespace(nameAndNamespace).then(response => {
+        const {data} =response
+        if(!data){
+          return reject('获取失败')
+        }
+        resolve(data)
+      }).catch((error) => {
+        reject(error)
+      })
+    })
+  },
+
+  // 通过名字和命名空间获取 Job 和 Job 管理的 Pods
+  getJobPodsByNameAndNamespace({commit}, nameAndNamespace) {
+    return new Promise((resolve, reject) => {
+      getJobPodsByNameAndNamespace(nameAndNamespace).then(response => {
         const {data} =response
         if(!data){
           return reject('获取失败')

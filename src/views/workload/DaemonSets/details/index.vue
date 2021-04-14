@@ -3,16 +3,14 @@
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-03-30 20:30:24
- * @LastEditors: Rex Joush
- * @LastEditTime: 2021-03-30 20:30:38
+ * @LastEditors: zqy
+ * @LastEditTime: 2021-04-14 23:22:07
 -->
 <template>
-    <dev>
+  <dev>
     <el-divider content-position="left"
       ><span style="font-weight: bold; font-size: 20px">
-        {{
-        daemonSet.metadata.name
-      }}
+        {{ daemonSet.metadata.name }}
       </span></el-divider
     >
     <!-- 元数据 -->
@@ -26,10 +24,14 @@
           <span>{{ daemonSet.metadata.name }}</span>
         </div>
         <div class="metadata-item">
+          <p>命名空间</p>
+          <span>{{ daemonSet.metadata.namespace }}</span>
+        </div>
+        <div class="metadata-item">
           <p>创建时间</p>
           <span>{{
             daemonSet.metadata.creationTimestamp.replaceAll(/[TZ]/g, " ")
-          }}</span>
+          }}</span> 
         </div>
         <div class="metadata-item">
           <p>UID</p>
@@ -38,9 +40,13 @@
       </List>
       <!-- 元数据 标签 注释部分 -->
       <List item-layout="horizontal" :split="false">
-        <div class="metadata-item">
+        <div
+          :labels="this.labels"
+          v-if="labels.length > 0"
+          class="metadata-item"
+        >
           <p>标签</p>
-          <li v-for="label in this.labels" :key=label>
+          <li v-for="label in labels" :key="label">
             <el-tag
               class="lebel-tag"
               effect="dark"
@@ -50,14 +56,32 @@
             >
           </li>
         </div>
-        <div class="metadata-item">
+        <br/><br/>
+        <div
+          :annotations="this.annotations"
+          v-if="annotations.length > 0"
+          class="metadata-item"
+        >
           <p>注释</p>
-          <li v-for="anno in this.annotations" :key='anno'>
+          <li v-for="anno in annotations" :key="anno">
+            <el-tag
+              class="lebel-tag"
+              id="anno_hover"
+              effect="dark"
+              size="medium"
+              color="#bedcfa"
+              style="color: #409eff"
+              v-if="anno.value.length > 50"
+              @click="showAnnoDetails(anno.key)"
+            >
+              {{ anno.key }}
+            </el-tag>
             <el-tag
               class="lebel-tag"
               effect="dark"
               size="medium"
               color="#bedcfa"
+              v-else
               >{{ anno.key }}: {{ anno.value }}</el-tag
             >
           </li>
@@ -65,23 +89,72 @@
       </List>
     </el-card>
     <br /><br />
-    </dev>
+
+    <!-- 资源信息 -->
+    <el-card class="box-card">
+      <div slot="header" class="clearfix">
+        <span style="font-size: 16px">资源信息</span>
+      </div>
+      <div class="metadata-item">
+        <p>选择</p>
+        <li v-for="matchLabel in this.matchLabels" :key="matchLabel">
+            <el-tag
+              class="lebel-tag"
+              effect="dark"
+              size="medium"
+              color="#bedcfa"
+              >{{ matchLabel.key }}:{{matchLabel.value}}</el-tag
+            >
+          </li>
+      </div>
+      <br/>
+      <div class="metadata-item">
+        <p>镜像</p>
+        <li v-for="image in this.images" :key="image">
+            <el-tag
+              class="lebel-tag"
+              effect="dark"
+              size="medium"
+              color="#bedcfa"
+              >{{ image }}</el-tag
+            >
+          </li>
+      </div>
+    </el-card>
+
+    <!-- DaemonSet 编辑框 -->
+    <el-dialog
+      :title="annoKey"
+      :visible.sync="annoDialogVisible"
+      width="50%"
+      @close="handleClose"
+      :modal="false"
+      :show-close="true"
+    >
+      <highlightjs javascript :code="annoDetails" />
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="annoDialogVisible=false">关闭</el-button>
+      </span>
+    </el-dialog>
+  </dev>
 </template>
 
 
 <script>
 export default {
-  props: ['name','namespace'],
+  props: ["name", "namespace"],
   data() {
     return {
       daemonSet: {},
       daemonSetName: "",
       daemonSetNamespace: "",
+      annoKey: "",
+      annoDialogVisible: false,
+      annoDetails: "",
     };
   },
   // 生命周期方法
   mounted: function () {
-
     /* name */
     // // 为空，直接存储
     // if (sessionStorage.getItem("deploymentName") == null) {
@@ -97,7 +170,6 @@ export default {
     //   this.deploymentName = this.$store.state.deployments.deployment.deploymentName;
     // }
 
-    
     // /* namespace */
     // // 为空，直接存储
     // if (sessionStorage.getItem("deploymentNamespace") == null) {
@@ -113,19 +185,18 @@ export default {
     //   this.deploymentNamespace = this.$store.state.deployments.deployment.deploymentNamespace;
     // }
 
-    
     // 获取数据
     let nameAndNamespace = {
       // name: sessionStorage.getItem("deploymentName"),
       // namespace: sessionStorage.getItem("deploymentNamespace"),
-      name: this.name.split(',')[0],
-      namespace: this.name.split(',')[1],
+      name: this.name.split(",")[0],
+      namespace: this.name.split(",")[1],
     };
     this.$store
       .dispatch("daemonSets/getDaemonSetByNameAndNamespace", nameAndNamespace)
       .then((res) => {
         console.log(res);
-        this.deployment = res.data;
+        this.daemonSet = res.data;
       })
       .catch((error) => {
         throw error;
@@ -156,8 +227,46 @@ export default {
       }
       return annoArr;
     },
-  }
-  
+
+    // DaemonSet 的镜像
+    images() {
+      let imagesList = [];
+      for(let i = 0; i < this.daemonSet.spec.template.spec.containers.length; i ++){
+        imagesList.push(this.daemonSet.spec.template.spec.containers[i].image);
+      }
+      return imagesList;
+    },
+
+    // DaemonSet 的选择标签
+    matchLabels() {
+      let matchLabelsList = [];
+      for(let i in this.daemonSet.spec.selector.matchLabels){
+        matchLabelsList.push({
+          key:i,
+          value:daemonSet.spec.selector.matchLabels[i]
+        });
+      }
+      return matchLabelsList;
+    }
+  },
+
+  methods: {
+    showAnnoDetails: function(key) {
+      this.annoDialogVisible = true;
+      this.annoKey = key;
+      this.annoDetails = this.beautify(this.daemonSet.metadata.annotations[key], {
+        indent_size: 2,
+        space_in_empty_paren: true,
+      });
+      console.log(this.daemonSet.metadata.annotations[key]);
+
+    },
+    handleClose() {
+      // console.log(this.annoKey, "inhandleClose");  
+      this.annoKey = "";
+      this.annoDialogVisible = false;
+    },
+  },
 };
 </script>
 <style lang="scss" scoped>
@@ -247,6 +356,9 @@ export default {
     font-style: normal;
     color: #3f414d;
   }
+}
+#anno_hover:hover {
+  cursor: pointer;
 }
 </style>
 

@@ -4,7 +4,7 @@
  * @Author: zqy
  * @Date: 2021.03.29 16:14
  * @LastEditors: zqy
- * @LastEditTime: 2021-04-11 12:10:14
+ * @LastEditTime: 2021-04-13 20:06:07
  */
 import { getAllCronJobs, getCronJobByNameAndNamespace, deleteCronJobByNameAndNamespace, getCronJobYamlByNameAndNamespace } from '@/api/workload/cronJobs'
 import { getToken } from '@/utils/auth'
@@ -38,6 +38,7 @@ const actions = {
       })
     })
   },
+  
   //通过名字和命名空间获取CronJob
   getCronJobByNameAndNamespace({ commit }, nameAndNamespace) {
     return new Promise((resolve, reject) => {

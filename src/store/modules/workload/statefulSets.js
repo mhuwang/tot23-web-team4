@@ -4,9 +4,9 @@
  * @Author: zqy
  * @Date: 2021.03.29 16:26
  * @LastEditors: zqy
- * @LastEditTime: 2021.03.29 16:26
+ * @LastEditTime: 2021-04-13 21:40:44
  */
-import { getAllStatefulSets } from '@/api/workload/statefulSets'
+import { getAllStatefulSets, getStatefulSetYamlByNameAndNamespace, deleteStatefulSetByNameAndNamespace } from '@/api/workload/statefulSets'
 import { getToken } from '@/utils/auth'
 
 const getDefaultState = () => {
@@ -25,15 +25,46 @@ const mutations = {
 
 const actions = {
   // getAllStatefulSets
-  getAllStatefulSets({ commit }) {
+  getAllStatefulSets({ commit }, namespace) {
+    console.log(namespace, "in store")
     return new Promise((resolve, reject) => {
-      getAllStatefulSets().then(response => {
+      getAllStatefulSets(namespace).then(response => {
         const { data } = response
         if (!data) {
           return reject('获取失败')
         }
         resolve(data)
       }).catch(error => {
+        reject(error)
+      })
+    })
+  },
+  
+  // 通过名字和命名空间获取 Yaml 格式的 StatefulSet
+  getStatefulSetYamlByNameAndNamespace({ commit }, nameAndNamespace) {
+    return new Promise((resolve, reject) => {
+      getStatefulSetYamlByNameAndNamespace(nameAndNamespace).then(response => {
+        const { data } = response
+        if (!data) {
+          return reject('获取失败')
+        }
+        resolve(data)
+      }).catch((error) => {
+        reject(error)
+      })
+    })
+  },
+
+  //通过名字和命名空间删除 StatefulSet
+  deleteStatefulSetByNameAndNamespace({ commit }, nameAndNamespace) {
+    return new Promise((resolve, reject) => {
+      deleteStatefulSetByNameAndNamespace(nameAndNamespace).then((response) => {
+        const { data } = response
+        if (!data) {
+          return reject('删除失败')
+        }
+        resolve(data)
+      }).catch((error) => {
         reject(error)
       })
     })
