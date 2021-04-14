@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: Leo
- * @LastEditTime: 2021-04-13 09:16:37
+ * @LastEditTime: 2021-04-13 17:01:09
 
  -->
 <template>
@@ -170,7 +170,7 @@
             @input="onYamlCmCodeChange"
           />
         </el-tab-pane>
-        <el-tab-pane label="JSON" name="second">
+        <!-- <el-tab-pane label="JSON" name="second">
           <codemirror
             ref="cmYamlEditor"
             :value="codeJSON"
@@ -178,7 +178,7 @@
             @ready="onJSONCmReady"
             @input="onJSONCmCodeChange"
           />
-        </el-tab-pane>
+        </el-tab-pane> -->
       </el-tabs>
 
       <!-- <textarea style="width:100%" name="describe" id="service" cols="30" rows="10">
@@ -245,21 +245,21 @@ export default {
       loading: true, // 获取数据中
       editDialogVisible: false, // 编辑详情框
       addDialogVisible: false, // 添加框详情
-      codeJSON: "", // 编辑框的 json 数据
+      // codeJSON: "", // 编辑框的 json 数据
       codeYaml: "", // 编辑框的 yaml 数据
       addYaml: "", // 添加框的 yaml 数据
 
-      cmOptions: {
-        // json codemirror 配置项
-        tabSize: 4,
-        mode: {
-          name: "javascript",
-          json: true,
-        },
-        theme: "panda-syntax",
-        lineNumbers: true,
-        line: true,
-      },
+      // cmOptions: {
+      //   // json codemirror 配置项
+      //   tabSize: 4,
+      //   mode: {
+      //     name: "javascript",
+      //     json: true,
+      //   },
+      //   theme: "panda-syntax",
+      //   lineNumbers: true,
+      //   line: true,
+      // },
       cmOptionsYaml: {
         // yaml codemirror 配置项
         tabSize: 4,
@@ -302,17 +302,17 @@ export default {
       this.addYaml = newCode;
     },
 
-    /* JSON */
-    onJSONCmReady(cm) {
-      setTimeout(() => {
-        cm.refresh();
-      }, 50);
-    },
+    // /* JSON */
+    // onJSONCmReady(cm) {
+    //   setTimeout(() => {
+    //     cm.refresh();
+    //   }, 50);
+    // },
 
-    onJSONCmCodeChange(newCode) {
-      //console.log("this is new code", newCode);
-      this.codeJSON = newCode;
-    },
+    // onJSONCmCodeChange(newCode) {
+    //   //console.log("this is new code", newCode);
+    //   this.codeJSON = newCode;
+    // },
 
     // 获取所有 Services
     getServices(namespace) {
