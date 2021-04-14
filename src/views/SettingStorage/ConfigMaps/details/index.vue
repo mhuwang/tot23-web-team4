@@ -7,7 +7,6 @@
  * @LastEditTime: 
 -->
 <template>
-  <!-- <h1>ConfigMaps Details</h1> -->
   <div>
     <el-divider content-position="left"
       ><span style="font-weight: bold; font-size: 20px">
@@ -45,7 +44,19 @@
       <List item-layout="horizontal" :split="false">
         <div class="metadata-item">
           <p>标签</p>
-          <li v-for="label in this.labels" :key=label>
+          <li v-for="(label, index) in this.labels" :key="index">
+            <el-tag
+              class="lebel-tag"
+              effect="dark"
+              size="medium"
+              color="#bedcfa"
+              >{{ label.key }}: {{ label.value }}</el-tag
+            >
+          </li>
+        </div>
+        <div v-if="annotations.length > 0" class="metadata-item">
+          <p>注释</p>
+          <li v-for="(anno, index) in this.annotations" :key="index">
             <el-tag
               class="lebel-tag"
               effect="dark"
@@ -53,26 +64,27 @@
               color="#bedcfa"
               style="color: #409eff"
               @click="showAnnoDetails(anno.key)"
-              >{{ label.key }}</el-tag
-            >
-          </li>
-        </div>
-        <div class="metadata-item">
-          <p>注释</p>
-          <li v-for="anno in this.annotations" :key='anno'>
-            <el-tag
-              class="lebel-tag"
-              effect="dark"
-              size="medium"
-              color="#bedcfa"
-              >{{ anno.key }}: {{ anno.value }}</el-tag
+              >{{ anno.key }}</el-tag
             >
           </li>
         </div>
       </List>
     </el-card>
+    <br />
+    <!-- 注释的详情框 -->
+    <el-dialog
+      :title="annoKey"
+      :visible.sync="annoDetailsVisible"
+      width="50%"
+      :modal="false"
+    >
+      <highlightjs javascript :code="annoDetails" />
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="annoDetailsVisible = false">关闭</el-button>
+      </span>
+    </el-dialog>
     <br /><br />
-    <!-- 数据 还没写完，待续...............-->   
+    <!-- 数据  -->   
     <el-card class="box-card">
       <div slot="header" class="clearfix">
         <span style="font-size: 16px">数据</span>
@@ -107,7 +119,17 @@ export default {
   methods: {
     showCa: function(){
       this.caShow = !this.caShow;
-    }
+    },
+    // 显示注解的详情
+    showAnnoDetails(key) {
+      this.annoDetailsVisible = true;
+      // console.log(key);
+      this.annoKey = key;
+      this.annoDetails = this.beautify(this.configMap.metadata.annotations[key], {
+        indent_size: 2,
+        space_in_empty_paren: true,
+      });
+    },
   },
 
   // 生命周期方法
@@ -174,31 +196,18 @@ export default {
       }
       return labelArr;
     },
-    methods: {
-    // 显示注解的详情
-    showAnnoDetails(key) {
-      this.annoDetailsVisible = true;
-      // console.log(key);
-      this.annoKey = key;
-      this.annoDetails = this.beautify(this.configMap.metadata.annotations[key], {
-        indent_size: 2,
-        space_in_empty_paren: true,
-      });
-    },
-  },
-
     // 元数据下的注释
     annotations() {
       let annoArr = [];
       for (let anno in this.configMap.metadata.annotations) {
         annoArr.push({
           key: anno,
-          value: this.configMap.metadata.annotations[anno],
+          value: this.ingress.configMap.annotations[anno],
         });
       }
       return annoArr;
     },
-  }
+  },
   
 };
 </script>
