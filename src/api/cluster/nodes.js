@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-25 20:42:46
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-04-02 12:47:06
+ * @LastEditTime: 2021-04-13 19:42:59
  */
 import request from '@/utils/request'
 let baseUrl = "http://localhost:8081"
@@ -24,6 +24,7 @@ export function getNodeByName(data) {
     }
   })
 }
+
 export function getUsageRecentTwenty(data) {
   return request({
     url: baseUrl + '/nodes/getUsageRecentTwenty',
@@ -31,5 +32,15 @@ export function getUsageRecentTwenty(data) {
     params: {
       nodeName: data,
     },
+  })
+}
+
+export function getNodeYamlByName(data) {
+  return request({
+    url: baseUrl + '/nodes/getNodeYamlByName',
+    method: 'get',
+    params: {
+      nodeName: data,
+    }
   })
 }

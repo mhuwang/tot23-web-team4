@@ -4,9 +4,9 @@
  * @Author: Rex Joush
  * @Date: 2021-03-25 20:41:52
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-04-07 20:09:25
+ * @LastEditTime: 2021-04-13 19:50:33
  */
-import { getAllNodes, getNodeByName, getUsageRecentTwenty } from '@/api/cluster/nodes'
+import { getAllNodes, getNodeByName, getUsageRecentTwenty, getNodeYamlByName } from '@/api/cluster/nodes'
 import { getToken } from '@/utils/auth'
 
 const state = {
@@ -72,7 +72,22 @@ const actions = {
         reject(error)
       })
     })
-  }
+  },
+
+  // 获取 Node yaml 文件
+  getNodeYamlByName({ commit }, nodeName) {
+    return new Promise((resolve, reject) => {
+      getNodeYamlByName(nodeName).then(response => {
+        const { data } = response
+        if (!data) {
+          return reject('获取失败')
+        }
+        resolve(data)
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
 }
 
 export default {
