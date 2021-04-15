@@ -6,7 +6,7 @@
  * @LastEditors: Rex Joush
  * @LastEditTime: 2021-04-12 15:45:58
  */
-import { getAllClusterRoles, getClusterRoleDetails } from '@/api/cluster/clusterRoles'
+import { getAllClusterRoles, getClusterRoleDetails, getClusterRoleYamlByName } from '@/api/cluster/clusterRoles'
 import { getToken } from '@/utils/auth'
 
 const state = {
@@ -59,6 +59,36 @@ const actions = {
       })
     })
   },
+
+   // 获取 Cluster Role 的 yaml 文件详情
+   getClusterRoleYamlByName({ commit }, clusterRole) {
+    return new Promise((resolve, reject) => {
+      getClusterRoleYamlByName(clusterRole).then(response => {
+        const { data } = response
+        if (!data) {
+          return reject('获取失败')
+        }
+        resolve(data)
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
+
+    // 删除 clusterRole 
+    delClusterRoleByName({ commit }, clusterRole) {
+      return new Promise((resolve, reject) => {
+        delClusterRoleByName(clusterRole).then(response => {
+          const { data } = response
+          if (!data) {
+            return reject('获取失败')
+          }
+          resolve(data)
+        }).catch(error => {
+          reject(error)
+        })
+      })
+    },
 }
 
 export default {

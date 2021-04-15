@@ -24,3 +24,22 @@ export function getClusterRoleDetails(data) {
     }
   })
 }
+
+export function getClusterRoleYamlByName(data) {
+  return request({
+    url: baseUrl + '/clusterRoles/getClusterRoleYamlByName',
+    method: 'get',
+    params: {
+      clusterRole: data,
+    }
+  })
+}
+export function delClusterRoleByName(data) {
+  return request({
+    url: baseUrl + '/clusterRoles/delClusterRoleByName',
+    method: 'get',
+    params: {
+      clusterRole: data,
+    }
+  })
+}
