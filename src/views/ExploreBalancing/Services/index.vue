@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: Leo
- * @LastEditTime: 2021-04-13 17:01:09
+ * @LastEditTime: 2021-04-14 19:48:38
 
  -->
 <template>
@@ -42,17 +42,6 @@
               icon="el-icon-plus"
               @click="getservices"
             ></el-button> -->
-        </el-col>
-        <!-- 添加按钮 -->
-        <el-col :span="4">
-          <el-button
-            type="primary"
-            size="large"
-            icon="el-icon-plus"
-            @click="addDialogVisible = true"
-          >
-            添加 service
-          </el-button>
         </el-col>
       </el-row>
       <el-table :data="services" style="width: 100%" stripe>
@@ -170,15 +159,6 @@
             @input="onYamlCmCodeChange"
           />
         </el-tab-pane>
-        <!-- <el-tab-pane label="JSON" name="second">
-          <codemirror
-            ref="cmYamlEditor"
-            :value="codeJSON"
-            :options="cmOptions"
-            @ready="onJSONCmReady"
-            @input="onJSONCmCodeChange"
-          />
-        </el-tab-pane> -->
       </el-tabs>
 
       <!-- <textarea style="width:100%" name="describe" id="service" cols="30" rows="10">
@@ -191,37 +171,6 @@
         </div>
         <el-button @click="editDialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="commitYamlChange">确 定</el-button>
-      </span>
-    </el-dialog>
-
-    <!-- 添加框 -->
-    <el-dialog
-      title="添加 Service"
-      :visible.sync="addDialogVisible"
-      width="70%"
-      @closed="handleClose"
-      @close="addDialogVisible = false"
-      :append-to-body="true"
-      :lock-scroll="true"
-    >
-      <codemirror
-        ref="cmYamlAdd"
-        :value="addYaml"
-        :options="cmOptionsYaml"
-        @ready="onAddYamlCmReady"
-        @input="onAddYamlCmCodeChange"
-      />
-
-      <!-- <textarea style="width:100%" name="describe" id="service" cols="30" rows="10">
-        {{code}}
-      </textarea> -->
-      <span slot="footer" class="dialog-footer">
-        <div class="foot-info">
-          <i class="el-icon-warning"></i> 此操作相当于 kubectl apply -f
-          &ltspec.yaml>
-        </div>
-        <el-button @click="addDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="commitServiceAdd">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -244,22 +193,8 @@ export default {
       value: "", // 选择框的值
       loading: true, // 获取数据中
       editDialogVisible: false, // 编辑详情框
-      addDialogVisible: false, // 添加框详情
-      // codeJSON: "", // 编辑框的 json 数据
       codeYaml: "", // 编辑框的 yaml 数据
-      addYaml: "", // 添加框的 yaml 数据
 
-      // cmOptions: {
-      //   // json codemirror 配置项
-      //   tabSize: 4,
-      //   mode: {
-      //     name: "javascript",
-      //     json: true,
-      //   },
-      //   theme: "panda-syntax",
-      //   lineNumbers: true,
-      //   line: true,
-      // },
       cmOptionsYaml: {
         // yaml codemirror 配置项
         tabSize: 4,
@@ -291,28 +226,6 @@ export default {
     onYamlCmCodeChange(newCode) {
       this.codeYaml = newCode;
     },
-    // 添加的 yaml 框
-    onAddYamlCmReady(cm) {
-      setTimeout(() => {
-        cm.refresh();
-      }, 50);
-    },
-
-    onAddYamlCmCodeChange(newCode) {
-      this.addYaml = newCode;
-    },
-
-    // /* JSON */
-    // onJSONCmReady(cm) {
-    //   setTimeout(() => {
-    //     cm.refresh();
-    //   }, 50);
-    // },
-
-    // onJSONCmCodeChange(newCode) {
-    //   //console.log("this is new code", newCode);
-    //   this.codeJSON = newCode;
-    // },
 
     // 获取所有 Services
     getServices(namespace) {
@@ -334,45 +247,6 @@ export default {
         serviceNamespace: namespace,
       };
       this.$store.dispatch("services/toDetails", serviceDetails);
-    },
-
-    /* 添加部分，提交添加 */
-    commitServiceAdd() {
-      this.$confirm("添加 Service？", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "info",
-      })
-        .then(() => {
-          this.$store
-            .dispatch("common/changeServicesByYaml", this.addYaml)
-            .then((res) => {
-              switch (res.code) {
-                case 1200:
-                  this.$message.success("添加成功");
-                  this.addDialogVisible = false;
-                  break;
-                case 1201:
-                  this.$message.error("添加失败，请查看云平台相关错误信息");
-                  this.addDialogVisible = false;
-                  break;
-                case 1202:
-                  this.$message.error(
-                    "添加失败，请查看 yaml 文件格式，命名空间必须指定"
-                  );
-                  break;
-                default:
-                  this.$message.info("提交成功");
-                  break;
-              }
-            })
-            .catch((error) => {
-              throw error;
-            });
-        })
-        .catch(() => {
-          console.log("cancel");
-        });
     },
 
     /* 编辑部分 */

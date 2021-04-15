@@ -1,10 +1,10 @@
 <!--
- * @Descripttion: your project
+ * @Description: your project
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-03-17 19:37:31
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-04-13 16:11:52
+ * @LastEditTime: 2021-04-14 13:06:57
 -->
 <template>
   <div>
@@ -247,7 +247,13 @@ export default {
         };
 
         let option = {
-          tooltip: {},
+          tooltip: {
+            formatter: function(params){
+
+              echartsInstance.clear ()
+              return params;
+            }
+          },
           legend: [
             {
               data: graph.categories.map(function (a) {
