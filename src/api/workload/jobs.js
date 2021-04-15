@@ -4,7 +4,7 @@
  * @Author: zqy
  * @Date: 2021.03.29 16:18
  * @LastEditors: zqy
- * @LastEditTime: 2021-04-11 21:05:56
+ * @LastEditTime: 2021-04-14 21:23:28
  */
 import request from "@/utils/request"
 let baseUrl = "http://localhost:8081"
@@ -13,6 +13,9 @@ export function getAllJobs(data) {
   return request({
     url: baseUrl + '/jobs/getAllJobs',
     method: 'get',
+    params: {
+      namespace: data
+    }
   })
 }
 
@@ -41,6 +44,17 @@ export function deleteJobByNameAndNamespace(data) {
 export function getJobYamlByNameAndNamespace(data) {
   return request({
     url :baseUrl + '/jobs/getJobYamlByNameAndNamespace',
+    method: 'get',
+    params: {
+      name: data.name,
+      namespace: data.namespace
+    }
+  })
+}
+
+export function getJobPodsByNameAndNamespace(data) {
+  return request({
+    url :baseUrl + '/jobs/getJobPodsByNameAndNamespace',
     method: 'get',
     params: {
       name: data.name,

@@ -4,16 +4,17 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: zqy
- * @LastEditTime: 2021-04-11 19:13:42
+ * @LastEditTime: 2021-04-13 21:41:31
 -->
 <!--<template>
   <h1>Stateful Sets</h1>
 </template>-->
 <template>
   <div>
+    <!-- 主体部分 -->
     <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <span>所有 Pod</span>
+        <span>所有 StatefulSets</span>
       </div>
       <el-row :gutter="20">
         <el-col :span="5">
@@ -57,78 +58,321 @@
           </el-button>
         </el-col> -->
       </el-row>
-      <el-table :data="pods" style="width: 100%" stripe>
+      <el-table :data="statefulSets" style="width: 100%" stripe>
         <el-table-column width="40">
           <template slot-scope="scope">
-            <svg-icon :icon-class="scope.row.status.conditions[3].status == 'True'? 'load-success': scope.row.status.conditions[3].status == 'Unknown'?'load-doubt':'load-failed'"/>
+            <!-- <svg-icon :icon-class="scope.row.status.conditions[3].status == 'True'? 'load-success': scope.row.status.conditions[3].status == 'Unknown'?'load-doubt':'load-failed'"/> -->
           </template>
         </el-table-column>
-        <el-table-column prop="metadata.name" label="名字">
+        <el-table-column prop="metadata.name" label="名称">
           <template slot-scope="scope">
-            <router-link :to="'/workload/pods/'+scope.row.metadata.name" @click.native="goToPodsDetails(scope.row)" class="link-type">
-              <span style="color:#409EFF;text-decoration:underline">{{ scope.row.metadata.name }}</span>
+            <router-link
+              :to="'/workload/statefulSets/' + scope.row.metadata.name"
+              @click.native="goToStatefulSetsDetails(scope.row)"
+              class="link-type"
+            >
+              <span style="color: #409eff; text-decoration: underline">{{
+                scope.row.metadata.name
+              }}</span>
             </router-link>
           </template>
         </el-table-column>
-        <el-table-column prop="metadata.namespace" label="命名空间"> </el-table-column>
-        <!-- <el-table-column label="标签">
+        <el-table-column prop="metadata.namespace" label="命名空间">
+        </el-table-column>
+        <el-table-column label="Pods">
           <template slot-scope="scope">
-            <span>k8s-app: {{scope.row.metadata.labels['k8s-app']}}</span>
-            <br>
-            <span>pod-template-hash: {{scope.row.metadata.labels['pod-template-hash']}}</span>
+            <span>
+              ?/{{scope.row.spec.replicas}}
+            </span>
           </template>
-        </el-table-column> -->
-        <!-- <el-table-column prop="apiVersion" label="apiVersion"> </el-table-column> -->
-        <!-- <el-table-column prop="kind" label="kind"> </el-table-column> -->
-        <!-- <el-table-column prop="metadata.uid" label="uid"> </el-table-column> -->
-        <el-table-column prop="spec.nodeName" width="140" label="所属节点"> </el-table-column>
-        <el-table-column prop="status.podIP" width="140" label="主机ip地址"> </el-table-column>
-        <el-table-column label="启动时间" width="200">
+        </el-table-column>
+        <el-table-column label="创建时间" width="200">
           <template slot-scope="scope">
-            <span>{{scope.row.status.startTime.replaceAll(/[TZ]/g,' ')}}</span>
+            <span>{{
+              scope.row.metadata.creationTimestamp.replaceAll(/[TZ]/g, " ")
+            }}</span>
           </template>
         </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
-              <!-- 修改 -->
-              <el-button type="primary" icon="el-icon-plus" size="small" @click="showClasterRolesAddDialog(scope.row)">增加</el-button>
-              <!-- 删除 -->
-              <el-button type="warning" icon="el-icon-edit" size="small" @click="showClasterRolesEditDialog(scope.row)">编辑</el-button>
-              <!-- 删除 -->
-              <el-button type="danger" icon="el-icon-delete" size="small" @click="delClasterRoles(scope.row)">删除</el-button>
+            <!-- 编辑 -->
+            <el-button
+              style="margin-bottom: 5px"
+              type="primary"
+              icon="el-icon-edit"
+              size="small"
+              @click="showStatefulSetEditDialog(scope.row.metadata.name, scope.row.metadata.namespace)"
+              >编辑</el-button
+            >
+            <br />
+            <!-- 删除 -->
+            <el-button
+              style="margin-bottom: 5px"
+              type="danger"
+              icon="el-icon-delete"
+              size="small"
+              @click="delStatefulSet(scope.row.metadata.name, scope.row.metadata.namespace)"
+              >删除</el-button
+            >
           </template>
         </el-table-column>
       </el-table>
     </el-card>
+
+    <!-- StatefulSet 编辑框 -->
+    <el-dialog
+      title="编辑 StatefulSet"
+      :visible.sync="editDialogVisible"
+      width="70%"
+      @closed="handleClose"
+      @close="editDialogVisible = false"
+      :append-to-body="true"
+      :lock-scroll="true"
+    >
+      <el-tabs value="first" type="card">
+        <el-tab-pane label="YAML" name="first">
+          <codemirror
+            :value="codeYaml"
+            :options="cmOptionsYaml"
+            @ready="onYamlCmReady"
+            @input="onYamlCmCodeChange"
+          />
+        </el-tab-pane>
+        <el-tab-pane label="JSON" name="second">
+          <codemirror
+            ref="cmYamlEditor"
+            :value="codeJSON"
+            :options="cmOptions"
+            @ready="onJSONCmReady"
+            @input="onJSONCmCodeChange"
+          />
+        </el-tab-pane>
+      </el-tabs>
+
+      <!-- <textarea style="width:100%" name="describe" id="pod" cols="30" rows="10">
+        {{code}}
+      </textarea> -->
+      <span slot="footer" class="dialog-footer">
+        <div class="foot-info">
+          <i class="el-icon-warning"></i> 此操作相当于 kubectl apply -f
+          &ltspec.yaml>
+        </div>
+        <el-button @click="editDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="commitYamlChange">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
+// import language js
+import "codemirror/mode/javascript/javascript.js";
+import "codemirror/mode/yaml/yaml.js";
+// import theme style
+import "codemirror/theme/panda-syntax.css";
+
 export default {
-  name: "Pods",
+  name: "StatefulSets",
 
   data() {
     return {
-      pods: [],
+      namespaces: [],
+      statefulSets: [],
+      loading: true, // 获取数据中
+      editDialogVisible: false, // 编辑详情框
+      addDialogVisible: false, // 添加框详情
+      codeJSON: "", // 编辑框的 json 数据
+      codeYaml: "", // 编辑框的 yaml 数据
+      addYaml: "", // 添加框的 yaml 数据
+      value: "",
+      cmOptions: {
+        // json codemirror 配置项
+        tabSize: 4,
+        mode: {
+          name: "javascript",
+          json: true,
+        },
+        theme: "panda-syntax",
+        lineNumbers: true,
+        line: true,
+      },
+      cmOptionsYaml: {
+        // yaml codemirror 配置项
+        tabSize: 4,
+        mode: "yaml",
+        theme: "panda-syntax",
+        lineNumbers: true,
+        line: true,
+      },
     };
   },
 
   created() {
-    this.getPods();
+    this.getStatefulSets();
   },
 
   methods: {
-    // 获取所有 pods
-    getPods() {
+    // 获取所有 StatefulSets
+    getStatefulSets(namespace = "") {
       this.$store
-        .dispatch("pods/getAllPods")
+        .dispatch("statefulSets/getAllStatefulSets", namespace)
         .then((res) => {
           console.log(res.data);
-          this.pods = res.data;
+          this.statefulSets = res.data;
         })
         .catch((error) => {
           console.log(error);
         });
+    },
+
+    /* 按命名空间查询 */
+    // 当选择框聚焦时获取命名空间
+    initNamespace() {
+      if (this.namespaces.length == 0) {
+        this.namespaces = this.$store.state.namespaces.namespaces;
+      }
+    },
+    // 选择框变化事件
+    selectChange(value) {
+      // console.log("selectChange", value, "++++\n\n")
+      this.loading = true;
+      this.getStatefulSets(value);
+    },
+    // 选择框清空事件
+    clearSelect() {
+      this.loading = true;
+      this.getStatefulSets();
+    },
+
+    //编辑 StatefulSets
+    showStatefulSetEditDialog(name, namespace) {
+      let statefulSetDetails = {
+        name: name,
+        namespace: namespace,
+      };
+
+      // 获取 yaml 格式
+      this.$store
+        .dispatch(
+          "statefulSets/getStatefulSetYamlByNameAndNamespace",
+          statefulSetDetails
+        )
+        .then((res) => {
+          this.codeYaml = res.data;
+          console.log("edit dialog init", this.codeYaml);
+          this.editDialogVisible = true; // 打开编辑对话框
+        })
+        .catch((error) => {
+          throw error;
+        });
+
+      // json 格式
+      this.$store
+        .dispatch(
+          "statefulSets/getStatefulSetByNameAndNamespace",
+          statefulSetDetails
+        )
+        .then((res) => {
+          // console.log(res);
+          let json = JSON.stringify(res.data.cronJob);
+          this.codeJSON = this.beautify(json, {
+            indent_size: 4,
+            space_in_empty_paren: true,
+          });
+        })
+        .catch((error) => {
+          throw error;
+        });
+
+      //this.editForm = res; // 查询结果写入表单
+    },
+
+    // 编辑器方法
+    /* yaml */
+    onYamlCmReady(cm) {
+      setTimeout(() => {
+        cm.refresh();
+      }, 50);
+    },
+    onYamlCmCodeChange(newCode) {
+      this.codeYaml = newCode;
+    },
+
+    //点击确认按钮触发此修改 StatefulSet 事件
+    commitYamlChange() {
+      this.$confirm("确认修改？", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "info",
+      })
+        .then(() => {
+          this.$store
+            .dispatch("common/changeResourceByYaml", this.codeYaml)
+            .then((res) => {
+              switch (res.code) {
+                case 1200:
+                  this.$message.success("修改成功");
+                  break;
+                case 1201:
+                  this.$message.error("修改失败，请查看 yaml 文件格式");
+                  break;
+                case 1202:
+                  this.$message.error("创建失败，请查看云平台相关错误信息");
+                  break;
+                default:
+                  this.$message.info("提交成功");
+                  break;
+              }
+              this.editDialogVisible = false;
+            })
+            .catch((error) => {
+              throw error;
+            });
+        })
+        .catch(() => {
+          console.log("cancel");
+        });
+    },
+
+    // 关闭修改框
+    handleClose: function () {
+      this.addYaml = "";
+      setTimeout(() => {
+        this.codemorror.refresh();
+      }, 1);
+    },
+
+    //删除 CronJob
+    delStatefulSet(name, namespace) {
+      this.$confirm("确认删除 StatefulSet", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          let nameAndNamespace = {
+            name: name,
+            namespace: namespace,
+          };
+          this.$store
+            .dispatch(
+              "statefulSets/deleteStatefulSetByNameAndNamespace",
+              nameAndNamespace
+            )
+            .then((res) => {
+              if (res.data) {
+                this.$message.success("删除成功");
+                this.getStatefulSets();
+              } else {
+                this.$message.error("删除失败");
+              }
+              console.log(res.data);
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        })
+        .catch(() => {});
     },
   },
 };

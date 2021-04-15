@@ -3,8 +3,8 @@
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-03-30 19:58:14
- * @LastEditors: Rex Joush
- * @LastEditTime: 2021-03-30 22:32:48
+ * @LastEditors: zqy
+ * @LastEditTime: 2021-04-14 22:17:12
 -->
 
 <template>
@@ -43,9 +43,9 @@
       </List>
       <!-- 元数据 标签 注释部分 -->
       <List item-layout="horizontal" :split="false">
-        <div class="metadata-item">
+        <div :labels="this.labels" v-if="labels.length > 0" class="metadata-item">
           <p>标签</p>
-          <li v-for="label in this.labels" :key="label">
+          <li v-for="label in labels" :key="label">
             <el-tag
               class="lebel-tag"
               effect="dark"
@@ -55,9 +55,9 @@
             >
           </li>
         </div>
-        <div class="metadata-item">
+        <div :annotation="this.annotations" v-if="annotations.length > 0" class="metadata-item">
           <p>注释</p>
-          <li v-for="anno in this.annotations" :key="anno">
+          <li v-for="anno in annotations" :key="anno">
             <el-tag
               class="lebel-tag"
               effect="dark"
@@ -112,17 +112,17 @@
         <span style="font-size: 16px">Pod 状态</span>
       </div>
       <List item-layout="horizontal" :split="false">
-        <div class="metadata-item">
+        <div :runningPods="this.runningPods" v-if="runningPods > 0" class="metadata-item">
           <p>运行</p>
-          <span>{{ job.spec.completions }}</span>
+          <span >{{ runningPods }}</span>
         </div>
-        <div class="metadata-item">
+        <div v-if="job.status.succeeded" class="metadata-item">
           <p>成功</p>
           <span>{{ job.status.succeeded }}</span>
         </div>
-        <div class="metadata-item">
+        <div :pendingPods="this.pendingPods" v-if="pendingPods > 0" class="metadata-item">
           <p>启动中</p>
-          <span></span>
+          <span >{{ pendingPods   }}</span>
         </div>
         <div class="metadata-item">
           <p>期望</p>
@@ -137,7 +137,102 @@
       <div slot="header" class="clearfix">
         <span style="font-size: 16px">Pods 列表</span>
       </div>
-      pods列表
+      <el-table
+        :data="pods"
+        style="width: 100%"
+        stripe
+        v-loading="loading"
+        element-loading-text="获取数据中..."
+      >
+        <el-table-column width="40">
+          <template slot-scope="scope">
+            <svg-icon
+              :icon-class="
+                scope.row.phase == 'Running' || scope.row.phase == 'Succeeded'
+                  ? 'load-success'
+                  : 'load-failed'
+              "
+          /></template>
+        </el-table-column>
+        <el-table-column prop="name" label="名字">
+          <template slot-scope="scope">
+            <router-link
+              :to="'/workload/pods/' + scope.row.name"
+              @click.native="
+                goToPodsDetails(scope.row.name, scope.row.namespace)
+              "
+              class="link-type"
+            >
+              <span style="color: #409eff; text-decoration: underline">{{
+                scope.row.name
+              }}</span>
+            </router-link>
+          </template>
+        </el-table-column>
+        <el-table-column prop="namespace" label="命名空间"> </el-table-column>
+        <el-table-column prop="phase" label="状态"> </el-table-column>
+        <el-table-column align="center" prop="restartCount" label="重启次数">
+        </el-table-column>
+        <el-table-column align="center" label="CPU 利用率" width="140">
+          <template slot-scope="scope">
+            <!-- {{ scope.row.cpuUsage }} -->
+            <div v-if="scope.row.cpuUsage != -1">
+              <div class="usage-cpu-tag-zero" v-if="scope.row.cpuUsage == 0">
+                0 m
+              </div>
+              <div class="usage-cpu-tag-success" v-else>
+                {{ (scope.row.cpuUsage / 1000 / 1000).toFixed(2) }} m
+              </div>
+            </div>
+
+            <div class="usage-cpu-tag-failed" v-else>--</div>
+          </template>
+        </el-table-column>
+        <el-table-column align="center" label="内存利用率" width="140">
+          <template slot-scope="scope">
+            <!-- {{scope.row.memoryUsage == -1}} -->
+            <div v-if="scope.row.memoryUsage != -1">
+              <div
+                class="usage-memory-tag-zero"
+                v-if="scope.row.memoryUsage == 0"
+              >
+                0 MiB
+              </div>
+              <div class="usage-memory-tag-success" v-else>
+                {{ (scope.row.memoryUsage / 1024).toFixed(2) }} MiB
+              </div>
+            </div>
+
+            <div class="usage-memory-tag-failed" v-else>--</div>
+          </template>
+        </el-table-column>
+        <el-table-column prop="nodeName" width="120" label="所属节点">
+        </el-table-column>
+        <el-table-column prop="podIP" width="120" label="主机ip地址">
+        </el-table-column>
+        <el-table-column label="操作">
+          <template slot-scope="scope">
+            <!-- 修改 -->
+            <el-button
+              type="primary"
+              icon="el-icon-edit"
+              style="margin-bottom: 5px"
+              size="small"
+              @click="showPodEditDialog(scope.row.name, scope.row.namespace)"
+              >编辑</el-button
+            >
+            <br />
+            <!-- 删除 -->
+            <el-button
+              type="danger"
+              icon="el-icon-delete"
+              size="small"
+              @click="delPod(scope.row.name, scope.row.namespace)"
+              >删除</el-button
+            >
+          </template>
+        </el-table-column>
+      </el-table>
     </el-card>
     <br /><br />
 
@@ -146,39 +241,6 @@
       <div slot="header" class="clearfix">
         <span style="font-size: 16px">活动</span>
       </div>
-
-      <!-- <el-table :data="jobs" style="width: 100%" stripe>
-        <el-table-column label="信息" width="200">
-          <template slot-scope="scope">
-            <span> </span>
-          </template>
-        </el-table-column>
-        <el-table-column label="资源" width="100">
-          <template slot-scope="scope">
-            <span> </span>
-          </template>
-        </el-table-column>
-        <el-table-column label="子对象" width="100">
-          <template slot-scope="scope">
-            <span> </span>
-          </template>
-        </el-table-column>
-        <el-table-column label="次数" width="100">
-          <template slot-scope="scope">
-            <span> </span>
-          </template>
-        </el-table-column>
-        <el-table-column label="初次" width="100">
-          <template slot-scope="scope">
-            <span> </span>
-          </template>
-        </el-table-column>
-        <el-table-column label="最后一次" width="100">
-          <template slot-scope="scope">
-            <span> </span>
-          </template>
-        </el-table-column>
-      </el-table> -->
     </el-card>
   </div>
 </template>
@@ -188,6 +250,7 @@ export default {
   props: ["name", "namespace"],
   data() {
     return {
+      pods: {},
       job: {},
       jobName: "",
       jobNamespace: "",
@@ -233,10 +296,11 @@ export default {
       namespace: this.name.split(",")[1],
     };
     this.$store
-      .dispatch("jobs/getJobByNameAndNamespace", nameAndNamespace)
+      .dispatch("jobs/getJobPodsByNameAndNamespace", nameAndNamespace)
       .then((res) => {
         console.log(res);
-        this.job = res.data;
+        this.job = res.dataJob;
+        this.pods = res.dataPods;
       })
       .catch((error) => {
         throw error;
@@ -266,6 +330,35 @@ export default {
         });
       }
       return annoArr;
+    },
+
+    //正在运行的Pods数量
+    runningPods() {
+      let amount = 0;
+      for (let i in this.pods) {
+        switch (this.pods[i].phase) {
+          case "Running":
+            amount += 1;
+            console.log(this.pods[i].phase, i, this.pods.length);
+            break;
+        }
+      }
+      return amount;
+    },
+
+    //正在启动中的Pods数量
+    pendingPods() {
+      let amount = 0;
+      console.log(this.pods);
+      for (let i = 0; i < this.pods.length; i++) {
+        switch (this.pods[i].phase) {
+          case "Pending":
+            amount += 1;
+            console.log(this.pods[i].phase, i, this.pods.length);
+            break;
+        }
+      }
+      return amount;
     },
   },
 };

@@ -3,8 +3,13 @@
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
+<<<<<<< HEAD
+ * @LastEditors: zqy
+ * @LastEditTime: 2021-04-14 19:25:03
+=======
  * @LastEditors: Rex Joush
  * @LastEditTime: 2021-04-14 12:29:18
+>>>>>>> e80b23f19a498cd564a1f2c159d2d7fa0a8e2adc
 -->
 <template>
   <div>
@@ -274,6 +279,7 @@ export default {
 
   mounted() {
     this.getPods();
+    this.getCompletePodsList();
   },
 
   computed: {},
@@ -321,6 +327,17 @@ export default {
           console.log(res);
           this.pods = res.data;
           this.loading = false;
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+
+    getCompletePodsList() {
+      this.$store
+        .dispatch("pods/getCompletePodsList")
+        .then((res) => {
+          console.log(res);
         })
         .catch((error) => {
           console.log(error);

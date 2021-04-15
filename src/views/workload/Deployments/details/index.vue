@@ -3,8 +3,8 @@
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-03-30 19:58:14
- * @LastEditors: Rex Joush
- * @LastEditTime: 2021-03-30 22:32:48
+ * @LastEditors: zqy
+ * @LastEditTime: 2021-04-14 22:21:26
 -->
 
 <template>
@@ -39,9 +39,9 @@
       </List>
       <!-- 元数据 标签 注释部分 -->
       <List item-layout="horizontal" :split="false">
-        <div class="metadata-item">
+        <div :labels="this.labels" v-if="labels.length > 0" class="metadata-item">
           <p>标签</p>
-          <li v-for="label in this.labels" :key="label">
+          <li v-for="label in labels" :key="label">
             <el-tag
               class="lebel-tag"
               effect="dark"
@@ -51,9 +51,9 @@
             >
           </li>
         </div>
-        <div class="metadata-item">
+        <div :annotations="this.annotations" v-if="annotations.length > 0" class="metadata-item">
           <p>注释</p>
-          <li v-for="anno in this.annotations" :key="anno">
+          <li v-for="anno in annotations" :key="anno">
             <el-tag
               class="lebel-tag"
               effect="dark"

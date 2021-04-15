@@ -3,10 +3,10 @@
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-03-22 17:20:12
- * @LastEditors: Rex Joush
- * @LastEditTime: 2021-04-09 19:35:00
+ * @LastEditors: zqy
+ * @LastEditTime: 2021-04-14 21:13:09
  */
-import { getAllPods, getPodsByNode, getPodByNameAndNamespace, getPodYamlByNameAndNamespace, delPodByNameAndNamespace } from '@/api/workload/pods'
+import { getAllPods, getPodsByNode, getPodByNameAndNamespace, getCompletePodsList, getPodYamlByNameAndNamespace, delPodByNameAndNamespace } from '@/api/workload/pods'
 import { getToken } from '@/utils/auth'
 
 
@@ -91,6 +91,21 @@ const actions = {
   delPodByNameAndNamespace({ commit }, podDetails) {
     return new Promise((resolve, reject) => {
       delPodByNameAndNamespace(podDetails).then(response => {
+        const { data } = response
+        if (!data) {
+          return reject('获取失败')
+        }
+        resolve(data)
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
+
+  // 查找完整的 Pod 列表 
+  getCompletePodsList({ commit }) {
+    return new Promise((resolve, reject) => {
+      getCompletePodsList().then(response => {
         const { data } = response
         if (!data) {
           return reject('获取失败')

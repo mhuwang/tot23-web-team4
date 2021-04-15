@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: zqy
- * @LastEditTime: 2021-04-11 21:04:10
+ * @LastEditTime: 2021-04-14 16:34:37
 -->
 
 <template>
@@ -58,11 +58,11 @@
       </el-row>
       <el-table :data="cronJobs" style="width: 100%" stripe>
         <el-table-column width="40">
-          <!-- <template slot-scope="scope">
-            <svg-icon :icon-class="scope.row.status.conditions[1].status == 'True'? 'load-success': scope.row.status.conditions[1].status == 'Unknown'?'load-doubt':'load-failed'"/>
-          </template> -->
+          <template >
+            <svg-icon :icon-class="'load-success'"/>
+          </template>
         </el-table-column>
-        <el-table-column prop="metadata.name" label="名字">
+        <el-table-column prop="metadata.name" label="名称">
           <template slot-scope="scope">
             <router-link
               :to="{
@@ -222,6 +222,7 @@ import "codemirror/mode/javascript/javascript.js";
 import "codemirror/mode/yaml/yaml.js";
 // import theme style
 import "codemirror/theme/panda-syntax.css";
+
 export default {
   name: "CronJobs",
 
@@ -296,40 +297,6 @@ export default {
       // })
     },
 
-    //删除 CronJob
-    delCronJob(name, namespace) {
-      this.$confirm("确认删除 CronJob？", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning",
-      }).then(() => {
-        let nameAndNamespace = {
-          name: name,
-          namespace: namespace,
-        };
-        this.$store
-          .dispatch(
-            "cronJobs/deleteCronJobByNameAndNamespace",
-            nameAndNamespace
-          )
-          .then((res) => {
-            if(res.data){
-              this.$message.success("删除成功");
-              this.getCronJobs();
-            }
-            else{
-              this.$message.error("删除失败");
-            }
-            console.log(res.data);
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-      }).catch(() => {
-
-      });
-    },
-
     /* 按命名空间查询 */
     // 当选择框聚焦时获取命名空间
     initNamespace() {
@@ -355,7 +322,7 @@ export default {
         name: name,
         namespace: namespace,
       };
-      
+
       // 获取 yaml 格式
       this.$store
         .dispatch("cronJobs/getCronJobYamlByNameAndNamespace", cronJobDetails)
@@ -439,6 +406,39 @@ export default {
       setTimeout(() => {
         this.codemorror.refresh();
       }, 1);
+    },
+
+    //删除 CronJob
+    delCronJob(name, namespace) {
+      this.$confirm("确认删除 CronJob？", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          let nameAndNamespace = {
+            name: name,
+            namespace: namespace,
+          };
+          this.$store
+            .dispatch(
+              "cronJobs/deleteCronJobByNameAndNamespace",
+              nameAndNamespace
+            )
+            .then((res) => {
+              if (res.data) {
+                this.$message.success("删除成功");
+                this.getCronJobs();
+              } else {
+                this.$message.error("删除失败");
+              }
+              console.log(res.data);
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        })
+        .catch(() => {});
     },
   },
 };
