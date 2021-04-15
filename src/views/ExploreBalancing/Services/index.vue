@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: Leo
- * @LastEditTime: 2021-04-14 19:48:38
+ * @LastEditTime: 2021-04-15 13:31:19
 
  -->
 <template>
@@ -273,21 +273,7 @@ export default {
           throw error;
         });
         
-      // json 格式
-      this.$store
-        .dispatch("services/getServiceByNameAndNamespace", serviceDetails)
-        .then((res) => {
-          // console.log(res);
-          let json = JSON.stringify(res.data.service);
-          this.codeJSON = this.beautify(json, {
-            indent_size: 4,
-            space_in_empty_paren: true,
-          });
-        })
-        .catch((error) => {
-          throw error;
-        });
-
+  
       //this.editForm = res; // 查询结果写入表单
     },
 

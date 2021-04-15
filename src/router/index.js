@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-10 15:03:17
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-04-14 21:39:57
+ * @LastEditTime: 2021-04-15 19:52:58
  */
 import Vue from 'vue'
 import Router from 'vue-router'
@@ -90,26 +90,26 @@ export const constantRoutes = [
     ]
   },
 
-  // 工作量
+  // 工作负载
   {
     path: '/workload',
     component: Layout,
     redirect: '/workload/CronJobs',
-    name: '工作量',
-    meta: { title: '工作量', icon: 'workload' },
+    name: '工作负载',
+    meta: { title: '工作负载', icon: 'workload' },
     children: [
       {
         path: 'cronjobs',
         name: 'Cron Jobs',
         component: () => import('@/views/workload/CronJobs/index'),
-        meta: { title: '定时作业', icon: 'cron-jobs' }
+        meta: { title: '定时任务', icon: 'cron-jobs' }
       },
       // cronjob 详情
       {
         path: 'cronjob/:name',
         component: () => import('@/views/workload/CronJobs/details/index'),
         name: 'CronJob 详情',
-        meta: { title: '定时作业详情', noCache: true, activeMenu: '/cronjobs' },
+        meta: { title: '定时任务详情', noCache: true, activeMenu: '/cronjobs' },
         hidden: true,
         props: true
       },
@@ -117,14 +117,14 @@ export const constantRoutes = [
         path: 'daemonsets',
         name: 'Daemon Sets',
         component: () => import('@/views/workload/DaemonSets/index'),
-        meta: { title: '守护进程', icon: 'daemon-sets' }
+        meta: { title: '守护进程集', icon: 'daemon-sets' }
       },
       // daemonset 详情
       {
         path: 'daemonset/:name',
         component: () => import('@/views/workload/DaemonSets/details/index'),
         name: 'DaemonSet Details',
-        meta: { title: '守护进程详情', noCache: true, activeMenu: '/daemonsets' },
+        meta: { title: '守护进程集详情', noCache: true, activeMenu: '/daemonsets' },
         hidden: true,
         props: true
       },
@@ -147,14 +147,14 @@ export const constantRoutes = [
         path: 'jobs',
         name: 'Jobs',
         component: () => import('@/views/workload/Jobs/index'),
-        meta: { title: '作业', icon: 'jobs' }
+        meta: { title: '任务', icon: 'jobs' }
       },
       // job 详情
       {
         path: 'job/:name',
         component: () => import('@/views/workload/Jobs/details/index'),
         name: 'Job 详情',
-        meta: { title: '作业详情', noCache: true, activeMenu: '/jobs' },
+        meta: { title: '任务详情', noCache: true, activeMenu: '/jobs' },
         hidden: true,
         props: true
       },
@@ -162,14 +162,14 @@ export const constantRoutes = [
         path: 'pods',
         name: 'Pods',
         component: () => import('@/views/workload/Pods/index'),
-        meta: { title: 'Pods', icon: 'pods' }
+        meta: { title: '容器组', icon: 'pods' }
       },
       // pod 详情
       {
         path: 'pods/:name',
         component: () => import('@/views/workload/Pods/details/index'),
-        name: 'Pod 详情',
-        meta: { title: 'Pod 详情', noCache: true, activeMenu: '/pods'},
+        name: 'Pods 详情',
+        meta: { title: '容器组详情', noCache: true, activeMenu: '/pods'},
         hidden: true
 
       },
@@ -177,14 +177,14 @@ export const constantRoutes = [
         path: 'replicasets',
         name: 'Replica Sets',
         component: () => import('@/views/workload/ReplicaSets/index'),
-        meta: { title: '副本控制器', icon: 'replica-sets' }
+        meta: { title: '副本集', icon: 'replica-sets' }
       },
       // replicaset 详情
       {
         path: 'replicaset/:name',
         component: () => import('@/views/workload/ReplicaSets/details/index'),
         name: 'ReplicaSet Details',
-        meta: { title: '副本控制器详情', noCache: true, activeMenu: '/replicasets' },
+        meta: { title: '副本集详情', noCache: true, activeMenu: '/replicasets' },
         hidden: true,
         props: true
       },
@@ -192,14 +192,14 @@ export const constantRoutes = [
         path: 'replicationcontrollers',
         name: 'Replication Controllers',
         component: () => import('@/views/workload/ReplicationControllers/index'),
-        meta: { title: '复制控制器', icon: 'replication-controllers' }
+        meta: { title: '副本控制器', icon: 'replication-controllers' }
       },
       // replicationcontroller 详情
       {
         path: 'replicationcontroller/:name',
         component: () => import('@/views/workload/ReplicationControllers/details/index'),
         name: 'ReplicationController Details',
-        meta: { title: '复制控制器详情', noCache: true, activeMenu: '/replicationcontrollers' },
+        meta: { title: '副本控制器详情', noCache: true, activeMenu: '/replicationcontrollers' },
         hidden: true,
         props: true
       },
@@ -207,14 +207,14 @@ export const constantRoutes = [
         path: 'statefulsets',
         name: 'Stateful Sets',
         component: () => import('@/views/workload/StatefulSets/index'),
-        meta: { title: '状态集', icon: 'stateful-sets' }
+        meta: { title: '有状态副本集', icon: 'stateful-sets' }
       },
       // statefulset 详情
       {
         path: 'statefulset/:name',
         component: () => import('@/views/workload/StatefulSets/details/index'),
         name: 'Statefulset Details',
-        meta: { title: '状态集详情', noCache: true, activeMenu: '/statefulsets' },
+        meta: { title: '有状态副本集详情', noCache: true, activeMenu: '/statefulsets' },
         hidden: true,
         props: true
       },
@@ -226,35 +226,35 @@ export const constantRoutes = [
     path: '/explorebalancing',
     component: Layout,
     redirect: '/explorebalancing/Ingresses',
-    name: '发现与负载均衡',
-    meta: { title: '发现与负载均衡', icon: 'explore-balancing' },
+    name: '服务发现与负载均衡',
+    meta: { title: '服务发现与负载均衡', icon: 'explore-balancing' },
     children: [
       {
         path: 'ingresses',
         name: 'Ingresses',
         component: () => import('@/views/ExploreBalancing/Ingresses/index'),
-        meta: { title: '负载均衡器', icon: 'ingresses' }
+        meta: { title: '访问权', icon: 'ingresses' }
       },
       // ingresses 详情
       {
         path: 'ingresses/:name',
         component: () => import('@/views/ExploreBalancing/Ingresses/details/index'),
         name: 'Ingress Details',
-        meta: { title: '负载均衡器详情', noCache: true, activeMenu: '/ingresses' },
+        meta: { title: '访问权详情', noCache: true, activeMenu: '/ingresses' },
         hidden: true
       },
       {
         path: 'services',
         name: 'Services',
         component: () => import('@/views/ExploreBalancing/Services/index'),
-        meta: { title: '服务发现', icon: 'services' }
+        meta: { title: '服务', icon: 'services' }
       },
       // services 详情
       {
         path: 'services/:name',
         component: () => import('@/views/ExploreBalancing/Services/details/index'),
         name: 'Services Details',
-        meta: { title: '服务发现详情', noCache: true, activeMenu: '/services' },
+        meta: { title: '服务详情', noCache: true, activeMenu: '/services' },
         hidden: true
       }
     ]
@@ -272,28 +272,28 @@ export const constantRoutes = [
         path: 'configmaps',
         name: 'Config Maps',
         component: () => import('@/views/SettingStorage/ConfigMaps/index'),
-        meta: { title: '配置映射', icon: 'config-maps' }
+        meta: { title: '配置字典', icon: 'config-maps' }
       },
       // -----configMap 详情
       {
         path: 'configmaps/:name([a-z0-9-.]+)',
         component: () => import('@/views/SettingStorage/ConfigMaps/details/index'),
         name: 'Config Map Details',
-        meta: { title: '配置映射详情', noCache: true, activeMenu: '/configmaps' },
+        meta: { title: '配置字典详情', noCache: true, activeMenu: '/configmaps' },
         hidden: true
       },
       {
         path: 'persistentvolumeclaims',
         name: 'Persistent Volume Claims',
         component: () => import('@/views/SettingStorage/PersistentVolumeClaims/index'),
-        meta: { title: '持久存储卷', icon: 'persistent-volume-claims' }
+        meta: { title: '持久化存储卷', icon: 'persistent-volume-claims' }
       },
       //------- persistentvolumeclaims 详情
       {
         path: 'persistentvolumeclaims/:name([a-z0-9-.]+)',
         component: () => import('@/views/SettingStorage/PersistentVolumeClaims/details/index'),
         name: 'PersistentVolumeClaims Details',
-        meta: { title: '持久存储卷详情', noCache: true, activeMenu: '/persistentvolumeclaims' },
+        meta: { title: '持久化存储卷详情', noCache: true, activeMenu: '/persistentvolumeclaims' },
         hidden: true
       },
       {

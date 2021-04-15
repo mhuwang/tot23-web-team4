@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: zqy
- * @LastEditTime: 2021-04-15 15:49:02
+ * @LastEditTime: 2021-04-15 23:13:55
 -->
 <template>
   <div>
@@ -71,7 +71,7 @@
               "
           /></template>
         </el-table-column>
-        <el-table-column prop="name" label="名字">
+        <el-table-column prop="name" label="名称">
           <template slot-scope="scope">
             <router-link
               :to="'/workload/pods/' + scope.row.name"

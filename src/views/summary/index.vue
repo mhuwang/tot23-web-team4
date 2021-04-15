@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-04-14 21:55:56
+ * @LastEditTime: 2021-04-15 20:06:48
 -->
 <template>
   <div>
@@ -28,7 +28,7 @@
             />
           </template>
         </el-table-column>
-        <el-table-column label="名字" width="120">
+        <el-table-column label="名称" width="120">
           <template slot-scope="scope">
             <router-link
               :to="'/summary/nodes/' + scope.row.name"
@@ -48,7 +48,7 @@
             <span>pod-template-hash: {{scope.row.metadata.labels['pod-template-hash']}}</span>
           </template>
         </el-table-column> -->
-        <el-table-column prop="status" width="100" label="准备就绪">
+        <el-table-column prop="status" width="100" label="就绪状态">
         </el-table-column>
         <el-table-column label="CPU 利用率" width="200">
           <template slot-scope="scope">
@@ -133,7 +133,7 @@
             />
           </template>
         </el-table-column>
-        <el-table-column label="名字">
+        <el-table-column label="名称">
           <template slot-scope="scope">
             <router-link
               :to="'/summary/namespaces/' + scope.row.metadata.name"
@@ -175,7 +175,7 @@
               size="small"
               @click="showNamespaceEditDialog(scope.row.metadata.name)"
               >编辑</el-button
-            >
+            ><br>
             <!-- 删除 -->
             <el-button
               type="danger"
@@ -200,7 +200,7 @@
             <svg-icon :icon-class="scope.row.status.phase == 'Active'? 'load-success': 'load-failed'"/>
           </template>
         </el-table-column> -->
-        <el-table-column label="名字">
+        <el-table-column label="名称">
           <template slot-scope="scope">
             <router-link
               :to="'/summary/clusterRoles/' + scope.row.metadata.name"
@@ -213,17 +213,6 @@
             </router-link>
           </template>
         </el-table-column>
-        <!-- <el-table-column label="标签">
-          <template slot-scope="scope">
-            <span>k8s-app: {{scope.row.metadata.labels['k8s-app']}}</span>
-            <br>
-            <span>pod-template-hash: {{scope.row.metadata.labels['pod-template-hash']}}</span>
-          </template>
-        </el-table-column> -->
-        <!-- <el-table-column prop="status.phase" label="运行阶段"> </el-table-column> -->
-        <!-- <el-table-column prop="metadata.uid" label="uid"> </el-table-column>
-        <el-table-column prop="spec.nodeName" label="所属节点"> </el-table-column>
-        <el-table-column prop="status.podIP" label="主机ip地址"> </el-table-column> -->
         <el-table-column label="创建时间">
           <template slot-scope="scope">
             <span>{{
@@ -237,16 +226,17 @@
             <el-button
               type="primary"
               icon="el-icon-edit"
+              style="margin-bottom: 5px"
               size="small"
               @click="showClusterRolesEditDialog(scope.row.metadata.name)"
               >编辑</el-button
-            >
+            ><br>
             <!-- 删除 -->
             <el-button
               type="danger"
               icon="el-icon-delete"
               size="small"
-              @click="delClusterRoles(scope.row)"
+              @click="delClusterRoles(scope.row.metadata.name)"
               >删除</el-button
             >
           </template>
@@ -274,10 +264,6 @@
           />
         </el-tab-pane>
       </el-tabs>
-
-      <!-- <textarea style="width:100%" name="describe" id="pod" cols="30" rows="10">
-        {{code}}
-      </textarea> -->
       <span slot="footer" class="dialog-footer">
         <div class="foot-info">
           <i class="el-icon-warning"></i> 此操作相当于 kubectl apply -f
@@ -291,6 +277,40 @@
     <!-- 编辑框 Namespace-->
     <el-dialog
       title="编辑 namespace"
+      :visible.sync="editDialogVisible"
+      width="70%"
+      @closed="handleClose"
+      @close="editDialogVisible = false"
+      :append-to-body="true"
+      :lock-scroll="true"
+    >
+      <el-tabs value="first" type="card">
+        <el-tab-pane label="YAML" name="first">
+          <codemirror
+            :value="codeYaml"
+            :options="cmOptionsYaml"
+            @ready="onYamlCmReady"
+            @input="onYamlCmCodeChange"
+          />
+        </el-tab-pane>
+      </el-tabs>
+
+      <!-- <textarea style="width:100%" name="describe" id="ingress" cols="30" rows="10">
+        {{code}}
+      </textarea> -->
+      <span slot="footer" class="dialog-footer">
+        <div class="foot-info">
+          <i class="el-icon-warning"></i> 此操作相当于 kubectl apply -f
+          &ltspec.yaml>
+        </div>
+        <el-button @click="editDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="commitYamlChange">确 定</el-button>
+      </span>
+    </el-dialog>
+
+    <!-- 编辑框 ClusterRole-->
+    <el-dialog
+      title="编辑 clusterRole"
       :visible.sync="editDialogVisible"
       width="70%"
       @closed="handleClose"
@@ -452,6 +472,19 @@ export default {
           throw error;
         });
     },
+    // 打开 cluster 编辑框
+    showClusterRolesEditDialog(name) {
+      this.$store
+        .dispatch("clusterRoles/getClusterRoleYamlByName", name)
+        .then((res) => {
+          console.log(res);
+          this.codeYaml = res.data;
+          this.editDialogVisible = true; // 打开编辑对话框
+        })
+        .catch((error) => {
+          throw error;
+        });
+    },
 
     // 提交修改
     commitYamlChange() {
@@ -488,6 +521,56 @@ export default {
           console.log("cancel");
         });
     },
+
+  /* 删除 namespace */
+    delNamespace: function (name) {
+      this.$confirm("确认删除 namespace", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      }).then(() => {
+        this.$store
+          .dispatch("namespaces/deleteNamespaceByName", name)
+          .then((res) => {
+            if(res.code == 1200) {
+              this.$message.success("删除成功");
+              this.getNamespaces();
+            } else {
+              this.$message.error("删除失败");
+            }
+          })
+          .catch((error) => {
+            throw error;
+          });
+      }).catch(()=>{
+
+      });
+    },
+
+    /* 删除 clusterRole */
+    delClusterRole: function (name) {
+      this.$confirm("确认删除 namespace", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      }).then(() => {
+        this.$store
+          .then((res) => {
+            if(res.code == 1200) {
+              this.$message.success("删除成功");
+              this.getNamespaces();
+            } else {
+              this.$message.error("删除失败");
+            }
+          })
+          .catch((error) => {
+            throw error;
+          });
+      }).catch(()=>{
+
+      });
+    },
+
 
     // 关闭添加或者修改框
     handleClose: function () {

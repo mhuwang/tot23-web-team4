@@ -4,9 +4,9 @@
  * @Author: Rex Joush
  * @Date: 2021-03-26 13:23:01
  * @LastEditors: Leo
- * @LastEditTime: 2021-04-14 20:51:26
+ * @LastEditTime: 2021-04-15 13:28:52
  */
-import { getAllNamespaces, getAllNamespaceName, getNamespaceDetails, getNamespaceYamlByName } from '@/api/cluster/namespaces'
+import { getAllNamespaces, getAllNamespaceName, getNamespaceDetails, getNamespaceYamlByName, deleteNamespaceByName } from '@/api/cluster/namespaces'
 import { getToken } from '@/utils/auth'
 
 const state = {
@@ -24,16 +24,16 @@ const mutations = {
     state.namespaceDetails = namespaceDetails;
   },
   // 初始化获取所有命名空间名称
-  SAVE_NAMESPACE_NAME: (state, namespcaes) => {
-    state.namespaces = namespcaes;
+  SAVE_NAMESPACE_NAME: (state, namespaces) => {
+    state.namespaces = namespaces;
   }
 }
 
 const actions = {
   // 获取所有命名空间
-  getAllNamespaces({commit}) {
+  getAllNamespaces({ commit }) {
     return new Promise((resolve, reject) => {
-        getAllNamespaces().then(response => {
+      getAllNamespaces().then(response => {
         const { data } = response
         if (!data) {
           return reject('获取失败')
@@ -46,7 +46,7 @@ const actions = {
   },
 
   // 获取所有命名空间名字
-  getAllNamespaceName({commit}) {
+  getAllNamespaceName({ commit }) {
     return new Promise((resolve, reject) => {
       getAllNamespaceName().then(response => {
         const { data } = response.data
@@ -75,24 +75,39 @@ const actions = {
     })
   },
 
-    //通过名字获取命名空间对应的 yaml文件
-    getNamespaceYamlByName({ commit }, namespace) {
-      return new Promise((resolve, reject) => {
-        getNamespaceYamlByName(namespace).then(response => {
-          const { data } = response
-          if (!data) {
-            return reject('获取失败')
-          }
-          resolve(data)
-        }).catch(error => {
-          reject(error)
-        })
+  //通过名字获取命名空间对应的 yaml文件
+  getNamespaceYamlByName({ commit }, namespace) {
+    return new Promise((resolve, reject) => {
+      getNamespaceYamlByName(namespace).then(response => {
+        const { data } = response
+        if (!data) {
+          return reject('获取失败')
+        }
+        resolve(data)
+      }).catch(error => {
+        reject(error)
       })
-    },
-  
+    })
+  },
+
+  //通过名字获取命名空间对应的 yaml文件
+  deleteNamespaceByName({ commit }, namespace) {
+    return new Promise((resolve, reject) => {
+      deleteNamespaceByName(namespace).then(response => {
+        const { data } = response
+        if (!data) {
+          return reject('获取失败')
+        }
+        resolve(data)
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
+
 
   // 点击名字进入详情页
-  toDetails({commit, state}, namespaceDetails) {
+  toDetails({ commit, state }, namespaceDetails) {
     commit("TO_NAMESPACE_DETIALS", namespaceDetails);
   }
 }

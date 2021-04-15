@@ -4,12 +4,17 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 19:37:31
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-04-14 13:06:57
+ * @LastEditTime: 2021-04-15 19:24:20
 -->
 <template>
   <div>
-    <el-row style="item-align:center;">
-      <el-col :span="12"><div ref="chart" style="height: 600px; width: 100%"></div></el-col>
+    <el-row style="item-align: center">
+      <el-col :span="12"
+        ><div
+          ref="chart"
+          style="height: 600px; width: 100%; border: solid 1px black"
+        ></div
+      ></el-col>
     </el-row>
   </div>
 </template>
@@ -246,14 +251,55 @@ export default {
           ],
         };
 
-        let option = {
-          tooltip: {
-            formatter: function(params){
+        // let graph = {
+        //   nodes: [
+        //     {
+        //       id: "0",
+        //       name: "master-1",
+        //       symbolSize: 66,
+        //       x: -1,
+        //       y: -1,
+        //       value: "Master Node",
+        //       category: 0,
+        //     },
+        //     {
+        //       id: "1",
+        //       name: "master-2",
+        //       symbolSize: 66,
+        //       x: 0,
+        //       y: 0,
+        //       value: "Master Node",
+        //       category: 0,
+        //     },
+        //   ],
+        //   links: [
+        //     {
+        //       source: "1",
+        //       target: "0",
+        //     },
+        //   ],
+        //   categories: [
+        //     {
+        //       name: "Master Node",
+        //     },
+        //   ],
+        // };
 
-              echartsInstance.clear ()
-              return params;
-            }
+        graph.nodes.forEach(function (node) {
+          node.label = {
+            show: node.symbolSize > 30,
+          };
+        });
+
+        let option = {
+          title: {
+            text: "集群节点拓扑图",
+            subtext: "Default layout",
+            top: "bottom",
+            left: "right",
           },
+
+          tooltip: {},
           legend: [
             {
               data: graph.categories.map(function (a) {
@@ -261,6 +307,8 @@ export default {
               }),
             },
           ],
+          // animationDuration: 1500,
+          // animationEasingUpdate: "quinticInOut",
           series: [
             {
               type: "graph",
@@ -268,24 +316,35 @@ export default {
               data: graph.nodes,
               links: graph.links,
               categories: graph.categories,
-              roam: true,
-              center: [115.97, 29.71],
+              legendHoverLink: false,
+              zoom: 0.5,
+              roam: false,
+              center: [0, 0],
               label: {
                 show: true,
                 position: "right",
                 formatter: "{b}",
               },
-              labelLayout: {
-                hideOverlap: true,
-              },
-              scaleLimit: {
-                min: 0.4,
-                max: 3,
-              },
               lineStyle: {
                 color: "source",
                 curveness: 0.3,
               },
+              emphasis: {
+                // scale: true,
+                focus: "adjacency",
+                blurScope: 'global',
+                lineStyle: {
+                  width: 10,
+                },
+              },
+              animation: true,
+              labelLayout: {
+                hideOverlap: true,
+              },
+              // scaleLimit: {
+              //   min: 0.4,
+              //   max: 3,
+              // },
             },
           ],
         };
