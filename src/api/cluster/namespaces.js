@@ -41,3 +41,13 @@ export function getNamespaceYamlByName(data) {
     }
   })
 }
+
+export function deleteNamespaceByName(data) {
+  return request({
+    url: baseUrl + '/namespaces/deleteNamespaceByName',
+    method: 'get',
+    params: {
+      namespace: data,
+    }
+  })
+}

@@ -3,8 +3,8 @@
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
- * @LastEditors: Rex Joush
- * @LastEditTime: 2021-04-14 21:55:56
+ * @LastEditors: Leo
+ * @LastEditTime: 2021-04-15 13:42:52
 -->
 <template>
   <div>
@@ -488,6 +488,32 @@ export default {
           console.log("cancel");
         });
     },
+
+  /* 删除 namespace */
+    delNamespace: function (name) {
+      this.$confirm("确认删除 namespace", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      }).then(() => {
+        this.$store
+          .dispatch("namespaces/deleteNamespaceByName", name)
+          .then((res) => {
+            if(res.code == 1200) {
+              this.$message.success("删除成功");
+              this.getNamespaces();
+            } else {
+              this.$message.error("删除失败");
+            }
+          })
+          .catch((error) => {
+            throw error;
+          });
+      }).catch(()=>{
+
+      });
+    },
+
 
     // 关闭添加或者修改框
     handleClose: function () {
