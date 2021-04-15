@@ -147,7 +147,7 @@
       :title="annoKey"
       :visible.sync="annoDialogVisible"
       width="50%"
-      @close="handleClose"
+      @close="annoHandleClose"
       :modal="false"
       :show-close="true"
     >
@@ -255,15 +255,15 @@ export default {
   methods: {
     showAnnoDetails(key) {
       this.annoDialogVisible = true;
-      console.log(this.cronJob.metadata);
+      // console.log(this.cronJob.metadata);
       this.annoKey = key;
       this.annoDetails = this.beautify(this.cronJob.metadata.annotations[key], {
         indent_size: 2,
         space_in_empty_paren: true,
       });
     },
-    handleClose() {
-      console.log(this.annoKey, "inhandleClose");
+    annoHandleClose() {
+      // console.log(this.annoKey, "inhandleClose");
       this.annoKey = "";
       this.annoDialogVisible = false;
     },

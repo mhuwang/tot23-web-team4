@@ -4,7 +4,7 @@
  * @Author: zqy
  * @Date: 2021.03.29 16:18
  * @LastEditors: zqy
- * @LastEditTime: 2021-04-13 20:09:11
+ * @LastEditTime: 2021-04-15 20:47:27
  */
 import request from "@/utils/request";
 let baseUrl = "http://localhost:8081"
@@ -19,13 +19,13 @@ export function getAllReplicaSets(data) {
   })
 }
 
-export function getReplicaSetByNameAndNamespace(nameAndNamespace) {
+export function getReplicaSetByNameAndNamespace(data) {
   return request({
     url: baseUrl + '/replicaSets/getReplicaSetByNameAndNamespace',
     method: 'get',
     params: {
-      name: nameAndNamespace.name,
-      namespace: nameAndNamespace.namespace
+      name: data.name,
+      namespace: data.namespace
     }
   })
 }
@@ -44,6 +44,17 @@ export function deleteReplicaSetByNameAndNamespace(data) {
 export function getReplicaSetYamlByNameAndNamespace(data) {
   return request({
     url :baseUrl + '/replicaSets/getReplicaSetYamlByNameAndNamespace',
+    method: 'get',
+    params: {
+      name: data.name,
+      namespace: data.namespace
+    }
+  })
+}
+
+export function getReplicaSetResources(data) {
+  return request({
+    url :baseUrl + '/replicaSets/getReplicaSetResources',
     method: 'get',
     params: {
       name: data.name,

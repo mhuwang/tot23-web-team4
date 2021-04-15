@@ -4,9 +4,9 @@
  * @Author: zqy
  * @Date: 2021.03.29 16:26
  * @LastEditors: zqy
- * @LastEditTime: 2021-04-13 20:07:51
+ * @LastEditTime: 2021-04-15 20:36:01
  */
-import { getAllReplicaSets, getReplicaSetByNameAndNamespace, getReplicaSetYamlByNameAndNamespace, deleteReplicaSetByNameAndNamespace } from '@/api/workload/replicaSets'
+import { getAllReplicaSets, getReplicaSetByNameAndNamespace, getReplicaSetYamlByNameAndNamespace, deleteReplicaSetByNameAndNamespace, getReplicaSetResources } from '@/api/workload/replicaSets'
 import { getToken } from '@/utils/auth'
 
 const getDefaultState = () => {
@@ -73,6 +73,21 @@ const actions = {
   deleteReplicaSetByNameAndNamespace({ commit }, nameAndNamespace) {
     return new Promise((resolve, reject) => {
       deleteReplicaSetByNameAndNamespace(nameAndNamespace).then((response) => {
+        const { data } = response
+        if (!data) {
+          return reject('删除失败')
+        }
+        resolve(data)
+      }).catch((error) => {
+        reject(error)
+      })
+    })
+  },
+
+  //通过名字和命名空间查找 ReplicaSet 相应资源
+  getReplicaSetResources({ commit }, nameAndNamespace) {
+    return new Promise((resolve, reject) => {
+      getReplicaSetResources(nameAndNamespace).then((response) => {
         const { data } = response
         if (!data) {
           return reject('删除失败')

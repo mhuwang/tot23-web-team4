@@ -4,9 +4,9 @@
  * @Author: zqy
  * @Date: 2021.03.29 16:26
  * @LastEditors: zqy
- * @LastEditTime: 2021-04-13 21:40:44
+ * @LastEditTime: 2021-04-15 22:49:08
  */
-import { getAllStatefulSets, getStatefulSetYamlByNameAndNamespace, deleteStatefulSetByNameAndNamespace } from '@/api/workload/statefulSets'
+import { getAllStatefulSets, getStatefulSetYamlByNameAndNamespace, deleteStatefulSetByNameAndNamespace, getStatefulSetResources } from '@/api/workload/statefulSets'
 import { getToken } from '@/utils/auth'
 
 const getDefaultState = () => {
@@ -59,6 +59,21 @@ const actions = {
   deleteStatefulSetByNameAndNamespace({ commit }, nameAndNamespace) {
     return new Promise((resolve, reject) => {
       deleteStatefulSetByNameAndNamespace(nameAndNamespace).then((response) => {
+        const { data } = response
+        if (!data) {
+          return reject('删除失败')
+        }
+        resolve(data)
+      }).catch((error) => {
+        reject(error)
+      })
+    })
+  },
+
+  //通过名字和命名空间查找 StatefulSet 相应资源
+  getStatefulSetResources({ commit }, nameAndNamespace) {
+    return new Promise((resolve, reject) => {
+      getStatefulSetResources(nameAndNamespace).then((response) => {
         const { data } = response
         if (!data) {
           return reject('删除失败')

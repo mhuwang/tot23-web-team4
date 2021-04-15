@@ -4,9 +4,9 @@
  * @Author: zqy
  * @Date: 2021.03.29 16:26
  * @LastEditors: zqy
- * @LastEditTime: 2021-04-13 20:42:07
+ * @LastEditTime: 2021-04-15 21:39:17
  */
-import { getAllReplicationControllers, getReplicationControllerYamlByNameAndNamespace, deleteReplicationControllerByNameAndNamespace } from '@/api/workload/replicationControllers'
+import { getAllReplicationControllers, getReplicationControllerYamlByNameAndNamespace, deleteReplicationControllerByNameAndNamespace, getReplicationControllerResources } from '@/api/workload/replicationControllers'
 import { getToken } from '@/utils/auth'
 
 const getDefaultState = () => {
@@ -58,6 +58,21 @@ const actions = {
   deleteReplicationControllerByNameAndNamespace({ commit }, nameAndNamespace) {
     return new Promise((resolve, reject) => {
       deleteReplicationControllerByNameAndNamespace(nameAndNamespace).then((response) => {
+        const { data } = response
+        if (!data) {
+          return reject('删除失败')
+        }
+        resolve(data)
+      }).catch((error) => {
+        reject(error)
+      })
+    })
+  },
+
+  //通过名字和命名空间查找 ReplicationController 相应资源
+  getReplicationControllerResources({ commit }, nameAndNamespace) {
+    return new Promise((resolve, reject) => {
+      getReplicationControllerResources(nameAndNamespace).then((response) => {
         const { data } = response
         if (!data) {
           return reject('删除失败')
