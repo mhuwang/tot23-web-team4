@@ -3,8 +3,8 @@
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
- * @LastEditors: Leo
- * @LastEditTime: 2021-04-15 13:42:52
+ * @LastEditors: Rex Joush
+ * @LastEditTime: 2021-04-15 20:06:48
 -->
 <template>
   <div>
@@ -28,7 +28,7 @@
             />
           </template>
         </el-table-column>
-        <el-table-column label="名字" width="120">
+        <el-table-column label="名称" width="120">
           <template slot-scope="scope">
             <router-link
               :to="'/summary/nodes/' + scope.row.name"
@@ -48,7 +48,7 @@
             <span>pod-template-hash: {{scope.row.metadata.labels['pod-template-hash']}}</span>
           </template>
         </el-table-column> -->
-        <el-table-column prop="status" width="100" label="准备就绪">
+        <el-table-column prop="status" width="100" label="就绪状态">
         </el-table-column>
         <el-table-column label="CPU 利用率" width="200">
           <template slot-scope="scope">
@@ -133,7 +133,7 @@
             />
           </template>
         </el-table-column>
-        <el-table-column label="名字">
+        <el-table-column label="名称">
           <template slot-scope="scope">
             <router-link
               :to="'/summary/namespaces/' + scope.row.metadata.name"
@@ -175,7 +175,7 @@
               size="small"
               @click="showNamespaceEditDialog(scope.row.metadata.name)"
               >编辑</el-button
-            >
+            ><br>
             <!-- 删除 -->
             <el-button
               type="danger"
@@ -200,7 +200,7 @@
             <svg-icon :icon-class="scope.row.status.phase == 'Active'? 'load-success': 'load-failed'"/>
           </template>
         </el-table-column> -->
-        <el-table-column label="名字">
+        <el-table-column label="名称">
           <template slot-scope="scope">
             <router-link
               :to="'/summary/clusterRoles/' + scope.row.metadata.name"
@@ -213,17 +213,6 @@
             </router-link>
           </template>
         </el-table-column>
-        <!-- <el-table-column label="标签">
-          <template slot-scope="scope">
-            <span>k8s-app: {{scope.row.metadata.labels['k8s-app']}}</span>
-            <br>
-            <span>pod-template-hash: {{scope.row.metadata.labels['pod-template-hash']}}</span>
-          </template>
-        </el-table-column> -->
-        <!-- <el-table-column prop="status.phase" label="运行阶段"> </el-table-column> -->
-        <!-- <el-table-column prop="metadata.uid" label="uid"> </el-table-column>
-        <el-table-column prop="spec.nodeName" label="所属节点"> </el-table-column>
-        <el-table-column prop="status.podIP" label="主机ip地址"> </el-table-column> -->
         <el-table-column label="创建时间">
           <template slot-scope="scope">
             <span>{{
@@ -237,11 +226,11 @@
             <el-button
               type="primary"
               icon="el-icon-edit"
-              tyle="margin-bottom: 5px"
+              style="margin-bottom: 5px"
               size="small"
               @click="showClusterRolesEditDialog(scope.row.metadata.name)"
               >编辑</el-button
-            >
+            ><br>
             <!-- 删除 -->
             <el-button
               type="danger"
@@ -275,10 +264,6 @@
           />
         </el-tab-pane>
       </el-tabs>
-
-      <!-- <textarea style="width:100%" name="describe" id="pod" cols="30" rows="10">
-        {{code}}
-      </textarea> -->
       <span slot="footer" class="dialog-footer">
         <div class="foot-info">
           <i class="el-icon-warning"></i> 此操作相当于 kubectl apply -f
