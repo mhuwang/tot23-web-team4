@@ -3,8 +3,8 @@
  * @version: 1.0
  * @Author: Anna667
  * @Date: 
- * @LastEditors: Anna667
- * @LastEditTime: 
+ * @LastEditors: Rex Joush
+ * @LastEditTime: 2021-04-16 10:14:18
 -->
 <template>
   <div>
@@ -61,6 +61,7 @@
               class="lebel-tag"
               effect="dark"
               size="medium"
+              id="anno_hover"
               color="#bedcfa"
               style="color: #409eff"
               @click="showAnnoDetails(anno.key)"
