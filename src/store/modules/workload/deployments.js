@@ -4,9 +4,9 @@
  * @Author: Rex Joush
  * @Date: 2021-03-27 14:18:28
  * @LastEditors: zqy
- * @LastEditTime: 2021-04-13 19:58:00
+ * @LastEditTime: 2021-04-16 22:27:33
  */
-import { getAllDeployments, getDeploymentByNameAndNamespace, getDeploymentYamlByNameAndNamespace, deleteDeploymentByNameAndNamespace } from '@/api/workload/deployments'
+import { getAllDeployments, getDeploymentByNameAndNamespace, getDeploymentYamlByNameAndNamespace, deleteDeploymentByNameAndNamespace, getDeploymentResources } from '@/api/workload/deployments'
 import { getToken } from '@/utils/auth'
 
 
@@ -76,6 +76,21 @@ const actions = {
     deleteDeploymentByNameAndNamespace({ commit }, nameAndNamespace) {
         return new Promise((resolve, reject) => {
             deleteDeploymentByNameAndNamespace(nameAndNamespace).then((response) => {
+                const { data } = response
+                if (!data) {
+                    return reject('删除失败')
+                }
+                resolve(data)
+            }).catch((error) => {
+                reject(error)
+            })
+        })
+    },
+
+    //通过名字和命名空间获取 Deployment 和 Resources
+    getDeploymentResources({ commit }, nameAndNamespace) {
+        return new Promise((resolve, reject) => {
+            getDeploymentResources(nameAndNamespace).then((response) => {
                 const { data } = response
                 if (!data) {
                     return reject('删除失败')

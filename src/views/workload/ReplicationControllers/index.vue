@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: zqy
- * @LastEditTime: 2021-04-15 22:42:24
+ * @LastEditTime: 2021-04-16 21:44:35
 -->
 <!--<template>
   <h1>Replication Controller</h1>
@@ -60,32 +60,32 @@
       </el-row>
       <el-table :data="replicationControllers" style="width: 100%" stripe>
         <el-table-column width="40">
-          <!-- <template slot-scope="scope">
-            <svg-icon :icon-class="scope.row.status.conditions[3].status == 'True'? 'load-success': scope.row.status.conditions[3].status == 'Unknown'?'load-doubt':'load-failed'"/>
-          </template> -->
+          <template slot-scope="scope">
+            <svg-icon :icon-class="scope.row.status == '1'? 'load-success': 'load-failed'"/>
+          </template>
         </el-table-column>
-        <el-table-column prop="metadata.name" label="名称">
+        <el-table-column prop="name" label="名称">
           <template slot-scope="scope">
             <router-link
               :to="{
                 name: 'ReplicationController Details',
                 params: {
                   name:
-                    scope.row.metadata.name +
+                    scope.row.name +
                     ',' +
-                    scope.row.metadata.namespace,
+                    scope.row.namespace,
                 },
               }"
               @click.native="goToReplicationControllerDetails(scope.row)"
               class="link-type"
             >
               <span style="color: #409eff; text-decoration: underline">{{
-                scope.row.metadata.name
+                scope.row.name
               }}</span>
             </router-link>
           </template>
         </el-table-column>
-        <el-table-column prop="metadata.namespace" label="命名空间">
+        <el-table-column prop="namespace" label="命名空间">
         </el-table-column>
         <!-- <el-table-column label="标签">
           <template slot-scope="scope">
@@ -99,12 +99,12 @@
         <!-- <el-table-column prop="metadata.uid" label="uid"> </el-table-column> -->
         <el-table-column label="Pods">
           <template slot-scope="scope">
-            {{scope.row.status.readyReplicas ? scope.row.status.readyReplicas:0}}/{{scope.row.spec.replicas}}
-          </template>
+          {{scope.row.runningPods ? scope.row.runningPods : 0}}/{{scope.row.replicas}}
+        </template>
         </el-table-column>
         <el-table-column label="启动时间" width="200">
           <template slot-scope="scope">
-            <span>{{scope.row.metadata.creationTimestamp.replaceAll(/[TZ]/g,' ')}}</span>
+            <span>{{scope.row.creationTimestamp.replaceAll(/[TZ]/g,' ')}}</span>
           </template>
         </el-table-column>
         <el-table-column label="操作">
@@ -115,7 +115,7 @@
               type="primary"
               icon="el-icon-edit"
               size="small"
-              @click="showReplicationControllerEditDialog(scope.row.metadata.name, scope.row.metadata.namespace)"
+              @click="showReplicationControllerEditDialog(scope.row.name, scope.row.namespace)"
               >编辑</el-button
             >
             <br />
@@ -125,7 +125,7 @@
               type="danger"
               icon="el-icon-delete"
               size="small"
-              @click="delReplicationController(scope.row.metadata.name, scope.row.metadata.namespace)"
+              @click="delReplicationController(scope.row.name, scope.row.namespace)"
               >删除</el-button
             >
           </template>

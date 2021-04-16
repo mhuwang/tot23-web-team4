@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: zqy
- * @LastEditTime: 2021-04-15 22:33:56
+ * @LastEditTime: 2021-04-16 21:52:30
 -->
 <!--<template>
   <h1>Stateful Sets</h1>
@@ -61,43 +61,41 @@
       <el-table :data="statefulSets" style="width: 100%" stripe>
         <el-table-column width="40">
           <template slot-scope="scope">
-            <!-- <svg-icon :icon-class="scope.row.status.conditions[3].status == 'True'? 'load-success': scope.row.status.conditions[3].status == 'Unknown'?'load-doubt':'load-failed'"/> -->
+            <svg-icon :icon-class="scope.row.status == '1'? 'load-success': 'load-failed'"/>
           </template>
         </el-table-column>
-        <el-table-column prop="metadata.name" label="名称">
+        <el-table-column prop="name" label="名称">
           <template slot-scope="scope">
             <router-link
               :to="{
                 name: 'Statefulset Details',
                 params: {
                   name:
-                    scope.row.metadata.name +
+                    scope.row.name +
                     ',' +
-                    scope.row.metadata.namespace,
+                    scope.row.namespace,
                 },
               }"
               @click.native="goToStatefulSetDetails(scope.row)"
               class="link-type"
             >
               <span style="color: #409eff; text-decoration: underline">{{
-                scope.row.metadata.name
+                scope.row.name
               }}</span>
             </router-link>
           </template>
         </el-table-column>
-        <el-table-column prop="metadata.namespace" label="命名空间">
+        <el-table-column prop="namespace" label="命名空间">
         </el-table-column>
         <el-table-column label="Pods">
           <template slot-scope="scope">
-            <span>
-              ?/{{scope.row.spec.replicas}}
-            </span>
+          {{scope.row.runningPods ? scope.row.runningPods : 0}}/{{scope.row.replicas}}
           </template>
         </el-table-column>
         <el-table-column label="创建时间" width="200">
           <template slot-scope="scope">
             <span>{{
-              scope.row.metadata.creationTimestamp.replaceAll(/[TZ]/g, " ")
+              scope.row.creationTimestamp.replaceAll(/[TZ]/g, " ")
             }}</span>
           </template>
         </el-table-column>
@@ -109,7 +107,7 @@
               type="primary"
               icon="el-icon-edit"
               size="small"
-              @click="showStatefulSetEditDialog(scope.row.metadata.name, scope.row.metadata.namespace)"
+              @click="showStatefulSetEditDialog(scope.row.name, scope.row.namespace)"
               >编辑</el-button
             >
             <br />
@@ -119,7 +117,7 @@
               type="danger"
               icon="el-icon-delete"
               size="small"
-              @click="delStatefulSet(scope.row.metadata.name, scope.row.metadata.namespace)"
+              @click="delStatefulSet(scope.row.name, scope.row.namespace)"
               >删除</el-button
             >
           </template>

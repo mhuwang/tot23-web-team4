@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: zqy
- * @LastEditTime: 2021-04-14 12:20:51
+ * @LastEditTime: 2021-04-16 22:15:51
 -->
 <!--<template>
   <h1>Jobs</h1>
@@ -60,32 +60,32 @@
       </el-row>
       <el-table :data="jobs" style="width: 100%" stripe>
         <el-table-column width="40">
-          <!-- <template slot-scope="scope"> -->
-          <!-- <svg-icon :icon-class="scope.row.status.conditions[3].status == 'True'? 'load-success': scope.row.status.conditions[3].status == 'Unknown'?'load-doubt':'load-failed'"/> -->
-          <!-- </template> -->
+          <template slot-scope="scope">
+          <svg-icon :icon-class="scope.row.status == '1'? 'load-success': 'load-failed'"/>
+          </template>
         </el-table-column>
-        <el-table-column prop="metadata.name" label="名称">
+        <el-table-column prop="name" label="名称">
           <template slot-scope="scope">
             <router-link
               :to="{
                 name: 'Job 详情',
                 params: {
                   name:
-                    scope.row.metadata.name +
+                    scope.row.name +
                     ',' +
-                    scope.row.metadata.namespace,
+                    scope.row.namespace,
                 },
               }"
               @click.native="goToJobsDetails(scope.row)"
               class="link-type"
             >
               <span style="color: #409eff; text-decoration: underline">{{
-                scope.row.metadata.name
+                scope.row.name
               }}</span>
             </router-link>
           </template>
         </el-table-column>
-        <el-table-column prop="metadata.namespace" label="命名空间">
+        <el-table-column prop="namespace" label="命名空间">
         </el-table-column>
         <!-- <el-table-column label="标签">
           <template slot-scope="scope">
@@ -102,14 +102,14 @@
         <el-table-column label="Pods" width="200">
           <template slot-scope="scope">
             <span>
-              ?/{{scope.row.spec.completions}}
+              {{scope.row.runningPods ? scope.row.runningPods: 0}}/{{scope.row.replicas}}
             </span>
           </template>
         </el-table-column>
         <el-table-column label="创建时间" width="200">
           <template slot-scope="scope">
             <span>{{
-              scope.row.status.startTime.replaceAll(/[TZ]/g, " ")
+              scope.row.creationTimestamp.replaceAll(/[TZ]/g, " ")
             }}</span>
           </template>
         </el-table-column>
@@ -137,8 +137,8 @@
               icon="el-icon-edit"
               size="small"
               @click="showJobEditDialog(
-                  scope.row.metadata.name,
-                  scope.row.metadata.namespace
+                  scope.row.name,
+                  scope.row.namespace
                 )"
               >编辑</el-button
             >
@@ -150,8 +150,8 @@
               icon="el-icon-delete"
               size="small"
               @click="delJob(
-                  scope.row.metadata.name,
-                  scope.row.metadata.namespace
+                  scope.row.name,
+                  scope.row.namespace
                 )"
               >删除</el-button
             >
@@ -269,11 +269,11 @@ export default {
       this.$store
         .dispatch("jobs/getAllJobs", namespace)
         .then((res) => {
-          console.log(res.data);
+          console.log("sssssssssss\n", res.data);
           this.jobs = res.data;
         })
         .catch((error) => {
-          console.log(error);
+          console.log("333333错了", error);
         });
     },
 

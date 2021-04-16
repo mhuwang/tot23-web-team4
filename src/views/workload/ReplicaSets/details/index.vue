@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-30 19:58:14
  * @LastEditors: zqy
- * @LastEditTime: 2021-04-15 22:46:53
+ * @LastEditTime: 2021-04-16 20:54:53
 -->
 
 <template>
@@ -259,13 +259,72 @@
         v-loading="loading"
         element-loading-text="获取数据中..."
       >
-        未找到资源
+        <el-table-column prop="metadata.name" label="名字">
+          <template slot-scope="scope">
+            <router-link
+              :to="'/ExploreBalancing/services/' + scope.row.metadata.name"
+              @click.native="
+                goToServicesDetails(
+                  scope.row.metadata.name,
+                  scope.row.metadata.namespace
+                )
+              "
+              class="link-type"
+            >
+              <span style="color: #409eff; text-decoration: underline">{{
+                scope.row.metadata.name
+              }}</span>
+            </router-link>
+          </template>
+        </el-table-column>
+        <el-table-column prop="metadata.namespace" label="命名空间">
+        </el-table-column>
+        <el-table-column prop="spec.type" label="类型"> </el-table-column>
+        <el-table-column label="创建时间" width="300">
+          <template slot-scope="scope">
+            <span>{{
+              scope.row.metadata.creationTimestamp.replaceAll(/[TZ]/g, " ")
+            }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作">
+          <template slot-scope="scope">
+            <!-- 修改 -->
+            <el-button
+              type="primary"
+              icon="el-icon-edit"
+              style="margin-bottom: 5px"
+              size="small"
+              @click="
+                showServiceEditDialog(
+                  scope.row.metadata.name,
+                  scope.row.metadata.namespace
+                )
+              "
+              >编辑</el-button
+            >
+            <br />
+            <!-- 删除 -->
+            <el-button
+              type="danger"
+              icon="el-icon-delete"
+              size="small"
+              @click="
+                delService(
+                  scope.row.metadata.name,
+                  scope.row.metadata.namespace
+                )
+              "
+              >删除</el-button
+            >
+          </template>
+        </el-table-column>
       </el-table>
     </el-card>
     <br /><br />
 
     <!-- 活动 -->
-    <el-card class="box-card">
+    <!-- <el-card class="box-card">
       <div slot="header" class="clearfix">
         <span style="font-size: 16px">活动</span>
       </div>
@@ -279,7 +338,7 @@
         未找到资源
       </el-table>
     </el-card>
-    <br/><br/>
+    <br/><br/> -->
 
     <!-- anno 详情 -->
     <el-dialog
@@ -299,10 +358,10 @@
     <!-- Pod 编辑框 -->
     <el-dialog
       title="编辑 pod"
-      :visible.sync="editDialogVisible"
+      :visible.sync="podEditDialogVisible"
       width="70%"
       @closed="podHandleClose"
-      @close="editDialogVisible = false"
+      @close="podEditDialogVisible = false"
       :append-to-body="true"
       :lock-scroll="true"
     >
@@ -334,7 +393,41 @@
           <i class="el-icon-warning"></i> 此操作相当于 kubectl apply -f
           &ltspec.yaml>
         </div>
-        <el-button @click="editDialogVisible = false">取 消</el-button>
+        <el-button @click="podEditDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="commitYamlChange">确 定</el-button>
+      </span>
+    </el-dialog>
+
+    <!-- Service 编辑框 -->
+    <el-dialog
+      title="编辑 service"
+      :visible.sync="serviceEditDialogVisible"
+      width="70%"
+      @closed="serviceHandleClose"
+      @close="serviceEditDialogVisible = false"
+      :append-to-body="true"
+      :lock-scroll="true"
+    >
+      <el-tabs value="first" type="card">
+        <el-tab-pane label="YAML" name="first">
+          <codemirror
+            :value="codeYaml"
+            :options="cmOptionsYaml"
+            @ready="onYamlCmReady"
+            @input="onYamlCmCodeChange"
+          />
+        </el-tab-pane>
+      </el-tabs>
+
+      <!-- <textarea style="width:100%" name="describe" id="service" cols="30" rows="10">
+        {{code}}
+      </textarea> -->
+      <span slot="footer" class="dialog-footer">
+        <div class="foot-info">
+          <i class="el-icon-warning"></i> 此操作相当于 kubectl apply -f
+          &ltspec.yaml>
+        </div>
+        <el-button @click="serviceEditDialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="commitYamlChange">确 定</el-button>
       </span>
     </el-dialog>
@@ -353,6 +446,8 @@ export default {
   data() {
     return {
       replicaSet: {},
+      pods: {},
+      services: {},
       replicaSetStatus: {},
       replicaSetName: "",
       replicaSetNamespace: "",
@@ -360,7 +455,8 @@ export default {
       annoDialogVisible: false,
       annoDetails: "",
       loading: true,
-      editDialogVisible: false,
+      podEditDialogVisible: false,
+      serviceEditDialogVisible: false,
       codeYaml: "",
       addYaml: "", // 添加框的 yaml 数据
 
@@ -429,9 +525,9 @@ export default {
       .dispatch("replicaSets/getReplicaSetResources", nameAndNamespace)
       .then((res) => {
         console.log(res);
-        this.replicaSet = res.dataReplicaSet;
-        this.pods = res.dataPods;
-        this.services = res.dataServices;
+        this.replicaSet = res.data.replicaSet;
+        this.pods = res.data.pods;
+        this.services = res.data.services;
         // this.replicaSetStatus = res.data.status.conditions;
         this.loading = false;
         // console.log(this.replicaSetStatus)
@@ -539,7 +635,7 @@ export default {
       this.annoDialogVisible = false;
     },
 
-    /* 编辑部分 */
+    /* 编辑部分 Pod 和 Service*/
     showPodEditDialog(name, namespace) {
       let podDetails = {
         podName: name,
@@ -557,7 +653,7 @@ export default {
           // });
           console.log(res, "\n最初获取的Yaml\n");
           this.codeYaml = res.data;
-          this.editDialogVisible = true; // 打开编辑对话框
+          this.podEditDialogVisible = true; // 打开编辑对话框
         })
         .catch((error) => {
           throw error;
@@ -569,6 +665,40 @@ export default {
         .then((res) => {
           // console.log(res);
           let json = JSON.stringify(res.data.pod);
+          this.codeJSON = this.beautify(json, {
+            indent_size: 4,
+            space_in_empty_paren: true,
+          });
+        })
+        .catch((error) => {
+          throw error;
+        });
+
+      //this.editForm = res; // 查询结果写入表单
+    },
+    showServiceEditDialog(name, namespace) {
+      let serviceDetails = {
+        serviceName: name,
+        serviceNamespace: namespace,
+      };
+
+      // 获取 yaml 格式
+      this.$store
+        .dispatch("services/getServiceYamlByNameAndNamespace", serviceDetails)
+        .then((res) => {
+          this.codeYaml = res.data;
+          this.serviceEditDialogVisible = true; // 打开编辑对话框
+        })
+        .catch((error) => {
+          throw error;
+        });
+        
+      // json 格式
+      this.$store
+        .dispatch("services/getServiceByNameAndNamespace", serviceDetails)
+        .then((res) => {
+          // console.log(res);
+          let json = JSON.stringify(res.data.service);
           this.codeJSON = this.beautify(json, {
             indent_size: 4,
             space_in_empty_paren: true,
@@ -618,7 +748,9 @@ export default {
                   this.$message.info("提交成功");
                   break;
               }
-              this.editDialogVisible = false;
+              this.podEditDialogVisible = false;
+              this.serviceEditDialogVisible = false;
+
             })
             .catch((error) => {
               throw error;
@@ -637,7 +769,7 @@ export default {
       }, 1);
     },
 
-    /* 删除 Pod */
+    /* 删除 Pod 和 Service*/
     delPod: function (name, namespace) {
       this.$confirm("确认删除 pod？", {
         confirmButtonText: "确定",
@@ -664,6 +796,33 @@ export default {
       }).catch(()=>{
 
       });
+    },
+    delService: function (name, namespace) {
+      this.$confirm("确认删除 service？", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          let serviceDetails = {
+            serviceName: name,
+            serviceNamespace: namespace,
+          };
+          this.$store
+            .dispatch("services/delServiceByNameAndNamespace", serviceDetails)
+            .then((res) => {
+              if (res.code == 1200) {
+                this.$message.success("删除成功");
+                this.getServices();
+              } else {
+                this.$message.error("删除失败");
+              }
+            })
+            .catch((error) => {
+              throw error;
+            });
+        })
+        .catch(() => {});
     },
   },
 };

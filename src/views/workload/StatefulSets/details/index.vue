@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-30 19:58:14
  * @LastEditors: zqy
- * @LastEditTime: 2021-04-15 23:04:20
+ * @LastEditTime: 2021-04-16 23:07:12
 -->
 
 <template>
@@ -248,7 +248,7 @@
     <br /><br />
 
     <!-- 活动 -->
-    <el-card class="box-card">
+    <!-- <el-card class="box-card">
       <div slot="header" class="clearfix">
         <span style="font-size: 16px">活动</span>
       </div>
@@ -262,7 +262,7 @@
         未找到资源
       </el-table>
     </el-card>
-    <br/><br/>
+    <br/><br/> -->
 
     <!-- anno 详情 -->
     <el-dialog

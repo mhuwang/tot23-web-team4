@@ -237,11 +237,11 @@
     <br /><br />
 
     <!-- 活动 -->
-    <el-card class="box-card">
+    <!-- <el-card class="box-card">
       <div slot="header" class="clearfix">
         <span style="font-size: 16px">活动</span>
       </div>
-    </el-card>
+    </el-card> -->
 
     <!-- Pod 编辑框 -->
     <el-dialog

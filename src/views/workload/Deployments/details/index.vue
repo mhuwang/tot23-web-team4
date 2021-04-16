@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-30 19:58:14
  * @LastEditors: zqy
- * @LastEditTime: 2021-04-15 22:42:04
+ * @LastEditTime: 2021-04-16 22:54:40
 -->
 
 <template>
@@ -59,6 +59,7 @@
             >
           </li>
         </div>
+        <br/>
         <div
           :annotations="this.annotations"
           v-if="annotations.length > 0"
@@ -134,11 +135,15 @@
       <List item-layout="horizontal" :split="false">
         <div class="metadata-item">
           <p>最多超出数</p>
-          <span>{{ deployment.spec.strategy.rollingUpdate.maxSurge.strVal }}</span>
+          <span>{{
+            deployment.spec.strategy.rollingUpdate.maxSurge.strVal
+          }}</span>
         </div>
         <div class="metadata-item">
           <p>最多不可用数</p>
-          <span>{{deployment.spec.strategy.rollingUpdate.maxUnavailable.strVal}}</span>
+          <span>{{
+            deployment.spec.strategy.rollingUpdate.maxUnavailable.strVal
+          }}</span>
         </div>
       </List>
     </el-card>
@@ -156,7 +161,7 @@
         </div>
         <div class="metadata-item" v-if="deployment.status.replicas">
           <p>总计</p>
-          <span>{{deployment.status.replicas}}</span>
+          <span>{{ deployment.status.replicas }}</span>
         </div>
         <div class="metadata-item" v-if="deployment.status.availableReplicas">
           <p>可用</p>
@@ -164,7 +169,7 @@
         </div>
         <div class="metadata-item" v-if="deployment.status.unavailableReplicas">
           <p>不可用</p>
-          <span>{{deployment.status.unavailableReplicas}}</span>
+          <span>{{ deployment.status.unavailableReplicas }}</span>
         </div>
       </List>
     </el-card>
@@ -182,78 +187,310 @@
         v-loading="loading"
         element-loading-text="获取数据中..."
       >
-        <el-table-column align="center" prop="type" label="类别" width="130"></el-table-column>
-        <el-table-column align="center" prop="status" label="状态" width="130"> </el-table-column>
+        <el-table-column
+          align="center"
+          prop="type"
+          label="类别"
+          width="130"
+        ></el-table-column>
+        <el-table-column align="center" prop="status" label="状态" width="130">
+        </el-table-column>
         <el-table-column align="center" label="最后的检测时间" width="180">
           <template slot-scope="scope">
-            {{scope.row.lastUpdateTime.replaceAll(/[TZ]/g, " ")}}
+            {{ scope.row.lastUpdateTime.replaceAll(/[TZ]/g, " ") }}
           </template>
         </el-table-column>
-        <el-table-column align="center" prop="lastTransitionTime" label="最后的迁移时间" width="180">
+        <el-table-column
+          align="center"
+          prop="lastTransitionTime"
+          label="最后的迁移时间"
+          width="180"
+        >
           <template slot-scope="scope">
-            {{scope.row.lastTransitionTime.replaceAll(/[TZ]/g, " ")}}
+            {{ scope.row.lastTransitionTime.replaceAll(/[TZ]/g, " ") }}
           </template>
         </el-table-column>
-        <el-table-column prop="reason" align="center" label="原因" width="250"> </el-table-column>
-        <el-table-column align="center" prop="message"  label="信息"></el-table-column>
+        <el-table-column prop="reason" align="center" label="原因" width="250">
+        </el-table-column>
+        <el-table-column
+          align="center"
+          prop="message"
+          label="信息"
+        ></el-table-column>
       </el-table>
     </el-card>
+    <br /><br />
 
     <!-- 新 Replica Set -->
     <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <span style="font-size: 16px">新副本控制器</span>
+        <span style="font-size: 16px"> 新副本控制器</span>
       </div>
+      <el-table :data="newReplicaSets" style="width: 100%" stripe>
+        <el-table-column width="40">
+          <template slot-scope="scope">
+            <svg-icon
+              :icon-class="
+                scope.row.status == '1' ? 'load-success' : 'load-failed'
+              "
+            />
+          </template>
+        </el-table-column>
+        <el-table-column prop="name" label="名称">
+          <template slot-scope="scope">
+            <router-link
+              :to="{
+                name: 'ReplicaSet Details',
+                params: {
+                  name: scope.row.name + ',' + scope.row.namespace,
+                },
+              }"
+              @click.native="goToReplicaSetsDetails(scope.row)"
+              class="link-type"
+            >
+              <span style="color: #409eff; text-decoration: underline">{{
+                scope.row.name
+              }}</span>
+            </router-link>
+          </template>
+        </el-table-column>
+        <el-table-column prop="namespace" label="命名空间"> </el-table-column>
+        <!-- <el-table-column label="标签">
+          <template slot-scope="scope">
+            <span>k8s-app: {{scope.row.metadata.labels['k8s-app']}}</span>
+            <br>
+            <span>pod-template-hash: {{scope.row.metadata.labels['pod-template-hash']}}</span>
+          </template>
+        </el-table-column> -->
+        <!-- <el-table-column prop="apiVersion" label="apiVersion"> </el-table-column> -->
+        <!-- <el-table-column prop="kind" label="kind"> </el-table-column> -->
+        <!-- <el-table-column prop="metadata.uid" label="uid"> </el-table-column> -->
+        <!-- <el-table-column prop="spec.nodeName" width="140" label="所属节点"> </el-table-column> -->
+        <!-- <el-table-column prop="status.podIP" width="140" label="主机ip地址"> </el-table-column> -->
+        <el-table-column label="Pods">
+          <template slot-scope="scope">
+            {{ scope.row.runningPods ? scope.row.runningPods : 0 }}/{{
+              scope.row.replicas
+            }}
+          </template>
+        </el-table-column>
+        <el-table-column label="启动时间" width="200">
+          <template slot-scope="scope">
+            <span>{{
+              scope.row.creationTimestamp.replaceAll(/[TZ]/g, " ")
+            }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作">
+          <template slot-scope="scope">
+            <!-- 修改 -->
+            <el-button
+              style="margin-bottom: 5px"
+              type="primary"
+              icon="el-icon-edit"
+              size="small"
+              @click="
+                showReplicaSetEditDialog(scope.row.name, scope.row.namespace)
+              "
+              >编辑</el-button
+            >
+            <br />
+            <!-- 删除 -->
+            <el-button
+              style="margin-bottom: 5px"
+              type="danger"
+              icon="el-icon-delete"
+              size="small"
+              @click="delReplicaSet(scope.row.name, scope.row.namespace)"
+              >删除</el-button
+            >
+          </template>
+        </el-table-column>
+      </el-table>
     </el-card>
-    <br/><br/>
+    <br /><br />
 
     <!-- 旧 Replica Set -->
     <el-card class="box-card">
       <div slot="header" class="clearfix">
         <span style="font-size: 16px"> 旧副本控制器</span>
       </div>
+      <el-table :data="oldReplicaSets" style="width: 100%" stripe>
+        <el-table-column width="40">
+          <template slot-scope="scope">
+            <svg-icon
+              :icon-class="
+                scope.row.status == '1' ? 'load-success' : 'load-failed'
+              "
+            />
+          </template>
+        </el-table-column>
+        <el-table-column prop="name" label="名称">
+          <template slot-scope="scope">
+            <router-link
+              :to="{
+                name: 'ReplicaSet Details',
+                params: {
+                  name: scope.row.name + ',' + scope.row.namespace,
+                },
+              }"
+              @click.native="goToReplicaSetsDetails(scope.row)"
+              class="link-type"
+            >
+              <span style="color: #409eff; text-decoration: underline">{{
+                scope.row.name
+              }}</span>
+            </router-link>
+          </template>
+        </el-table-column>
+        <el-table-column prop="namespace" label="命名空间"> </el-table-column>
+        <!-- <el-table-column label="标签">
+          <template slot-scope="scope">
+            <span>k8s-app: {{scope.row.metadata.labels['k8s-app']}}</span>
+            <br>
+            <span>pod-template-hash: {{scope.row.metadata.labels['pod-template-hash']}}</span>
+          </template>
+        </el-table-column> -->
+        <!-- <el-table-column prop="apiVersion" label="apiVersion"> </el-table-column> -->
+        <!-- <el-table-column prop="kind" label="kind"> </el-table-column> -->
+        <!-- <el-table-column prop="metadata.uid" label="uid"> </el-table-column> -->
+        <!-- <el-table-column prop="spec.nodeName" width="140" label="所属节点"> </el-table-column> -->
+        <!-- <el-table-column prop="status.podIP" width="140" label="主机ip地址"> </el-table-column> -->
+        <el-table-column label="Pods">
+          <template slot-scope="scope">
+            {{ scope.row.runningPods ? scope.row.runningPods : 0 }}/{{
+              scope.row.replicas
+            }}
+          </template>
+        </el-table-column>
+        <el-table-column label="启动时间" width="200">
+          <template slot-scope="scope">
+            <span>{{
+              scope.row.creationTimestamp.replaceAll(/[TZ]/g, " ")
+            }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作">
+          <template slot-scope="scope">
+            <!-- 修改 -->
+            <el-button
+              style="margin-bottom: 5px"
+              type="primary"
+              icon="el-icon-edit"
+              size="small"
+              @click="
+                showReplicaSetEditDialog(scope.row.name, scope.row.namespace)
+              "
+              >编辑</el-button
+            >
+            <br />
+            <!-- 删除 -->
+            <el-button
+              style="margin-bottom: 5px"
+              type="danger"
+              icon="el-icon-delete"
+              size="small"
+              @click="delReplicaSet(scope.row.name, scope.row.namespace)"
+              >删除</el-button
+            >
+          </template>
+        </el-table-column>
+      </el-table>
     </el-card>
-    <br/><br/>
+    <br /><br />
 
     <!-- Pod 水平自动伸缩 -->
-    <el-card class="box-card">
+    <!-- <el-card class="box-card">
       <div slot="header" class="clearfix">
         <span style="font-size: 16px"> Pod 水平自动伸缩</span>
       </div>
     </el-card>
-    <br/><br/>
+    <br/><br/> -->
 
     <!-- 活动 -->
-    <el-card class="box-card">
+    <!-- <el-card class="box-card">
       <div slot="header" class="clearfix">
         <span style="font-size: 16px"> 活动</span>
       </div>
     </el-card>
-    <br/><br/>
+    <br /><br /> -->
 
     <!-- anno 详情 -->
     <el-dialog
       :title="annoKey"
       :visible.sync="annoDialogVisible"
       width="50%"
-      @close="annohandleClose"
+      @close="annoHandleClose"
       :modal="false"
       :show-close="true"
     >
       <highlightjs javascript :code="annoDetails" />
       <span slot="footer" class="dialog-footer">
-        <el-button @click="annoDialogVisible=false">关闭</el-button>
+        <el-button @click="annoDialogVisible = false">关闭</el-button>
+      </span>
+    </el-dialog>
+
+    <!-- ReplicaSet 编辑框 -->
+    <el-dialog
+      title="编辑 ReplicaSet"
+      :visible.sync="replicaSetEditDialogVisible"
+      width="70%"
+      @closed="replicaSetHandleClose"
+      @close="replicaSetEditDialogVisible = false"
+      :append-to-body="true"
+      :lock-scroll="true"
+    >
+      <el-tabs value="first" type="card">
+        <el-tab-pane label="YAML" name="first">
+          <codemirror
+            :value="codeYaml"
+            :options="cmOptionsYaml"
+            @ready="onYamlCmReady"
+            @input="onYamlCmCodeChange"
+          />
+        </el-tab-pane>
+        <el-tab-pane label="JSON" name="second">
+          <codemirror
+            ref="cmYamlEditor"
+            :value="codeJSON"
+            :options="cmOptions"
+            @ready="onJSONCmReady"
+            @input="onJSONCmCodeChange"
+          />
+        </el-tab-pane>
+      </el-tabs>
+
+      <!-- <textarea style="width:100%" name="describe" id="pod" cols="30" rows="10">
+        {{code}}
+      </textarea> -->
+      <span slot="footer" class="dialog-footer">
+        <div class="foot-info">
+          <i class="el-icon-warning"></i> 此操作相当于 kubectl apply -f
+          &ltspec.yaml>
+        </div>
+        <el-button @click="replicaSetEditDialogVisible = false"
+          >取 消</el-button
+        >
+        <el-button type="primary" @click="commitYamlChange">确 定</el-button>
       </span>
     </el-dialog>
   </div>
 </template>
 
 <script>
+// import language js
+import "codemirror/mode/javascript/javascript.js";
+import "codemirror/mode/yaml/yaml.js";
+// import theme style
+import "codemirror/theme/panda-syntax.css";
+
 export default {
   props: ["name", "namespace"],
   data() {
     return {
       deployment: {},
+      newReplicaSets: {},
+      oldReplicaSets: {},
       deploymentStatus: {},
       deploymentName: "",
       deploymentNamespace: "",
@@ -261,6 +498,30 @@ export default {
       annoDialogVisible: false,
       annoDetails: "",
       loading: true,
+      replicaSetEditDialogVisible: false, // 编辑详情框
+      codeJSON: "", // 编辑框的 json 数据
+      codeYaml: "", // 编辑框的 yaml 数据
+      addYaml: "", // 添加框的 yaml 数据
+      value: "",
+      cmOptions: {
+        // json codemirror 配置项
+        tabSize: 4,
+        mode: {
+          name: "javascript",
+          json: true,
+        },
+        theme: "panda-syntax",
+        lineNumbers: true,
+        line: true,
+      },
+      cmOptionsYaml: {
+        // yaml codemirror 配置项
+        tabSize: 4,
+        mode: "yaml",
+        theme: "panda-syntax",
+        lineNumbers: true,
+        line: true,
+      },
     };
   },
   // 生命周期方法
@@ -303,13 +564,15 @@ export default {
       namespace: this.name.split(",")[1],
     };
     this.$store
-      .dispatch("deployments/getDeploymentByNameAndNamespace", dep)
+      .dispatch("deployments/getDeploymentResources", dep)
       .then((res) => {
         console.log(res);
-        this.deployment = res.data;
-        this.deploymentStatus = res.data.status.conditions;
+        this.deployment = res.data.deployment;
+        this.newReplicaSets = res.data.newReplicaSets;
+        this.oldReplicaSets = res.data.oldReplicaSets;
+        this.deploymentStatus = res.data.deployment.status.conditions;
         this.loading = false;
-        console.log(this.deploymentStatus)
+        // console.log(this.deploymentStatus)
       })
       .catch((error) => {
         throw error;
@@ -374,6 +637,134 @@ export default {
       this.annoKey = "";
       this.annoDialogVisible = false;
     },
+
+    //编辑 ReplicaSet
+  showReplicaSetEditDialog(name, namespace) {
+    let replicaSetDetails = {
+      name: name,
+      namespace: namespace,
+    };
+
+    // 获取 yaml 格式
+    this.$store
+      .dispatch(
+        "replicaSets/getReplicaSetYamlByNameAndNamespace",
+        replicaSetDetails
+      )
+      .then((res) => {
+        this.codeYaml = res.data;
+        console.log("edit dialog init", this.codeYaml);
+        this.replicaSetEditDialogVisible = true; // 打开编辑对话框
+      })
+      .catch((error) => {
+        throw error;
+      });
+
+    // json 格式
+    this.$store
+      .dispatch("cronJobs/getCronJobByNameAndNamespace", cronJobDetails)
+      .then((res) => {
+        // console.log(res);
+        let json = JSON.stringify(res.data.cronJob);
+        this.codeJSON = this.beautify(json, {
+          indent_size: 4,
+          space_in_empty_paren: true,
+        });
+      })
+      .catch((error) => {
+        throw error;
+      });
+
+    //this.editForm = res; // 查询结果写入表单
+  },
+
+  // 编辑器方法
+  /* yaml */
+  onYamlCmReady(cm) {
+    setTimeout(() => {
+      cm.refresh();
+    }, 50);
+  },
+  onYamlCmCodeChange(newCode) {
+    this.codeYaml = newCode;
+  },
+
+  //点击确认按钮触发此修改 ReplicaSet 事件
+  commitYamlChange() {
+    this.$confirm("确认修改？", {
+      confirmButtonText: "确定",
+      cancelButtonText: "取消",
+      type: "info",
+    })
+      .then(() => {
+        this.$store
+          .dispatch("common/changeResourceByYaml", this.codeYaml)
+          .then((res) => {
+            switch (res.code) {
+              case 1200:
+                this.$message.success("修改成功");
+                break;
+              case 1201:
+                this.$message.error("修改失败，请查看 yaml 文件格式");
+                break;
+              case 1202:
+                this.$message.error("创建失败，请查看云平台相关错误信息");
+                break;
+              default:
+                this.$message.info("提交成功");
+                break;
+            }
+            this.replicaSetEditDialogVisible = false;
+          })
+          .catch((error) => {
+            throw error;
+          });
+      })
+      .catch(() => {
+        console.log("cancel");
+      });
+  },
+
+  // 关闭修改框
+  replicaSetHandleClose () {
+    this.addYaml = "";
+    setTimeout(() => {
+      this.codemorror.refresh();
+    }, 1);
+  },
+
+  //删除 ReplicaSet
+  delReplicaSet(name, namespace) {
+    this.$confirm("确认删除 ReplicaSet", {
+      confirmButtonText: "确定",
+      cancelButtonText: "取消",
+      type: "warning",
+    })
+      .then(() => {
+        let nameAndNamespace = {
+          name: name,
+          namespace: namespace,
+        };
+        this.$store
+          .dispatch(
+            "replicaSets/deleteReplicaSetByNameAndNamespace",
+            nameAndNamespace
+          )
+          .then((res) => {
+            if (res.data) {
+              this.$message.success("删除成功");
+              this.getReplicaSets();
+            } else {
+              this.$message.error("删除失败");
+            }
+            console.log(res.data);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      })
+      .catch(() => {});
+  },
   },
 };
 </script>
