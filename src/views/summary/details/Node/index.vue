@@ -3,8 +3,8 @@
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-03-25 22:13:37
- * @LastEditors: Rex Joush
- * @LastEditTime: 2021-04-15 20:03:30
+ * @LastEditors: Leo
+ * @LastEditTime: 2021-04-15 22:02:37
 -->
 <template>
   <div>
@@ -60,8 +60,8 @@
                   >
                     <div class="demo-Circle-custom">
                       <h2>6.3%</h2>
-                      <span> Requests </span>
-                      <p>Cores: {{ node.status.allocatable.cpu.amount }}</p>
+                      <span> 需求 </span>
+                      <p>内核: {{ node.status.allocatable.cpu.amount }}</p>
                     </div>
                   </i-circle>
                 </ListItem>
@@ -76,8 +76,8 @@
                   >
                     <div class="demo-Circle-custom">
                       <h2>12.5%</h2>
-                      <span> Limits </span>
-                      <p>Cores: {{ node.status.allocatable.cpu.amount }}</p>
+                      <span> 限制 </span>
+                      <p>内核: {{ node.status.allocatable.cpu.amount }}</p>
                     </div>
                   </i-circle>
                 </ListItem>
@@ -100,9 +100,9 @@
                   >
                     <div class="demo-Circle-custom">
                       <h2>0.4%</h2>
-                      <span> Requests </span>
+                      <span> 需求 </span>
                       <p>
-                        GiB:
+                        GB:
                         {{
                           (
                             node.status.allocatable.memory.amount /
@@ -125,9 +125,9 @@
                   >
                     <div class="demo-Circle-custom">
                       <h2>0.8%</h2>
-                      <span> Limits </span>
+                      <span> 限制 </span>
                       <p>
-                        GiB:
+                        GB:
                         {{
                           (
                             node.status.allocatable.memory.amount /
@@ -145,7 +145,7 @@
           <!-- pod 信息 -->
           <el-col :span="6" :offset="1">
             <Card class="my-card">
-              <p slot="title">Pod</p>
+              <p slot="title">容器组</p>
               <List class="my-list" item-layout="vertical" :split="false">
                 <ListItem class="my-list-item">
                   <i-circle
@@ -171,8 +171,8 @@
                         }}
                         %
                       </h2>
-                      <span> Requests </span>
-                      <p>Pods: {{ podsAmount }}</p>
+                      <span> 需求 </span>
+                      <p>容器组数: {{ podsAmount }}</p>
                     </div>
                   </i-circle>
                 </ListItem>
@@ -190,7 +190,7 @@
       </div>
       <List item-layout="horizontal" :split="false">
         <div class="metadata-item">
-          <p>名字</p>
+          <p>名称</p>
           <span>{{ node.metadata.name }}</span>
         </div>
         <div class="metadata-item">

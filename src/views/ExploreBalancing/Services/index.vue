@@ -4,14 +4,14 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: Leo
- * @LastEditTime: 2021-04-15 13:31:19
+ * @LastEditTime: 2021-04-15 21:12:46
 
  -->
 <template>
   <div>
     <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <span>所有 Services</span>
+        <span>所有服务</span>
       </div>
       <el-row :gutter="20">
         <el-col :span="6">
@@ -71,7 +71,7 @@
           </template>
         </el-table-column> -->
 
-        <el-table-column prop="metadata.name" label="名字">
+        <el-table-column prop="metadata.name" label="名称">
           <template slot-scope="scope">
             <router-link
               :to="'/ExploreBalancing/services/' + scope.row.metadata.name"
@@ -323,7 +323,7 @@ export default {
 
     /* 删除 Service */
     delService: function (name, namespace) {
-      this.$confirm("确认删除 service？", {
+      this.$confirm("确认删除 服务 ？", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",

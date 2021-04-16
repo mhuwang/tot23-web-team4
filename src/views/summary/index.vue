@@ -3,8 +3,8 @@
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
- * @LastEditors: Rex Joush
- * @LastEditTime: 2021-04-15 20:06:48
+ * @LastEditors: Leo
+ * @LastEditTime: 2021-04-15 20:52:26
 -->
 <template>
   <div>
@@ -175,7 +175,7 @@
               size="small"
               @click="showNamespaceEditDialog(scope.row.metadata.name)"
               >编辑</el-button
-            ><br>
+            ><br />
             <!-- 删除 -->
             <el-button
               type="danger"
@@ -230,13 +230,13 @@
               size="small"
               @click="showClusterRolesEditDialog(scope.row.metadata.name)"
               >编辑</el-button
-            ><br>
+            ><br />
             <!-- 删除 -->
             <el-button
               type="danger"
               icon="el-icon-delete"
               size="small"
-              @click="delClusterRoles(scope.row.metadata.name)"
+              @click="delClusterRole(scope.row.metadata.name)"
               >删除</el-button
             >
           </template>
@@ -522,55 +522,57 @@ export default {
         });
     },
 
-  /* 删除 namespace */
+    /* 删除 namespace */
     delNamespace: function (name) {
       this.$confirm("确认删除 namespace", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
-      }).then(() => {
-        this.$store
-          .dispatch("namespaces/deleteNamespaceByName", name)
-          .then((res) => {
-            if(res.code == 1200) {
-              this.$message.success("删除成功");
-              this.getNamespaces();
-            } else {
-              this.$message.error("删除失败");
-            }
-          })
-          .catch((error) => {
-            throw error;
-          });
-      }).catch(()=>{
-
-      });
+      })
+        .then(() => {
+          this.$store
+            .dispatch("namespaces/deleteNamespaceByName", name)
+            .then((res) => {
+              console.log(res);
+              if (res.code == 1200) {
+                this.$message.success("删除成功");
+                this.getNamespaces();
+              } else {
+                this.$message.error("删除失败");
+              }
+            })
+            .catch((error) => {
+              throw error;
+            });
+        })
+        .catch(() => {});
     },
 
     /* 删除 clusterRole */
     delClusterRole: function (name) {
-      this.$confirm("确认删除 namespace", {
+      this.$confirm("确认删除 clusterRole", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
-      }).then(() => {
-        this.$store
-          .then((res) => {
-            if(res.code == 1200) {
-              this.$message.success("删除成功");
-              this.getNamespaces();
-            } else {
-              this.$message.error("删除失败");
-            }
-          })
-          .catch((error) => {
-            throw error;
-          });
-      }).catch(()=>{
-
-      });
+      })
+        .then(() => {
+          this.$store
+            .dispatch("clusterRoles/delClusterRoleByName", name)
+            .then((res) => {
+              console.log(res)
+              if (res.code == 1200) {
+                this.$message.success("删除成功");
+                this.getClusterRoles();
+              } else {
+                this.$message.error("删除失败");
+              }
+            })
+            .catch((error) => {
+              throw error;
+            });
+        })
+        .catch(() => {});
     },
-
 
     // 关闭添加或者修改框
     handleClose: function () {

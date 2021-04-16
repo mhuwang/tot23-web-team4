@@ -4,13 +4,13 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: Leo
- * @LastEditTime: 2021-04-14 20:30:31
+ * @LastEditTime: 2021-04-15 21:58:23
 -->
 <template>
   <div>
     <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <span>所有 Ingresses</span>
+        <span>所有统一访问入口</span>
       </div>
       <el-row :gutter="20">
         <el-col :span="5">
@@ -50,7 +50,7 @@
             <svg-icon :icon-class="scope.row.status.conditions[1].status == 'True'? 'load-success': scope.row.status.conditions[1].status == 'Unknown'?'load-doubt':'load-failed'"/>
           </template>
         </el-table-column> -->
-        <el-table-column prop="metadata.name" label="名字">
+        <el-table-column prop="metadata.name" label="名称">
           <template slot-scope="scope">
             <router-link
               :to="'/ExploreBalancing/ingresses/' + scope.row.metadata.name"
@@ -127,7 +127,7 @@
 
     <!-- 编辑框 -->
     <el-dialog
-      title="编辑 ingress"
+      title="编辑 入口"
       :visible.sync="editDialogVisible"
       width="70%"
       @closed="handleClose"

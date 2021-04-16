@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-30 19:58:14
  * @LastEditors: Leo
- * @LastEditTime: 2021-04-13 09:07:08
+ * @LastEditTime: 2021-04-15 21:51:44
 -->
 
 <template>
@@ -21,7 +21,7 @@
       </div>
       <List item-layout="horizontal" :split="false">
         <div class="metadata-item">
-          <p>名字</p>
+          <p>名称</p>
           <span>{{ service.metadata.name }}</span>
         </div>
         <div class="metadata-item">
@@ -80,18 +80,18 @@
           <span>{{ service.spec.type }}</span>
         </div>
         <div class="metadata-item">
-          <p>Cluster IP</p>
+          <p>集群 IP</p>
           <span>{{ service.spec.clusterIP }}</span>
         </div>
         <div class="metadata-item">
-          <p>Session Affinity</p>
+          <p>会话亲和力</p>
           <span>{{ service.spec.sessionAffinity }}</span>
         </div>
       </List>
       <!-- Selector 部分 -->
       <List item-layout="horizontal" :split="false">
         <div v-if="selectors.length > 0" class="metadata-item">
-          <p>Selector</p>
+          <p>选择器</p>
           <li v-for="(select, index) in selectors" :key="index">
             <el-tag
               class="lebel-tag"
@@ -108,7 +108,7 @@
     <!-- Endpoint -->
     <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <span style="font-size: 16px">Endpoint</span>
+        <span style="font-size: 16px">端点</span>
       </div>
       <el-table
         v-if="endpoint.subsets.length > 0"
@@ -116,26 +116,26 @@
         style="width: 100%"
         stripe
       >
-        <el-table-column prop="ip" label="Host" width="240"> </el-table-column>
-        <el-table-column label="Ports(Name,Port,Protocol)" width="540">
+        <el-table-column prop="ip" label="主机 ip" width="240"> </el-table-column>
+        <el-table-column label="端口信息(名称，端口，协议)" width="540">
           <template>
             &lt;{{ endpoint.subsets[0].ports[0].name }}&gt; ­&shy; &lt;{{
               endpoint.subsets[0].ports[0].port
             }}&gt; ­&shy; &lt;{{ endpoint.subsets[0].ports[0].protocol }}&gt;
           </template>
         </el-table-column>
-        <el-table-column prop="nodeName" label="Node" width="300">
+        <el-table-column prop="nodeName" label="节点" width="300">
         </el-table-column>
-        <el-table-column label="Ready" width="300"> true </el-table-column>
+        <el-table-column label="是否就绪" width="300"> 是 </el-table-column>
       </el-table>
-      <p v-else style="font-size: 18px; color: #909399">No data</p>
+      <p v-else style="font-size: 18px; color: #909399">无数据</p>
     </el-card>
     <br /><br />
 
     <!-- Pods -->
     <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <span>Pods</span>
+        <span>容器组</span>
       </div>
       <el-table :data="pods" style="width: 100%" stripe>
         <el-table-column width="40">
@@ -148,7 +148,7 @@
               "
           /></template>
         </el-table-column>
-        <el-table-column prop="name" label="名字">
+        <el-table-column prop="name" label="名称">
           <template slot-scope="scope">
             <router-link
               :to="'/workload/pods/' + scope.row.name"
@@ -232,23 +232,23 @@
     <!-- Events -->
     <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <span style="font-size: 16px">Events</span>
+        <span style="font-size: 16px">事件</span>
       </div>
       <el-table :data="event" style="width: 100%" stripe>
-        <el-table-column prop="message" label="Message" width="480">
+        <el-table-column prop="message" label="信息" width="480">
         </el-table-column>
-        <el-table-column prop="source.component" label="Source" width="180">
+        <el-table-column prop="source.component" label="资源" width="180">
         </el-table-column>
-        <el-table-column prop="reason" label="Sub-object" width="180">
+        <el-table-column prop="reason" label="子对象" width="180">
         </el-table-column>
-        <el-table-column prop="count" label="Count" width="120">
+        <el-table-column prop="count" label="发生次数" width="120">
         </el-table-column>
-        <el-table-column label="First Seen" width="180">
+        <el-table-column label="第一次出现时间" width="240">
           <template slot-scope="scope">
             <span>{{ scope.row.firstTimestamp.replaceAll(/[TZ]/g, " ") }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="Last Seen" width="180">
+        <el-table-column label="最后一次出现时间" width="240">
           <template slot-scope="scope">
             <span>{{ scope.row.lastTimestamp.replaceAll(/[TZ]/g, " ") }}</span>
           </template>

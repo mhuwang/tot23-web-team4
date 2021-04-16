@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-30 19:58:14
  * @LastEditors: Leo
- * @LastEditTime: 2021-04-14 10:05:21
+ * @LastEditTime: 2021-04-15 21:58:40
 -->
 
 <template>
@@ -21,7 +21,7 @@
       </div>
       <List item-layout="horizontal" :split="false">
         <div class="metadata-item">
-          <p>名字</p>
+          <p>名称</p>
           <span>{{ ingress.metadata.name }}</span>
         </div>
         <div class="metadata-item">
