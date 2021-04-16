@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: zqy
- * @LastEditTime: 2021-04-13 21:41:31
+ * @LastEditTime: 2021-04-15 22:33:56
 -->
 <!--<template>
   <h1>Stateful Sets</h1>
@@ -67,8 +67,16 @@
         <el-table-column prop="metadata.name" label="名称">
           <template slot-scope="scope">
             <router-link
-              :to="'/workload/statefulSets/' + scope.row.metadata.name"
-              @click.native="goToStatefulSetsDetails(scope.row)"
+              :to="{
+                name: 'Statefulset Details',
+                params: {
+                  name:
+                    scope.row.metadata.name +
+                    ',' +
+                    scope.row.metadata.namespace,
+                },
+              }"
+              @click.native="goToStatefulSetDetails(scope.row)"
               class="link-type"
             >
               <span style="color: #409eff; text-decoration: underline">{{

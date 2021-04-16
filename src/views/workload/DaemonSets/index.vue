@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: zqy
- * @LastEditTime: 2021-04-14 15:30:32
+ * @LastEditTime: 2021-04-15 14:50:36
 -->
 <!--<template>-->
 <!--  <h1>Daemon Sets</h1>-->
@@ -14,7 +14,7 @@
     <!-- 主体部分 -->
     <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <span>所有 DaemonSets</span>
+        <span>所有 守护进程</span>
       </div>
       <el-row :gutter="20">
         <el-col :span="5">
@@ -77,7 +77,7 @@
           <template slot-scope="scope">
             <router-link
               :to="{
-                name: 'DaemonSet 详情',
+                name: 'DaemonSet Details',
                 params: {
                   name:
                     scope.row.metadata.name +

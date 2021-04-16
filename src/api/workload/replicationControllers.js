@@ -4,7 +4,7 @@
  * @Author: zqy
  * @Date: 2021.03.29 16:19
  * @LastEditors: zqy
- * @LastEditTime: 2021-04-13 20:43:53
+ * @LastEditTime: 2021-04-15 21:39:33
  */
 import request from "@/utils/request";
 let baseUrl = "http://localhost:8081"
@@ -43,6 +43,17 @@ export function deleteReplicationControllerByNameAndNamespace(data) {
 export function getReplicationControllerYamlByNameAndNamespace(data) {
   return request({
     url :baseUrl + '/replicationControllers/getReplicationControllerYamlByNameAndNamespace',
+    method: 'get',
+    params: {
+      name: data.name,
+      namespace: data.namespace
+    }
+  })
+}
+
+export function getReplicationControllerResources(data) {
+  return request({
+    url :baseUrl + '/replicationControllers/getReplicationControllerResources',
     method: 'get',
     params: {
       name: data.name,

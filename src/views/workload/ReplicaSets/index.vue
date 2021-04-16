@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: zqy
- * @LastEditTime: 2021-04-14 12:25:00
+ * @LastEditTime: 2021-04-15 14:41:12
 -->
 <!--<template>
   <h1>Replication Controllers</h1>
@@ -68,7 +68,7 @@
           <template slot-scope="scope">
             <router-link
               :to="{
-                name: 'ReplicaSet 详情',
+                name: 'ReplicaSet Details',
                 params: {
                   name:
                     scope.row.metadata.name +

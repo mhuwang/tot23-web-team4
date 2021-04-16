@@ -4,7 +4,7 @@
  * @Author: zqy
  * @Date: 2021.03.29 16:18
  * @LastEditors: zqy
- * @LastEditTime: 2021-04-13 20:26:54
+ * @LastEditTime: 2021-04-15 15:52:09
  */
 import request from "@/utils/request";
 let baseUrl = "http://localhost:8081"
@@ -44,6 +44,18 @@ export function deleteDaemonSetByNameAndNamespace(data) {
 export function getDaemonSetYamlByNameAndNamespace(data) {
   return request({
     url :baseUrl + '/daemonSets/getDaemonSetYamlByNameAndNamespace',
+    method: 'get',
+    params: {
+      name: data.name,
+      namespace: data.namespace
+    }
+  })
+}
+
+export function getDaemonSetPodsByNameAndNamespace(data) {
+  console.log(data, "in api")
+  return request({
+    url :baseUrl + '/daemonSets/getDaemonSetPodsByNameAndNamespace',
     method: 'get',
     params: {
       name: data.name,

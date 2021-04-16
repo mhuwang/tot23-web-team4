@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: zqy
- * @LastEditTime: 2021-04-14 12:30:41
+ * @LastEditTime: 2021-04-15 22:42:24
 -->
 <!--<template>
   <h1>Replication Controller</h1>
@@ -68,7 +68,7 @@
           <template slot-scope="scope">
             <router-link
               :to="{
-                name: 'ReplicationController 详情',
+                name: 'ReplicationController Details',
                 params: {
                   name:
                     scope.row.metadata.name +
@@ -76,7 +76,7 @@
                     scope.row.metadata.namespace,
                 },
               }"
-              @click.native="goToReplicationControllersDetails(scope.row)"
+              @click.native="goToReplicationControllerDetails(scope.row)"
               class="link-type"
             >
               <span style="color: #409eff; text-decoration: underline">{{
