@@ -3,8 +3,8 @@
  * @version: 1.0
  * @Author: Anna667
  * @Date: 
- * @LastEditors: Anna667
- * @LastEditTime: 
+ * @LastEditors: Anna
+ * @LastEditTime: 2021-04-16 11:21:36
 -->
 <template>
   <div>
@@ -22,7 +22,7 @@
       </div>
       <List item-layout="horizontal" :split="false">
         <div class="metadata-item">
-          <p>名字</p>
+          <p>名称</p>
           <span>{{ secret.metadata.name }}</span>
         </div>
         <div class="metadata-item">
@@ -61,6 +61,7 @@
               class="lebel-tag"
               effect="dark"
               size="medium"
+              id="anno_hover"
               color="#bedcfa"
               style="color: #409eff"
               @click="showAnnoDetails(anno.key)"
@@ -88,30 +89,24 @@
     <el-card class="box-card">
       <div slot="header" class="clearfix">
         <span style="font-size: 16px">数据</span>
-      </div>
+      </div>      
       <List item-layout="horizontal" :split="false">
-        <!-- <div class="metadata-item"> -->
           ca.crt&nbsp;&nbsp;<i :class="!caShow1? 'el-icon-zoom-in' : 'el-icon-zoom-out'" @click="showCa1"></i>
           <highlightjs v-show="caShow1" style="width:100%" language='plaintext' :code="secret.data['ca.crt']" />
-        <!-- </div> -->
-        <!-- <div class="metadata-item">
-          namespace&nbsp;&nbsp;<i :class="!caShow2? 'el-icon-zoom-in' : 'el-icon-zoom-out'" @click="showCa2"></i>
-          <highlightjs v-show="caShow2" style="width:100%" language='plaintext' :code="secret.metadata.namespace" />
-        </div>
-        <div class="metadata-item">
-          token&nbsp;&nbsp;<i :class="!caShow3? 'el-icon-zoom-in' : 'el-icon-zoom-out'" @click="showCa3"></i>
-          <highlightjs v-show="caShow3" style="width:100%" language='plaintext' :code="secret.data['token']" />
-        </div> -->
       </List>
+
       <List item-layout="horizontal" :split="false">
         namespace&nbsp;&nbsp;<i :class="!caShow2? 'el-icon-zoom-in' : 'el-icon-zoom-out'" @click="showCa2"></i>
         <highlightjs v-show="caShow2" style="width:100%" language='plaintext' :code="secret.metadata.namespace" />
       </List>
+
       <List item-layout="horizontal" :split="false">
         token&nbsp;&nbsp;<i :class="!caShow3? 'el-icon-zoom-in' : 'el-icon-zoom-out'" @click="showCa3"></i>
         <highlightjs v-show="caShow3" style="width:100%" language='plaintext' :code="secret.data['token']" />
       </List>
+
     </el-card>
+    <br /><br />
   </div>
 </template>
 

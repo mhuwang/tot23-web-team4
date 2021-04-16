@@ -3,8 +3,8 @@
  * @version: 1.0
  * @Author: Anna667
  * @Date: 
- * @LastEditors: Rex Joush
- * @LastEditTime: 2021-04-16 10:14:18
+ * @LastEditors: Anna
+ * @LastEditTime: 2021-04-16 11:03:55
 -->
 <template>
   <div>
@@ -22,7 +22,7 @@
       </div>
       <List item-layout="horizontal" :split="false">
         <div class="metadata-item">
-          <p>名字</p>
+          <p>名称</p>
           <span>{{ persistentVolumeClaim.metadata.name }}</span>
         </div>
         <div class="metadata-item">
