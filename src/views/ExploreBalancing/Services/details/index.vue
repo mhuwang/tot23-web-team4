@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-30 19:58:14
  * @LastEditors: Leo
- * @LastEditTime: 2021-04-15 21:51:44
+ * @LastEditTime: 2021-04-16 10:55:38
 -->
 
 <template>
@@ -116,7 +116,8 @@
         style="width: 100%"
         stripe
       >
-        <el-table-column prop="ip" label="主机 ip" width="240"> </el-table-column>
+        <el-table-column prop="ip" label="主机 ip" width="240">
+        </el-table-column>
         <el-table-column label="端口信息(名称，端口，协议)" width="540">
           <template>
             &lt;{{ endpoint.subsets[0].ports[0].name }}&gt; ­&shy; &lt;{{
@@ -254,6 +255,16 @@
           </template>
         </el-table-column>
       </el-table>
+      <!-- 分页 -->
+       <!-- <el-pagination
+        background
+        @current-change="handleCurrentChange"
+        :current-page="1"
+        :page-size="10"
+        layout="total, prev, pager, next, jumper"
+        :total="total"
+      >
+      </el-pagination> -->
     </el-card>
 
     <!-- 注释的详情框 -->
@@ -283,7 +294,7 @@ export default {
       event: [],
       pods: [],
       podsAmount: 0,
-      
+
       annoKey: "",
       annoDetails: "",
       annoDetailsVisible: false, // 注释的详情框
@@ -363,15 +374,30 @@ export default {
   },
 
   methods: {
+    // // 处理分页
+    // handleCurrentChange(page) {
+    //   console.log(page);
+    //   this.event = this.events.slice((page - 1) * 10, page * 10);
+    // },
+
     // 显示注解的详情
     showAnnoDetails(key) {
       this.annoDetailsVisible = true;
       console.log(key);
       this.annoKey = key;
-      this.annoDetails = this.beautify(
-        this.service.metadata.annotations[key],
-        { indent_size: 2, space_in_empty_paren: true }
-      );
+      this.annoDetails = this.beautify(this.service.metadata.annotations[key], {
+        indent_size: 2,
+        space_in_empty_paren: true,
+      });
+    },
+    // 前往 pod 详情页
+    goToPodsDetails: function (name, namespace) {
+      console.log("aaa", name, namespace);
+      let podDetails = {
+        podName: name,
+        podNamespace: namespace,
+      };
+      this.$store.dispatch("pods/toDetails", podDetails);
     },
   },
   computed: {

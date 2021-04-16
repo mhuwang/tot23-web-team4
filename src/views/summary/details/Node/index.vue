@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-25 22:13:37
  * @LastEditors: Leo
- * @LastEditTime: 2021-04-15 22:02:37
+ * @LastEditTime: 2021-04-16 10:42:54
 -->
 <template>
   <div>
@@ -190,7 +190,7 @@
       </div>
       <List item-layout="horizontal" :split="false">
         <div class="metadata-item">
-          <p>名称</p>
+          <p>名称 </p>
           <span>{{ node.metadata.name }}</span>
         </div>
         <div class="metadata-item">
@@ -356,7 +356,7 @@
               "
           /></template>
         </el-table-column>
-        <el-table-column prop="name" label="名字">
+        <el-table-column prop="name" label="名称">
           <template slot-scope="scope">
             <router-link
               :to="'/workload/pods/' + scope.row.name"
