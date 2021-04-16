@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-19 16:14:56
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-04-14 21:21:12
+ * @LastEditTime: 2021-04-16 12:18:16
  */
 import Vue from 'vue'
 import Vuex from 'vuex'
@@ -14,6 +14,7 @@ import settings from './modules/settings'
 import user from './modules/user'
 import common from './modules/common'
 
+import cluster from './modules/cluster/cluster'
 import nodes from './modules/cluster/nodes'
 import namespaces from './modules/cluster/namespaces'
 import clusterRoles from './modules/cluster/clusterRoles'
@@ -46,6 +47,7 @@ const store = new Vuex.Store({
     user,
     nodes,
     namespaces,
+    cluster,
     common,
 
     cronJobs,

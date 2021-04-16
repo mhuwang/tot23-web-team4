@@ -3,11 +3,21 @@
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
- * @LastEditors: Leo
- * @LastEditTime: 2021-04-15 20:52:26
+ * @LastEditors: Rex Joush
+ * @LastEditTime: 2021-04-16 22:31:38
 -->
 <template>
   <div>
+    <el-card class="box-card">
+      <div slot="header" class="clearfix">
+        <span style="font-size: 20px">集群节点拓扑图</span>
+      </div>
+      <div
+        ref="chart"
+        style="height: 800px; width: 100%; "
+      ></div>
+    </el-card>
+    <br />
     <!-- <el-divider style="font-size:40px" content-position="left">集群信息</el-divider> -->
     <!-- 节点信息 -->
     <el-card class="box-card">
@@ -146,18 +156,8 @@
             </router-link>
           </template>
         </el-table-column>
-        <!-- <el-table-column label="标签">
-          <template slot-scope="scope">
-            <span>k8s-app: {{scope.row.metadata.labels['k8s-app']}}</span>
-            <br>
-            <span>pod-template-hash: {{scope.row.metadata.labels['pod-template-hash']}}</span>
-          </template>
-        </el-table-column> -->
         <el-table-column prop="status.phase" label="运行阶段">
         </el-table-column>
-        <!-- <el-table-column prop="metadata.uid" label="uid"> </el-table-column>
-        <el-table-column prop="spec.nodeName" label="所属节点"> </el-table-column>
-        <el-table-column prop="status.podIP" label="主机ip地址"> </el-table-column> -->
         <el-table-column label="创建时间">
           <template slot-scope="scope">
             <span>{{
@@ -378,8 +378,126 @@ export default {
     this.getAllNamespaces();
     this.getAllClusterRoles();
   },
+  mounted: function () {
+    this.initEchart();
+  },
 
   methods: {
+    // 初始化图
+    initEchart: function () {
+      let self = this;
+      this.$store
+        .dispatch("cluster/initClusterGraph")
+        .then((res) => {
+          console.log(res);
+          const chart = this.$refs.chart;
+          if (chart) {
+            const myChart = this.$echarts.init(chart);
+            let option = {
+              title: {
+                text: "集群节点拓扑图",
+                top: "top",
+                left: "center",
+              },
+
+              tooltip: {
+                formatter: (params, ticket) => {
+                  let arr = params.value.split(",");
+                  if (arr.length > 1) {
+                    return (
+                      "<strong>name:</strong> " +
+                      arr[0] +
+                      "<br/>" +
+                      "<strong>namespace:</strong> " +
+                      arr[1]
+                    );
+                  } else {
+                    return "<strong>name:</strong> " + params.value;
+                  }
+                },
+              },
+              legend: [
+                {
+                  orient: 'vertical',
+                  left: '5%',
+                  top: '10%',
+                  data: res.data.categories.map((a) => a.name),
+                },
+              ],
+              // animationDuration: 1500,
+              // animationEasingUpdate: "quinticInOut",
+              series: [
+                {
+                  type: "graph",
+                  layout: "none",
+                  data: res.data.nodes,
+                  links: res.data.links,
+                  categories: res.data.categories,
+                  legendHoverLink: false,  
+                  zoom: 1,
+                  roam: true,
+                  center: [0, 0],
+                  label: {
+                    show: true,
+                    position: "right",
+                    // formatter: [
+                    //   {name},
+                    //   {namespace}
+                    // ].join("\n"),
+                  },
+                  lineStyle: {
+                    color: "source",
+                    curveness: 0.3,
+                  },
+                  emphasis: {
+                    scale: true,
+                    focus: "adjacency",
+                    blurScope: "global",
+                    lineStyle: {
+                      width: 10,
+                    },
+                  },
+                  animation: true,
+                  labelLayout: {
+                    hideOverlap: true,
+                  },
+                },
+              ],
+            };
+            myChart.setOption(option);
+            myChart.on("click", function (params) {
+              if (params.dataType === "node") {
+                console.log(params);
+                // 点击节点
+                if (params.name === "Master Node" || params.name === "Node") {
+                  self.$store.dispatch("nodes/toDetails", params.value);
+                  self.$router.push("/summary/nodes/" + params.value);
+                } else if (params.name === "Edge Node") {
+                  self.$store.dispatch("edge/toDetails", params.value);
+                  self.$router.push("/edge/edgenodes/" + params.value);
+                } else {
+                  let arr = params.value.split(",");
+                  let podDetails = {
+                    podName: arr[0],
+                    podNamespace: arr[1],
+                  };
+                  self.$store.dispatch("pods/toDetails", podDetails);
+                  self.$router.push("/workload/pods/" + arr[0]);
+                }
+              } else if (params.dataType === "edge") {
+                // 点击连接线
+                console.log("click edge");
+              } else {
+                console.log("click");
+              }
+            });
+          }
+        })
+        .catch((error) => {
+          throw error;
+        });
+    },
+
     // 编辑器方法
     /* yaml */
     onYamlCmReady(cm) {
@@ -533,7 +651,6 @@ export default {
           this.$store
             .dispatch("namespaces/deleteNamespaceByName", name)
             .then((res) => {
-              console.log(res);
               if (res.code == 1200) {
                 this.$message.success("删除成功");
                 this.getNamespaces();
