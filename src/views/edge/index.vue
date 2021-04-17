@@ -4,13 +4,13 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 19:37:28
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-04-17 12:52:18
+ * @LastEditTime: 2021-04-17 13:19:15
 -->
 <template>
   <div>
     <!-- 边缘拓扑图 -->
     <el-card class="box-card">
-      <div ref="chart" style="height: 800px; width: 100%"></div>
+      <div ref="chart" style="height: 700px; width: 100%"></div>
     </el-card>
     <br /><br />
     <!-- 节点信息 -->

@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-04-17 12:37:44
+ * @LastEditTime: 2021-04-17 13:23:34
 -->
 <template>
   <div>
@@ -12,7 +12,7 @@
     <el-card class="box-card">
       <div
         ref="chart"
-        style="height: 800px; width: 100%; "
+        style="height: 700px; width: 100%; "
       ></div>
     </el-card>
     <br />
@@ -89,16 +89,14 @@
             <span>{{ scope.row.time.replaceAll(/[TZ]/g, " ") }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="是否可调度" width="100">
-          <!-- 作用域插槽 -->
+        <!-- <el-table-column label="是否可调度" width="100">
           <template slot-scope="scope">
-            <!-- {{scope.row}} 每一行封存的数据 -->
             <el-switch
               v-model="scope.row.schedule"
               @change="changeSchedule(scope.row.name)"
             ></el-switch>
           </template>
-        </el-table-column>
+        </el-table-column> -->
         <el-table-column label="操作">
           <template slot-scope="scope">
             <!-- 修改 -->
