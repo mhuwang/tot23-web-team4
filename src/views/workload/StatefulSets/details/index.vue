@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-30 19:58:14
  * @LastEditors: zqy
- * @LastEditTime: 2021-04-16 23:07:12
+ * @LastEditTime: 2021-04-17 12:41:34
 -->
 
 <template>
@@ -648,6 +648,15 @@ export default {
 
       });
     },
+
+    //Pod 跳转
+    goToPodsDetails(name, namespace){
+      let nameAndNamespace = {
+        podName: name,
+        podNamespace: namespace,
+      };
+      this.$store.dispatch("pods/toDetails", nameAndNamespace);
+    }
   },
 };
 </script>
