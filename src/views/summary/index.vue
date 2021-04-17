@@ -4,14 +4,12 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-04-16 22:31:38
+ * @LastEditTime: 2021-04-17 12:37:44
 -->
 <template>
   <div>
+    <!-- 集群拓扑图 -->
     <el-card class="box-card">
-      <div slot="header" class="clearfix">
-        <span style="font-size: 20px">集群节点拓扑图</span>
-      </div>
       <div
         ref="chart"
         style="height: 800px; width: 100%; "
@@ -401,18 +399,27 @@ export default {
               },
 
               tooltip: {
-                formatter: (params, ticket) => {
-                  let arr = params.value.split(",");
-                  if (arr.length > 1) {
-                    return (
-                      "<strong>name:</strong> " +
-                      arr[0] +
-                      "<br/>" +
-                      "<strong>namespace:</strong> " +
-                      arr[1]
-                    );
+                formatter: (params) => {
+                  if (params.dataType == "node") {
+                    if (params.name == "Pod") {
+                      return (
+                        "<strong>name:</strong> " +
+                        params.data.value +
+                        "<br/>" +
+                        "<strong>namespace:</strong> " +
+                        params.data.namespace
+                      );
+                    } else {
+                      return "<strong>name:</strong> " + params.value;
+                    }
                   } else {
-                    return "<strong>name:</strong> " + params.value;
+                    let a = res.data.nodes.filter(node =>{
+                      return node.id == params.data.source;
+                    });
+                    let b = res.data.nodes.filter(node =>{
+                      return node.id == params.data.target;
+                    });
+                    return b[0].value + " > " + a[0].value;
                   }
                 },
               },
@@ -440,10 +447,16 @@ export default {
                   label: {
                     show: true,
                     position: "right",
-                    // formatter: [
-                    //   {name},
-                    //   {namespace}
-                    // ].join("\n"),
+                    formatter: function (params) {
+                      switch (params.name) {
+                        case "Pod":
+                          return "容器";
+                        case "Master Node":
+                          return "主节点";
+                        case "Node":
+                          return "节点";
+                      }
+                    },
                   },
                   lineStyle: {
                     color: "source",
@@ -467,7 +480,6 @@ export default {
             myChart.setOption(option);
             myChart.on("click", function (params) {
               if (params.dataType === "node") {
-                console.log(params);
                 // 点击节点
                 if (params.name === "Master Node" || params.name === "Node") {
                   self.$store.dispatch("nodes/toDetails", params.value);
@@ -476,13 +488,12 @@ export default {
                   self.$store.dispatch("edge/toDetails", params.value);
                   self.$router.push("/edge/edgenodes/" + params.value);
                 } else {
-                  let arr = params.value.split(",");
                   let podDetails = {
-                    podName: arr[0],
-                    podNamespace: arr[1],
+                    podName: params.value,
+                    podNamespace: params.data.namespace,
                   };
                   self.$store.dispatch("pods/toDetails", podDetails);
-                  self.$router.push("/workload/pods/" + arr[0]);
+                  self.$router.push("/workload/pods/" + params.value);
                 }
               } else if (params.dataType === "edge") {
                 // 点击连接线

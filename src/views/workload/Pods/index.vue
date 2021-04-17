@@ -3,14 +3,14 @@
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
- * @LastEditors: zqy
- * @LastEditTime: 2021-04-15 23:13:55
+ * @LastEditors: Rex Joush
+ * @LastEditTime: 2021-04-17 13:08:14
 -->
 <template>
   <div>
     <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <span>所有 Pod</span>
+        <span>所有容器组</span>
       </div>
       <el-row :gutter="20">
         <el-col :span="6">
@@ -43,7 +43,7 @@
             ></el-button> -->
         </el-col>
         <!-- 添加按钮 -->
-        <el-col :span="4">
+        <!-- <el-col :span="4">
           <el-button
             type="primary"
             size="large"
@@ -52,7 +52,7 @@
           >
             添加 Pod
           </el-button>
-        </el-col>
+        </el-col> -->
       </el-row>
       <el-table
         :data="pods"
@@ -171,15 +171,6 @@
             @input="onYamlCmCodeChange"
           />
         </el-tab-pane>
-        <el-tab-pane label="JSON" name="second">
-          <codemirror
-            ref="cmYamlEditor"
-            :value="codeJSON"
-            :options="cmOptions"
-            @ready="onJSONCmReady"
-            @input="onJSONCmCodeChange"
-          />
-        </el-tab-pane>
       </el-tabs>
 
       <!-- <textarea style="width:100%" name="describe" id="pod" cols="30" rows="10">
@@ -195,36 +186,7 @@
       </span>
     </el-dialog>
 
-    <!-- 添加框 -->
-    <el-dialog
-      title="添加 pod"
-      :visible.sync="addDialogVisible"
-      width="70%"
-      @closed="handleClose"
-      @close="addDialogVisible = false"
-      :append-to-body="true"
-      :lock-scroll="true"
-    >
-      <codemirror
-        ref="cmYamlAdd"
-        :value="addYaml"
-        :options="cmOptionsYaml"
-        @ready="onAddYamlCmReady"
-        @input="onAddYamlCmCodeChange"
-      />
-
-      <!-- <textarea style="width:100%" name="describe" id="pod" cols="30" rows="10">
-        {{code}}
-      </textarea> -->
-      <span slot="footer" class="dialog-footer">
-        <div class="foot-info">
-          <i class="el-icon-warning"></i> 此操作相当于 kubectl apply -f
-          &ltspec.yaml>
-        </div>
-        <el-button @click="addDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="commitPodAdd">确 定</el-button>
-      </span>
-    </el-dialog>
+    
   </div>
 </template>
 
@@ -245,22 +207,7 @@ export default {
       value: "", // 选择框的值
       loading: true, // 获取数据中
       editDialogVisible: false, // 编辑详情框
-      addDialogVisible: false, // 添加框详情
-      codeJSON: "", // 编辑框的 json 数据
       codeYaml: "", // 编辑框的 yaml 数据
-      addYaml: "", // 添加框的 yaml 数据
-
-      cmOptions: {
-        // json codemirror 配置项
-        tabSize: 4,
-        mode: {
-          name: "javascript",
-          json: true,
-        },
-        theme: "panda-syntax",
-        lineNumbers: true,
-        line: true,
-      },
       cmOptionsYaml: {
         // yaml codemirror 配置项
         tabSize: 4,
@@ -290,28 +237,6 @@ export default {
 
     onYamlCmCodeChange(newCode) {
       this.codeYaml = newCode;
-    },
-    // 添加的 yaml 框
-    onAddYamlCmReady(cm) {
-      setTimeout(() => {
-        cm.refresh();
-      }, 50);
-    },
-
-    onAddYamlCmCodeChange(newCode) {
-      this.addYaml = newCode;
-    },
-
-    /* JSON */
-    onJSONCmReady(cm) {
-      setTimeout(() => {
-        cm.refresh();
-      }, 50);
-    },
-
-    onJSONCmCodeChange(newCode) {
-      //console.log("this is new code", newCode);
-      this.codeJSON = newCode;
     },
 
     // 获取所有 pods
@@ -348,44 +273,6 @@ export default {
       this.$store.dispatch("pods/toDetails", podDetails);
     },
 
-    /* 添加部分，提交添加 */
-    commitPodAdd() {
-      this.$confirm("添加 Pod？", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "info",
-      })
-        .then(() => {
-          this.$store
-            .dispatch("common/changeResourceByYaml", this.addYaml)
-            .then((res) => {
-              switch (res.code) {
-                case 1200:
-                  this.$message.success("添加成功");
-                  this.addDialogVisible = false;
-                  break;
-                case 1201:
-                  this.$message.error("添加失败，请查看云平台相关错误信息");
-                  this.addDialogVisible = false;
-                  break;
-                case 1202:
-                  this.$message.error(
-                    "添加失败，请查看 yaml 文件格式，命名空间必须指定"
-                  );
-                  break;
-                default:
-                  this.$message.info("提交成功");
-                  break;
-              }
-            })
-            .catch((error) => {
-              throw error;
-            });
-        })
-        .catch(() => {
-          console.log("cancel");
-        });
-    },
     /* 编辑部分 */
     showPodEditDialog(name, namespace) {
       let podDetails = {
@@ -411,19 +298,19 @@ export default {
         });
 
       // json 格式
-      this.$store
-        .dispatch("pods/getPodByNameAndNamespace", podDetails)
-        .then((res) => {
-          // console.log(res);
-          let json = JSON.stringify(res.data.pod);
-          this.codeJSON = this.beautify(json, {
-            indent_size: 4,
-            space_in_empty_paren: true,
-          });
-        })
-        .catch((error) => {
-          throw error;
-        });
+      // this.$store
+      //   .dispatch("pods/getPodByNameAndNamespace", podDetails)
+      //   .then((res) => {
+      //     // console.log(res);
+      //     let json = JSON.stringify(res.data.pod);
+      //     this.codeJSON = this.beautify(json, {
+      //       indent_size: 4,
+      //       space_in_empty_paren: true,
+      //     });
+      //   })
+      //   .catch((error) => {
+      //     throw error;
+      //   });
 
       //this.editForm = res; // 查询结果写入表单
     },

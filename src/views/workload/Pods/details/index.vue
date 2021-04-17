@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-04-02 14:00:48
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-04-06 17:36:12
+ * @LastEditTime: 2021-04-17 12:58:38
 -->
 <template>
   <div>
@@ -253,7 +253,7 @@
           <p>状态</p>
           <span>{{ pod.status.phase }}</span>
         </div>
-        <div class="metadata-item">
+        <div class="metadata-item" v-if="pod.status.podIP">
           <p>IP</p>
           <span>{{ pod.status.podIP }}</span>
         </div>
@@ -265,7 +265,7 @@
     </el-card>
     <br /><br />
     <!-- 状态信息 -->
-    <el-card class="box-card">
+    <el-card class="box-card" v-if="pod.status.conditions.length > 0">
       <div slot="header" class="clearfix">
         <span style="font-size: 16px">状态</span>
       </div>
@@ -312,7 +312,7 @@
           <p>状态</p>
           <span>{{ pod.status.phase }}</span>
         </div>
-        <div class="metadata-item">
+        <div class="metadata-item" v-if="pod.status.podIP">
           <p>IP</p>
           <span>{{ pod.status.podIP }}</span>
         </div>
@@ -320,14 +320,15 @@
           <p>QoS类</p>
           <span>{{ pod.status.qosClass }}</span>
         </div>
-        <div class="metadata-item">
+        <div class="metadata-item" v-if="pod.status.containerStatuses > 0">
           <p>重启次数</p>
           <span>{{ pod.status.containerStatuses[0].restartCount }}</span>
         </div>
       </List>
     </el-card>
     <br /><br />
-    <el-divider content-position="left"
+    <div v-if="pod.status.containerStatuses.length > 0">
+      <el-divider content-position="left"
       ><span style="font-weight: bold; font-size: 18px">容器</span></el-divider
     >
     <div v-for="(container,index) in pod.status.containerStatuses" :key="index">
@@ -348,6 +349,7 @@
             <span>{{ container.containerID }}</span>
             </div> -->
         </el-card>
+    </div>
     </div>
   </div>
 </template>
@@ -473,9 +475,6 @@ export default {
         // 格式化时间数据
         timeArr.push(this.usage[i].time.substring(11, 16));
       }
-      //   console.log(cpuArr);
-      //   console.log(memoryArr);
-      //   console.log(timeArr);
 
       // 配置 cpu 图表项
       let optionCpu = {

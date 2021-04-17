@@ -4,10 +4,15 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 19:37:28
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-04-02 13:43:09
+ * @LastEditTime: 2021-04-17 12:52:18
 -->
 <template>
   <div>
+    <!-- 边缘拓扑图 -->
+    <el-card class="box-card">
+      <div ref="chart" style="height: 800px; width: 100%"></div>
+    </el-card>
+    <br /><br />
     <!-- 节点信息 -->
     <el-card class="box-card">
       <div slot="header" class="clearfix">
@@ -56,16 +61,6 @@
             }}</span>
           </template>
         </el-table-column>
-        <!-- <el-table-column label="是否可调度" width="100">
-          作用域插槽
-          <template slot-scope="scope">
-            {{scope.row}} 每一行封存的数据
-            <el-switch
-              v-model="!scope.row.spec.unschedulable"
-              @change="userStateChange(scope.row)"
-            ></el-switch>
-          </template>
-        </el-table-column> -->
         <el-table-column label="操作">
           <template slot-scope="scope">
             <!-- 修改 -->
@@ -129,13 +124,6 @@
             >
           </template>
         </el-table-column>
-        <!-- <el-table-column label="标签">
-          <template slot-scope="scope">
-            <span>k8s-app: {{scope.row.metadata.labels['k8s-app']}}</span>
-            <br>
-            <span>pod-template-hash: {{scope.row.metadata.labels['pod-template-hash']}}</span>
-          </template>
-        </el-table-column> -->
         <el-table-column prop="metadata.namespace" label="命名空间">
         </el-table-column>
         <el-table-column prop="status.twins[0].desired.value" label="状态">
@@ -147,16 +135,6 @@
             }}</span>
           </template>
         </el-table-column>
-        <!-- <el-table-column label="是否可调度" width="100">
-          作用域插槽
-          <template slot-scope="scope">
-            {{scope.row}} 每一行封存的数据
-            <el-switch
-              v-model="!scope.row.spec.unschedulable"
-              @change="userStateChange(scope.row)"
-            ></el-switch>
-          </template>
-        </el-table-column> -->
         <el-table-column label="操作">
           <template slot-scope="scope">
             <!-- 修改 -->
@@ -199,7 +177,138 @@ export default {
     this.getAllDevices();
   },
 
+  mounted: function () {
+    this.initEchart();
+  },
+
   methods: {
+    // 获取图表
+    initEchart: function () {
+      let self = this;
+      this.$store
+        .dispatch("edge/initEdgeGraph")
+        .then((res) => {
+          console.log(res);
+          const chart = this.$refs.chart;
+          if (chart) {
+            const myChart = this.$echarts.init(chart);
+            let option = {
+              title: {
+                text: "边缘节点拓扑图",
+                top: "top",
+                left: "center",
+              },
+
+              tooltip: {
+                formatter: (params) => {
+                  if (params.dataType == "node") {
+                    if (params.name == "Pod") {
+                      return (
+                        "<strong>name:</strong> " +
+                        params.data.value +
+                        "<br/>" +
+                        "<strong>namespace:</strong> " +
+                        params.data.namespace
+                      );
+                    } else {
+                      return "<strong>name:</strong> " + params.value;
+                    }
+                  } else {
+                    let a = res.data.nodes.filter((node) => {
+                      return node.id == params.data.source;
+                    });
+                    let b = res.data.nodes.filter((node) => {
+                      return node.id == params.data.target;
+                    });
+                    return b[0].value + " > " + a[0].value;
+                  }
+                },
+              },
+              legend: [
+                {
+                  orient: "vertical",
+                  left: "5%",
+                  top: "10%",
+                  data: res.data.categories.map((a) => a.name),
+                },
+              ],
+              // animationDuration: 1500,
+              // animationEasingUpdate: "quinticInOut",
+              series: [
+                {
+                  type: "graph",
+                  layout: "none",
+                  data: res.data.nodes,
+                  links: res.data.links,
+                  categories: res.data.categories,
+                  legendHoverLink: false,
+                  zoom: 0.8,
+                  roam: true,
+                  center: [0, 0],
+                  label: {
+                    show: true,
+                    position: "right",
+                    formatter: function (params) {
+                      switch (params.name) {
+                        case "Pod":
+                          return "容器";
+                        case "Edge Node":
+                          return "边缘节点";
+                        case "Device":
+                          return "设备";
+                      }
+                    },
+                  },
+                  lineStyle: {
+                    color: "source",
+                    curveness: 0.3,
+                  },
+                  emphasis: {
+                    scale: true,
+                    focus: "adjacency",
+                    blurScope: "global",
+                    lineStyle: {
+                      width: 10,
+                    },
+                  },
+                  animation: true,
+                  labelLayout: {
+                    hideOverlap: true,
+                  },
+                },
+              ],
+            };
+            myChart.setOption(option);
+            myChart.on("click", function (params) {
+              if (params.dataType === "node") {
+                // 点击节点
+                if (params.name === "Edge Node") {
+                  self.$store.dispatch("edge/toDetails", params.value);
+                  self.$router.push("/edge/edgenodes/" + params.value);
+                } else if (params.name === "Device") {
+                  window.location.href = "http://172.18.7.17:8089";
+                } else {
+                  let podDetails = {
+                    podName: params.value,
+                    podNamespace: params.data.namespace,
+                  };
+                  self.$store.dispatch("pods/toDetails", podDetails);
+                  self.$router.push("/workload/pods/" + params.value);
+                }
+              } else if (params.dataType === "edge") {
+                // 点击连接线
+                console.log("click edge");
+              } else {
+                console.log("click");
+              }
+            });
+          }
+        })
+        .catch((error) => {
+          throw error;
+        });
+    },
+
     // 获取 edge 节点信息
     getAllEdgeNodes: function () {
       this.$store
@@ -233,5 +342,5 @@ export default {
 };
 </script>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 </style>

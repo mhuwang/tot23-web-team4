@@ -4,9 +4,9 @@
  * @Author: Rex Joush
  * @Date: 2021-04-02 12:44:04
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-04-02 13:35:56
+ * @LastEditTime: 2021-04-17 11:21:28
  */
-import { getAllEdgeNodes, getNodeByName, getAllDevices } from '@/api/edge'
+import { initEdgeGraph, getAllEdgeNodes, getNodeByName, getAllDevices } from '@/api/edge'
 import { getToken } from '@/utils/auth'
 
 const state = {
@@ -25,6 +25,22 @@ const mutations = {
 }
 
 const actions = {
+
+  // 初始化图
+  initEdgeGraph({ commit }) {
+    return new Promise((resolve, reject) => {
+      initEdgeGraph().then(response => {
+        const { data } = response
+        if (!data) {
+          return reject('获取失败')
+        }
+        resolve(data)
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
+
   // 获取所有边缘节点
   getAllEdgeNodes({ commit }) {
     return new Promise((resolve, reject) => {
