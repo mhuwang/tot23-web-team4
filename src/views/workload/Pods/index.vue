@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-04-17 13:08:14
+ * @LastEditTime: 2021-04-19 14:26:33
 -->
 <template>
   <div>
@@ -55,7 +55,7 @@
         </el-col> -->
       </el-row>
       <el-table
-        :data="pods"
+        :data="currentPods"
         style="width: 100%"
         stripe
         v-loading="loading"
@@ -92,7 +92,6 @@
         </el-table-column>
         <el-table-column align="center" label="CPU 利用率" width="140">
           <template slot-scope="scope">
-            <!-- {{ scope.row.cpuUsage }} -->
             <div v-if="scope.row.cpuUsage != -1">
               <div class="usage-cpu-tag-zero" v-if="scope.row.cpuUsage == 0">
                 0 m
@@ -150,6 +149,15 @@
           </template>
         </el-table-column>
       </el-table>
+      <el-pagination
+        background
+        @current-change="handleCurrentChange"
+        :current-page="1"
+        :page-size="10"
+        layout="total, prev, pager, next, jumper"
+        :total="total"
+      >
+      </el-pagination>
     </el-card>
 
     <!-- 编辑框 -->
@@ -185,8 +193,6 @@
         <el-button type="primary" @click="commitYamlChange">确 定</el-button>
       </span>
     </el-dialog>
-
-    
   </div>
 </template>
 
@@ -203,6 +209,9 @@ export default {
   data() {
     return {
       pods: [], // pod 列表
+      total: 0, // 总 pod 数
+      currentPods: [], // 当前页面的事件
+
       namespaces: [], // 命名空间选择框
       value: "", // 选择框的值
       loading: true, // 获取数据中
@@ -221,12 +230,16 @@ export default {
 
   mounted() {
     this.getPods();
-    this.getCompletePodsList();
   },
 
   computed: {},
 
   methods: {
+
+    // 处理分页
+    handleCurrentChange(page) {
+      this.currentPods = this.pods.slice((page - 1) * 10, page * 10);
+    },
     // 编辑器方法
     /* yaml */
     onYamlCmReady(cm) {
@@ -246,18 +259,9 @@ export default {
         .then((res) => {
           console.log(res);
           this.pods = res.data;
+          this.total = res.data.length;
+          this.currentPods = res.data.slice(0, 10);
           this.loading = false;
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    },
-
-    getCompletePodsList() {
-      this.$store
-        .dispatch("pods/getCompletePodsList")
-        .then((res) => {
-          console.log(res);
         })
         .catch((error) => {
           console.log(error);
@@ -286,7 +290,7 @@ export default {
         .then((res) => {
           // let json = JSON.stringify(res.data);
           // this.codeJSON = this.beautify(json, {
-            //   indent_size: 4,
+          //   indent_size: 4,
           //   space_in_empty_paren: true,
           // });
           console.log(res, "\n最初获取的Yaml\n");
@@ -366,27 +370,27 @@ export default {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
-      }).then(() => {
-        let podDetails = {
-          podName: name,
-          podNamespace: namespace,
-        };
-        this.$store
-          .dispatch("pods/delPodByNameAndNamespace", podDetails)
-          .then((res) => {
-            if(res.code == 1200) {
-              this.$message.success("删除成功");
-              this.getPods();
-            } else {
-              this.$message.error("删除失败");
-            }
-          })
-          .catch((error) => {
-            throw error;
-          });
-      }).catch(()=>{
-
-      });
+      })
+        .then(() => {
+          let podDetails = {
+            podName: name,
+            podNamespace: namespace,
+          };
+          this.$store
+            .dispatch("pods/delPodByNameAndNamespace", podDetails)
+            .then((res) => {
+              if (res.code == 1200) {
+                this.$message.success("删除成功");
+                this.getPods();
+              } else {
+                this.$message.error("删除失败");
+              }
+            })
+            .catch((error) => {
+              throw error;
+            });
+        })
+        .catch(() => {});
     },
 
     /* 按命名空间查询 */

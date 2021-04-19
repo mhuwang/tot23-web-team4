@@ -4,19 +4,15 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-04-17 13:23:34
+ * @LastEditTime: 2021-04-19 14:45:15
 -->
 <template>
   <div>
     <!-- 集群拓扑图 -->
     <el-card class="box-card">
-      <div
-        ref="chart"
-        style="height: 700px; width: 100%; "
-      ></div>
+      <div ref="chart" style="height: 700px; width: 100%"></div>
     </el-card>
     <br />
-    <!-- <el-divider style="font-size:40px" content-position="left">集群信息</el-divider> -->
     <!-- 节点信息 -->
     <el-card class="box-card">
       <div slot="header" class="clearfix">
@@ -56,7 +52,16 @@
             <span>pod-template-hash: {{scope.row.metadata.labels['pod-template-hash']}}</span>
           </template>
         </el-table-column> -->
-        <el-table-column prop="status" width="100" label="就绪状态">
+        <el-table-column width="100" label="就绪状态">
+          <template slot-scope="scope">
+            {{
+              scope.row.status == "True"
+                ? "就绪"
+                : scope.row.status == "Unknown"
+                ? "未知"
+                : "失败"
+            }}
+          </template>
         </el-table-column>
         <el-table-column label="CPU 利用率" width="200">
           <template slot-scope="scope">
@@ -84,6 +89,7 @@
         <el-table-column
           prop="node.metadata.creationTimestamp"
           label="创建时间"
+          sortable :sort-by="timeSort"
         >
           <template slot-scope="scope">
             <span>{{ scope.row.time.replaceAll(/[TZ]/g, " ") }}</span>
@@ -110,13 +116,13 @@
             >
             <br />
             <!-- 删除 -->
-            <el-button
+            <!-- <el-button
               type="danger"
               icon="el-icon-delete"
               size="small"
               @click="delNode(scope.row.name)"
               >删除</el-button
-            >
+            > -->
           </template>
         </el-table-column>
       </el-table>
@@ -127,38 +133,35 @@
       <div slot="header" class="clearfix">
         <span style="font-size: 20px">命名空间</span>
       </div>
-      <el-table :data="namespaces" style="width: 100%" stripe>
+      <el-table :data="currentNamespaces" style="width: 100%" stripe>
         <el-table-column width="40">
           <template slot-scope="scope">
             <svg-icon
-              :icon-class="
-                scope.row.status.phase == 'Active'
-                  ? 'load-success'
-                  : 'load-failed'
-              "
+              :icon-class="scope.row.status ? 'load-success' : 'load-failed'"
             />
           </template>
         </el-table-column>
         <el-table-column label="名称">
           <template slot-scope="scope">
             <router-link
-              :to="'/summary/namespaces/' + scope.row.metadata.name"
+              :to="'/summary/namespaces/' + scope.row.name"
               @click.native="goToNamespacesDetails(scope.row)"
               class="link-type"
             >
               <span style="color: #409eff; text-decoration: underline">{{
-                scope.row.metadata.name
+                scope.row.name
               }}</span>
             </router-link>
           </template>
         </el-table-column>
-        <el-table-column prop="status.phase" label="运行阶段">
-        </el-table-column>
-        <el-table-column label="创建时间">
+        <el-table-column prop="phase" label="运行阶段">
           <template slot-scope="scope">
-            <span>{{
-              scope.row.metadata.creationTimestamp.replaceAll(/[TZ]/g, " ")
-            }}</span>
+            {{ scope.row.status ? "运行" : "终止" }}
+          </template>
+        </el-table-column>
+        <el-table-column label="创建时间" sortable :sort-by="timeSort">
+          <template slot-scope="scope">
+            <span>{{ scope.row.time }}</span>
           </template>
         </el-table-column>
         <el-table-column label="操作">
@@ -169,7 +172,7 @@
               icon="el-icon-edit"
               style="margin-bottom: 5px"
               size="small"
-              @click="showNamespaceEditDialog(scope.row.metadata.name)"
+              @click="showNamespaceEditDialog(scope.row.name)"
               >编辑</el-button
             ><br />
             <!-- 删除 -->
@@ -177,12 +180,21 @@
               type="danger"
               icon="el-icon-delete"
               size="small"
-              @click="delNamespace(scope.row.metadata.name)"
+              @click="delNamespace(scope.row.name)"
               >删除</el-button
             >
           </template>
         </el-table-column>
       </el-table>
+      <el-pagination
+        background
+        @current-change="handleNamespaceCurrentChange"
+        :current-page="1"
+        :page-size="10"
+        layout="total, prev, pager, next, jumper"
+        :total="totalNamespace"
+      >
+      </el-pagination>
     </el-card>
     <br />
     <!-- 集群角色 -->
@@ -190,7 +202,7 @@
       <div slot="header" class="clearfix">
         <span style="font-size: 20px">集群角色</span>
       </div>
-      <el-table :data="clusterRoles" style="width: 100%" stripe>
+      <el-table :data="currentClusterRoles" style="width: 100%" stripe>
         <!-- <el-table-column width="40">
           <template slot-scope="scope">
             <svg-icon :icon-class="scope.row.status.phase == 'Active'? 'load-success': 'load-failed'"/>
@@ -199,21 +211,19 @@
         <el-table-column label="名称">
           <template slot-scope="scope">
             <router-link
-              :to="'/summary/clusterRoles/' + scope.row.metadata.name"
+              :to="'/summary/clusterRoles/' + scope.row.name"
               @click.native="goToClusterRolesDetails(scope.row)"
               class="link-type"
             >
               <span style="color: #409eff; text-decoration: underline">{{
-                scope.row.metadata.name
+                scope.row.name
               }}</span>
             </router-link>
           </template>
         </el-table-column>
-        <el-table-column label="创建时间">
+        <el-table-column label="创建时间" sortable :sort-by="timeSort">
           <template slot-scope="scope">
-            <span>{{
-              scope.row.metadata.creationTimestamp.replaceAll(/[TZ]/g, " ")
-            }}</span>
+            <span>{{ scope.row.time }}</span>
           </template>
         </el-table-column>
         <el-table-column label="操作">
@@ -224,7 +234,7 @@
               icon="el-icon-edit"
               style="margin-bottom: 5px"
               size="small"
-              @click="showClusterRolesEditDialog(scope.row.metadata.name)"
+              @click="showClusterRolesEditDialog(scope.row.name)"
               >编辑</el-button
             ><br />
             <!-- 删除 -->
@@ -232,12 +242,21 @@
               type="danger"
               icon="el-icon-delete"
               size="small"
-              @click="delClusterRole(scope.row.metadata.name)"
+              @click="delClusterRole(scope.row.name)"
               >删除</el-button
             >
           </template>
         </el-table-column>
       </el-table>
+      <el-pagination
+        background
+        @current-change="handleClusterRolesCurrentChange"
+        :current-page="1"
+        :page-size="10"
+        layout="total, prev, pager, next, jumper"
+        :total="totalClusterRoles"
+      >
+      </el-pagination>
     </el-card>
 
     <!-- 编辑框 Node -->
@@ -290,10 +309,6 @@
           />
         </el-tab-pane>
       </el-tabs>
-
-      <!-- <textarea style="width:100%" name="describe" id="ingress" cols="30" rows="10">
-        {{code}}
-      </textarea> -->
       <span slot="footer" class="dialog-footer">
         <div class="foot-info">
           <i class="el-icon-warning"></i> 此操作相当于 kubectl apply -f
@@ -351,12 +366,23 @@ export default {
   components: {},
   data() {
     return {
+      
+      /* 节点部分 */
       nodes: [],
+      
+      /* 命名空间部分 */
       namespaces: [],
+      currentNamespaces: [],
+      totalNamespace: 0,
+
+      /* 集群角色部分 */
       clusterRoles: [],
+      currentClusterRoles: [],
+      totalClusterRoles: 0,
+
+      /* 公共部分 */
       editDialogVisible: false,
       codeYaml: "", // 编辑框的 yaml 数据
-
       cmOptionsYaml: {
         // yaml codemirror 配置项
         tabSize: 4,
@@ -411,10 +437,10 @@ export default {
                       return "<strong>name:</strong> " + params.value;
                     }
                   } else {
-                    let a = res.data.nodes.filter(node =>{
+                    let a = res.data.nodes.filter((node) => {
                       return node.id == params.data.source;
                     });
-                    let b = res.data.nodes.filter(node =>{
+                    let b = res.data.nodes.filter((node) => {
                       return node.id == params.data.target;
                     });
                     return b[0].value + " > " + a[0].value;
@@ -423,9 +449,9 @@ export default {
               },
               legend: [
                 {
-                  orient: 'vertical',
-                  left: '5%',
-                  top: '10%',
+                  orient: "vertical",
+                  left: "5%",
+                  top: "10%",
                   data: res.data.categories.map((a) => a.name),
                 },
               ],
@@ -438,7 +464,7 @@ export default {
                   data: res.data.nodes,
                   links: res.data.links,
                   categories: res.data.categories,
-                  legendHoverLink: false,  
+                  legendHoverLink: false,
                   zoom: 1,
                   roam: true,
                   center: [0, 0],
@@ -475,7 +501,7 @@ export default {
                 },
               ],
             };
-            myChart.setOption(option);
+            myChart.setOption(option, null, { renderer: "svg" });
             myChart.on("click", function (params) {
               if (params.dataType === "node") {
                 // 点击节点
@@ -528,7 +554,7 @@ export default {
       this.$store.dispatch("namespaces/toDetails", namespaceDetails);
     },
     // 获取集群角色详情页
-    goToNamespacesDetails: function (clusterRoles) {
+    goToClusterRolesDetails: function (clusterRoles) {
       this.$store.dispatch("clusterRoles/toDetails", clusterRoles);
     },
     // 获取所有节点信息
@@ -551,10 +577,17 @@ export default {
         .then((res) => {
           console.log(res);
           this.namespaces = res.data;
+          this.totalNamespace = res.data.length;
+          this.currentNamespaces = res.data.slice(0, 10);
         })
         .catch((error) => {
           console.log(error);
         });
+    },
+
+    // 处理命名空间分页
+    handleNamespaceCurrentChange(page) {
+      this.currentNamespaces = this.namespaces.slice((page - 1) * 10, page * 10);
     },
 
     // 获取所有集群角色
@@ -564,10 +597,27 @@ export default {
         .then((res) => {
           console.log(res);
           this.clusterRoles = res.data;
+          this.totalClusterRoles = res.data.length;
+          this.currentClusterRoles = res.data.slice(0, 10);
         })
         .catch((error) => {
           console.log(error);
         });
+    },
+
+    // 处理集群角色分页
+    handleClusterRolesCurrentChange(page) {
+      this.currentClusterRoles = this.clusterRoles.slice((page - 1) * 10, page * 10);
+    },
+
+    /* 排序部分 */
+    // 时间排序
+    timeSort: function(row){
+      return row.time;
+    },
+    // 名称排序
+    nameSort: function(row){
+      return row.name;
     },
 
     /* 编辑部分 */
@@ -685,7 +735,7 @@ export default {
           this.$store
             .dispatch("clusterRoles/delClusterRoleByName", name)
             .then((res) => {
-              console.log(res)
+              console.log(res);
               if (res.code == 1200) {
                 this.$message.success("删除成功");
                 this.getClusterRoles();
@@ -739,11 +789,10 @@ export default {
 .el-card {
   width: 95%;
 }
-.el-table .warning-row {
-  background: rgb(194, 99, 70);
-}
 
-.el-table .success-row {
+
+.el-table {
+  margin-bottom: 15px;
   background: #f0f9eb;
 }
 </style>
