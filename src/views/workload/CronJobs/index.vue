@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: zqy
- * @LastEditTime: 2021-04-14 16:34:37
+ * @LastEditTime: 2021-04-19 15:11:58
 -->
 
 <template>
@@ -100,7 +100,7 @@
               inactive-color="#ff4949"
               active-text="运行"
               inactive-text="暂停"
-              @change="changeCronJobSuSpend()"
+              @change="changeCronJobSuSpend(scope.row)"
             >
             </el-switch>
           </template>
@@ -288,7 +288,7 @@ export default {
     },
 
     //修改 CronJob 的为暂停或者运行
-    changeCronJobSuSpend() {
+    changeCronJobSuSpend(cronJob) {
       // this.$store.dispatch("cronJobs/changeCronJobSuSpend")
       // .then((res) => {
       //   this.cronJobSuSpend = res.data;
