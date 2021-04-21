@@ -3,8 +3,6 @@
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-03-10 15:03:17
- * @LastEditors: Rex Joush
- * @LastEditTime: 2021-04-15 19:52:58
  */
 import Vue from 'vue'
 import Router from 'vue-router'
@@ -332,7 +330,17 @@ export const constantRoutes = [
         name: 'Customize Details',
         meta: { title: '自定义资源详情', noCache: true, activeMenu: '/customize' },
         hidden: true
-      },]
+      },
+      // Object详情
+      {
+        path: 'details/object/:name([a-z0-9-.]+)',
+        component: () => import('@/views/customize/details/object/index'),
+        name: 'Object 详情',
+        meta: { title: 'Object Details', noCache: true, activeMenu: '/customize' },
+        hidden: true
+      },
+
+    ]
   },
 
   // 负载预测

@@ -3,19 +3,16 @@
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-04-07 20:10:50
- * @LastEditors: Leo
- * @LastEditTime: 2021-04-13 16:40:05
  */
 import request from '@/utils/request'
 let baseUrl = "http://localhost:8081"
 
 export function changeResourceByYaml(data) {
-  console.log("yaml", data);
   return request({
     url: baseUrl + '/common/changeResourceByYaml',
     method: 'post',
     data: {
-      pod: data,
+      yaml: data,
     }
   })
 }
@@ -34,6 +31,27 @@ export function changeIngressesByYaml(data) {
     method: 'post',
     data: {
       ingress: data,
+    }
+  })
+}
+export function changeCrdByYaml(data) {
+  console.log("yaml", data);
+  return request({
+    url: baseUrl + '/common/changeResourceByYaml_v1beta',
+    method: 'post',
+    data: {
+      yaml: data,
+    }
+  })
+}
+//changeCrdObjectByYaml
+export function changeCrdObjectByYaml(data) {
+  console.log("yaml", data);
+  return request({
+    url: baseUrl + '/common/changeCrdObjectByYaml',
+    method: 'post',
+    data: {
+      yaml: data,
     }
   })
 }
