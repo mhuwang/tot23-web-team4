@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: zqy
- * @LastEditTime: 2021-04-13 20:02:34
+ * @LastEditTime: 2021-04-19 17:05:22
 -->
 <template>
   <div>
@@ -60,40 +60,38 @@
           <template slot-scope="scope">
             <svg-icon
               :icon-class="
-                scope.row.status.conditions[1].status == 'True'
+                scope.row.status == '1'
                   ? 'load-success'
-                  : scope.row.status.conditions[1].status == 'Unknown'
-                  ? 'load-doubt'
                   : 'load-failed'
               "
             />
           </template>
         </el-table-column>
-        <el-table-column prop="metadata.name" label="名称">
+        <el-table-column prop="name" label="名称">
           <template slot-scope="scope">
             <router-link
-              :to="{name: 'Deployment 详情', params:{name: scope.row.metadata.name + ',' + scope.row.metadata.namespace}}"
+              :to="{name: 'Deployment 详情', params:{name: scope.row.name + ',' + scope.row.namespace}}"
               @click.native="
                 goToDeploymentsDetails(
-                  scope.row.metadata.name,
-                  scope.row.metadata.namespace
+                  scope.row.name,
+                  scope.row.namespace
                 )
               "
               class="link-type"
             >
               <span style="color: #409eff; text-decoration: underline">{{
-                scope.row.metadata.name
+                scope.row.name
               }}</span>
             </router-link>
           </template>
         </el-table-column>
         <!-- <el-table-column prop="apiVersion" label="版本"> </el-table-column> -->
-        <el-table-column prop="metadata.namespace" label="命名空间">
+        <el-table-column prop="namespace" label="命名空间">
         </el-table-column>
         <el-table-column label="Pods">
           <template slot-scope="scope">
             <span>
-              {{scope.row.status.readyReplicas ? scope.row.status.readyReplicas : 0}}/{{scope.row.spec.replicas}}
+              {{scope.row.runningPods}}/{{scope.row.replicas}}
             </span>
           </template>
         </el-table-column>
@@ -115,7 +113,7 @@
         <el-table-column label="创建时间" width="200">
           <template slot-scope="scope">
             <span>{{
-              scope.row.metadata.creationTimestamp.replaceAll(/[TZ]/g, " ")
+              scope.row.creationTimestamp.replaceAll(/[TZ]/g, " ")
             }}</span>
           </template>
         </el-table-column>
@@ -129,8 +127,8 @@
               size="small"
               @click="
                 showDeploymentEditDialog(
-                  scope.row.metadata.name,
-                  scope.row.metadata.namespace
+                  scope.row.name,
+                  scope.row.namespace
                 )
               "
               >编辑</el-button
@@ -143,8 +141,8 @@
               size="small"
               @click="
                 delDeployment(
-                  scope.row.metadata.name,
-                  scope.row.metadata.namespace
+                  scope.row.name,
+                  scope.row.namespace
                 )
               "
               >删除</el-button

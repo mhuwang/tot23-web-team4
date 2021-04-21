@@ -4,188 +4,188 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: zqy
- * @LastEditTime: 2021-04-19 15:14:45
+ * @LastEditTime: 2021-04-21 20:55:15
 -->
 <template>
   <div>
     <el-card class="box-card">
-      <div slot="header" class="clearfix">
+      <!-- <div slot="header" class="clearfix">
         <span>创建资源</span>
-      </div>
-      <el-form
-        :model="ruleForm"
-        :rules="rules"
-        ref="ruleForm"
-        label-width="100px"
-        class="demo-ruleForm"
-      >
-        <el-form-item label="Pod名称" prop="name">
-          <el-input v-model="ruleForm.name"></el-input>
-        </el-form-item>
-        <el-form-item label="命名空间" prop="region">
-          <el-select v-model="ruleForm.region" placeholder="请选择命名空间">
-            <el-option label="区域一" value="shanghai"></el-option>
-            <el-option label="区域二" value="beijing"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="活动时间" required>
-          <el-col :span="11">
-            <el-form-item prop="date1">
-              <el-date-picker
-                type="date"
-                placeholder="选择日期"
-                v-model="ruleForm.date1"
-                style="width: 100%"
-              ></el-date-picker>
-            </el-form-item>
-          </el-col>
-          <el-col class="line" :span="2">-</el-col>
-          <el-col :span="11">
-            <el-form-item prop="date2">
-              <el-time-picker
-                placeholder="选择时间"
-                v-model="ruleForm.date2"
-                style="width: 100%"
-              ></el-time-picker>
-            </el-form-item>
-          </el-col>
-        </el-form-item>
-        <el-form-item label="即时配送" prop="delivery">
-          <el-switch v-model="ruleForm.delivery"></el-switch>
-        </el-form-item>
-        <el-form-item label="活动性质" prop="type">
-          <el-checkbox-group v-model="ruleForm.type">
-            <el-checkbox label="美食/餐厅线上活动" name="type"></el-checkbox>
-            <el-checkbox label="地推活动" name="type"></el-checkbox>
-            <el-checkbox label="线下主题活动" name="type"></el-checkbox>
-            <el-checkbox label="单纯品牌曝光" name="type"></el-checkbox>
-          </el-checkbox-group>
-        </el-form-item>
-        <el-form-item label="特殊资源" prop="resource">
-          <el-radio-group v-model="ruleForm.resource">
-            <el-radio label="线上品牌商赞助"></el-radio>
-            <el-radio label="线下场地免费"></el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item label="活动形式" prop="desc">
-          <el-input type="textarea" v-model="ruleForm.desc"></el-input>
-        </el-form-item>
-        <el-form-item v-if="! completeOption">
-          <el-button
-            round="true"
-            @click="showCompleteOption(completeOption)"
-            >显示高级选项</el-button
+      </div> -->
+      <el-tabs tab-position="top" style="margin-bottom: 4000px">
+        <!-- 从表单创建 -->
+        <el-tab-pane>
+          <span slot="label"><i class="el-icon-document"></i>从表单创建</span>
+          <!-- 必填信息 -->
+          <el-form
+            :model="ruleForm"
+            :rules="rules"
+            ref="ruleForm"
+            label-width="100px"
+            class="demo-ruleForm"
           >
-          <el-button type="primary" @click="submitForm('ruleForm')"
-            >立即创建</el-button
+            <el-form-item label="容器组 名称" prop="name">
+              <el-input v-model="ruleForm.name"></el-input>
+            </el-form-item>
+            <el-form-item label="容器镜像" prop="region">
+              <el-select v-model="ruleForm.region" placeholder="请选择命名空间">
+                <el-option label="区域一" value="shanghai"></el-option>
+                <el-option label="区域二" value="beijing"></el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="容器组 数量">
+              <el-input-number
+                v-model="amount"
+                @change="handleChange"
+                :min="1"
+                label="描述文字"
+              ></el-input-number>
+            </el-form-item>
+            <el-form-item label="服务" prop="region">
+              <el-select v-model="ruleForm.region" placeholder="请选服务">
+                <el-option label="无服务" value="None"></el-option>
+                <el-option label="内部服务" value="Internal"></el-option>
+                <el-option label="外部服务" value="External"></el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item v-if="!completeOption">
+              <el-button type="primary" @click="submitForm('ruleForm')"
+                >创 建</el-button
+              >
+              <el-button @click="resetForm('ruleForm')">重置</el-button>
+              <el-button
+                round="true"
+                @click="showCompleteOption(completeOption)"
+                type="text"
+                >显示高级选项</el-button
+              >
+            </el-form-item>
+          </el-form>
+          <!-- 高级信息 -->
+          <el-form
+            :model="ruleForm"
+            :rules="rules"
+            ref="ruleForm"
+            label-width="100px"
+            class="demo-ruleForm"
+            v-if="completeOption"
           >
-          <el-button @click="resetForm('ruleForm')">重置</el-button>
-        </el-form-item>
-      </el-form>
+            <el-form-item label="描述" prop="name">
+              <el-input
+                type="textarea"
+                :autosize="{ minRows: 2, maxRows: 4 }"
+                placeholder="请输入内容"
+                v-model="textarea2"
+              >
+              </el-input>
+            </el-form-item>
+            <el-form-item label="标签" prop="region" >
+              <div class="demo-input-size">
+                <el-input
+                  size="medium"
+                  placeholder="键"
+                  suffix-icon="el-icon-date"
+                  v-model="input2"
+                >
+                </el-input>
+                <el-input
+                  size="medium"
+                  placeholder="值"
+                  suffix-icon="el-icon-date"
+                  v-model="input2"
+                >
+                </el-input>
+              </div>
+            </el-form-item>
+            <el-form-item label="CPU需求" required>
+              <el-col :span="11">
+                <el-form-item prop="date1">
+                  <el-date-picker
+                    type="date"
+                    placeholder="最低需求"
+                    v-model="ruleForm.date1"
+                    style="width: 100%"
+                  ></el-date-picker>
+                </el-form-item>
+              </el-col>
+              <el-col class="line" :span="2">-</el-col>
+              <el-col :span="11">
+                <el-form-item prop="date2">
+                  <el-time-picker
+                    placeholder="最高需求"
+                    v-model="ruleForm.date2"
+                    style="width: 100%"
+                  ></el-time-picker>
+                </el-form-item>
+              </el-col>
+            </el-form-item>
+            <el-form-item label="运行命令" prop="type">
+              <el-input v-model="input" placeholder="请输入内容"></el-input>
+            </el-form-item>
+            <el-form-item label="命令参数" prop="resource">
+              <el-input v-model="input" placeholder="请输入内容"></el-input>
+            </el-form-item>
+            <el-form-item label="环境变量" prop="desc">
+              <el-input type="textarea" v-model="ruleForm.desc"></el-input>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" @click="submitForm('ruleForm')"
+                >创 建</el-button
+              >
+              <el-button @click="resetForm('ruleForm')">重 置</el-button>
+              <el-button
+                round="true"
+                @click="showCompleteOption(completeOption)"
+                type="text"
+                >收起高级选项</el-button
+              >
+            </el-form-item>
+          </el-form>
+        </el-tab-pane>
 
-      <el-form
-        :model="ruleForm"
-        :rules="rules"
-        ref="ruleForm"
-        label-width="100px"
-        class="demo-ruleForm"
-        v-if="completeOption"
-      >
-        <el-form-item label="Pod名称" prop="name">
-          <el-input v-model="ruleForm.name"></el-input>
-        </el-form-item>
-        <el-form-item label="命名空间" prop="region">
-          <el-select v-model="ruleForm.region" placeholder="请选择命名空间">
-            <el-option label="区域一" value="shanghai"></el-option>
-            <el-option label="区域二" value="beijing"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="活动时间" required>
-          <el-col :span="11">
-            <el-form-item prop="date1">
-              <el-date-picker
-                type="date"
-                placeholder="选择日期"
-                v-model="ruleForm.date1"
-                style="width: 100%"
-              ></el-date-picker>
-            </el-form-item>
-          </el-col>
-          <el-col class="line" :span="2">-</el-col>
-          <el-col :span="11">
-            <el-form-item prop="date2">
-              <el-time-picker
-                placeholder="选择时间"
-                v-model="ruleForm.date2"
-                style="width: 100%"
-              ></el-time-picker>
-            </el-form-item>
-          </el-col>
-        </el-form-item>
-        <el-form-item label="即时配送" prop="delivery">
-          <el-switch v-model="ruleForm.delivery"></el-switch>
-        </el-form-item>
-        <el-form-item label="活动性质" prop="type">
-          <el-checkbox-group v-model="ruleForm.type">
-            <el-checkbox label="美食/餐厅线上活动" name="type"></el-checkbox>
-            <el-checkbox label="地推活动" name="type"></el-checkbox>
-            <el-checkbox label="线下主题活动" name="type"></el-checkbox>
-            <el-checkbox label="单纯品牌曝光" name="type"></el-checkbox>
-          </el-checkbox-group>
-        </el-form-item>
-        <el-form-item label="特殊资源" prop="resource">
-          <el-radio-group v-model="ruleForm.resource">
-            <el-radio label="线上品牌商赞助"></el-radio>
-            <el-radio label="线下场地免费"></el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item label="活动形式" prop="desc">
-          <el-input type="textarea" v-model="ruleForm.desc"></el-input>
-        </el-form-item>
-        <el-form-item>
-          <el-button
-            round="true"
-            @click="showCompleteOption(completeOption)"
-            >收起高级选项</el-button
+        <!-- 输入并创建 -->
+        <el-tab-pane>
+          <span slot="label"
+            ><i class="el-icon-document-add"></i>输入并创建</span
           >
-          <el-button type="primary" @click="submitForm('ruleForm')"
-            >立即创建</el-button
+          <codemirror
+            ref="cmYamlAdd"
+            :value="addYaml"
+            :options="cmOptionsYaml"
+            @ready="onAddYamlCmReady"
+            @input="onAddYamlCmCodeChange"
+          />
+          <span class="dialog-footer">
+            <!-- <div class="foot-info">
+                <i class="el-icon-warning"></i> 此操作相当于 kubectl apply -f
+                &ltspec.yaml>
+              </div> -->
+            <br />
+            <el-button type="primary" @click="commitPodAdd">创 建</el-button>
+            <el-button @click="addDialogVisible = false">取 消</el-button>
+          </span>
+        </el-tab-pane>
+
+        <!-- 从文件创建 -->
+        <el-tab-pane>
+          <span slot="label"><i class="el-icon-folder"></i>从文件创建</span>
+          <el-upload
+            class="upload-demo"
+            drag
+            action="https://jsonplaceholder.typicode.com/posts/"
+            multiple
           >
-          <el-button @click="resetForm('ruleForm')">重置</el-button>
-        </el-form-item>
-      </el-form>
+            <i class="el-icon-upload"></i>
+            <div class="el-upload__text">
+              将文件拖到此处，或<em>点击上传</em>
+            </div>
+            <div class="el-upload__tip" slot="tip">
+              只能上传Yaml格式的文件，且不超过500kb
+            </div>
+          </el-upload>
+        </el-tab-pane>
+      </el-tabs>
     </el-card>
-
-    <!-- 添加框 -->
-    <el-dialog
-      title="创建资源"
-      :visible.sync="addDialogVisible"
-      width="70%"
-      @closed="handleClose"
-      @close="addDialogVisible = false"
-      :append-to-body="true"
-      :lock-scroll="true"
-    >
-      <codemirror
-        ref="cmYamlAdd"
-        :value="addYaml"
-        :options="cmOptionsYaml"
-        @ready="onAddYamlCmReady"
-        @input="onAddYamlCmCodeChange"
-      />
-
-      <!-- <textarea style="width:100%" name="describe" id="pod" cols="30" rows="10">
-        {{code}}
-      </textarea> -->
-      <span slot="footer" class="dialog-footer">
-        <div class="foot-info">
-          <i class="el-icon-warning"></i> 此操作相当于 kubectl apply -f
-          &ltspec.yaml>
-        </div>
-        <el-button @click="addDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="commitPodAdd">确 定</el-button>
-      </span>
-    </el-dialog>
   </div>
 </template>
 
@@ -198,8 +198,10 @@ import "codemirror/theme/panda-syntax.css";
 export default {
   data() {
     return {
-      addDialogVisible: false, // 添加框详情
-      addYaml: "", // 添加框的 yaml 数据
+      textarea2: "",
+      amount: 1,
+      addDialogVisible: true, // 添加框详情
+      addYaml: "", // 输入框的 yaml 数据
 
       cmOptionsYaml: {
         // yaml codemirror 配置项
@@ -287,20 +289,19 @@ export default {
     resetForm(formName) {
       this.$refs[formName].resetFields();
     },
-  },
-  // 添加的 yaml 框
+
+    /* 从输入创建 */
+    // 添加的 yaml 框
     onAddYamlCmReady(cm) {
       setTimeout(() => {
         cm.refresh();
       }, 50);
     },
-
     onAddYamlCmCodeChange(newCode) {
+      // console.log(newCode, "输入")
       this.addYaml = newCode;
     },
-
-    
-    /* 添加部分，提交添加 */
+    //提交创建申请并返回结果
     commitPodAdd() {
       this.$confirm("创建资源？", {
         confirmButtonText: "确定",
@@ -338,6 +339,7 @@ export default {
           console.log("cancel");
         });
     },
+  },
 };
 </script>
 

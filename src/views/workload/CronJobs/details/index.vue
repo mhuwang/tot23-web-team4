@@ -126,7 +126,7 @@
     <!-- 运行中的Jobs -->
     <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <span style="font-size: 16px">运行中的Jobs</span>
+        <span style="font-size: 16px">运行中的任务</span>
       </div>
       <el-table :data="runningJobs" style="width: 100%" stripe>
         <el-table-column width="40">
@@ -230,7 +230,7 @@
     <!-- 非工作的Jobs -->
     <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <span style="font-size: 16px">非工作的Jobs</span>
+        <span style="font-size: 16px">非工作的任务  </span>
       </div>
       <el-table :data="jobs" style="width: 100%" stripe>
         <el-table-column width="40">
@@ -461,9 +461,9 @@ export default {
         .dispatch("cronJobs/getCronJobResources", nameAndNamespace)
         .then((res) => {
           console.log(res);
-          this.cronJob = res.dataCronJob;
-          this.runningJobs = res.dataRunningJobs;
-          this.jobs = res.dataJods;
+          this.cronJob = res.data.cronJob;
+          this.runningJobs = res.data.runningJobs;
+          this.jobs = res.data.jods;
         })
         .catch((error) => {
           throw error;
