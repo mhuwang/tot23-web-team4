@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-22 17:20:47
  * @LastEditors: zqy
- * @LastEditTime: 2021-04-14 21:25:41
+ * @LastEditTime: 2021-04-24 13:12:23
  */
 import request from '@/utils/request'
 let baseUrl = "http://localhost:8081"
@@ -64,3 +64,15 @@ export function getCompletePodsList(data) {
     method: 'get'
   })
 }
+export function createPodFromForm(data) {
+  return request({
+    url: baseUrl + '/pods/createPodFromForm',
+    method: 'get',
+    params: {
+      name: data.baseImformation.name,
+      namespace: data.baseImformation.namespace,
+      image: data.baseImformation.image,
+    }
+  })
+}
+
