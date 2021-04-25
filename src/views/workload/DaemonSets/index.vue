@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: zqy
- * @LastEditTime: 2021-04-15 14:50:36
+ * @LastEditTime: 2021-04-19 16:49:06
 -->
 <!--<template>-->
 <!--  <h1>Daemon Sets</h1>-->
@@ -62,57 +62,41 @@
         <el-table-column width="40">
           <template slot-scope="scope">
             <svg-icon
-              :icon-class="
-                'True'
-                  ? scope.row.status.numberReady <
-                    scope.row.status.numberAvailable
+              :icon-class="scope.row.status == '0'
                     ? 'load-doubt'
                     : 'load-success'
-                  : 'load-failed'
               "
             />
           </template>
         </el-table-column>
-        <el-table-column prop="metadata.name" label="名称">
+        <el-table-column prop="name" label="名称">
           <template slot-scope="scope">
             <router-link
               :to="{
                 name: 'DaemonSet Details',
                 params: {
                   name:
-                    scope.row.metadata.name +
+                    scope.row.name +
                     ',' +
-                    scope.row.metadata.namespace,
+                    scope.row.namespace,
                 },
               }"
               @click.native="goToDaemonSetsDetails(scope.row)"
               class="link-type"
             >
               <span style="color: #409eff; text-decoration: underline">{{
-                scope.row.metadata.name
+                scope.row.name
               }}</span>
             </router-link>
           </template>
         </el-table-column>
-        <el-table-column prop="metadata.namespace" label="命名空间">
+        <el-table-column prop="namespace" label="命名空间">
         </el-table-column>
-        <!-- <el-table-column label="标签">
-          <template slot-scope="scope">
-            <span>k8s-app: {{scope.row.metadata.labels['k8s-app']}}</span>
-            <br>
-            <span>pod-template-hash: {{scope.row.metadata.labels['pod-template-hash']}}</span>
-          </template>
-        </el-table-column> -->
-        <!-- <el-table-column prop="apiVersion" label="apiVersion"> </el-table-column> -->
-        <!-- <el-table-column prop="kind" label="kind"> </el-table-column> -->
-        <!-- <el-table-column prop="metadata.uid" label="uid"> </el-table-column> -->
-        <!-- <el-table-column prop="spec.nodeName" width="140" label="所属节点"> </el-table-column> -->
-        <!-- <el-table-column prop="status.podIP" width="140" label="主机ip地址"> </el-table-column> -->
         <el-table-column label="Pods">
           <template slot-scope="scope">
             <span>
-              {{ scope.row.status.numberReady }}/{{
-                scope.row.status.numberAvailable
+              {{ scope.row.runningPods }}/{{
+                scope.row.replicas
               }}
             </span>
           </template>
@@ -120,7 +104,7 @@
         <el-table-column label="启动时间" width="200">
           <template slot-scope="scope">
             <span>{{
-              scope.row.metadata.creationTimestamp.replaceAll(/[TZ]/g, " ")
+              scope.row.creationTimestamp.replaceAll(/[TZ]/g, " ")
             }}</span>
           </template>
         </el-table-column>
@@ -134,8 +118,8 @@
               size="small"
               @click="
                 showDaemonSetEditDialog(
-                  scope.row.metadata.name,
-                  scope.row.metadata.namespace
+                  scope.row.name,
+                  scope.row.namespace
                 )
               "
               >编辑</el-button
@@ -149,8 +133,8 @@
               size="small"
               @click="
                 delDaemonSet(
-                  scope.row.metadata.name,
-                  scope.row.metadata.namespace
+                  scope.row.name,
+                  scope.row.namespace
                 )
               "
               >删除</el-button
