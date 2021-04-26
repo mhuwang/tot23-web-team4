@@ -4,7 +4,7 @@
  * @Author: Anna667
  * @Date: 
  * @LastEditors: Anna
- * @LastEditTime: 2021-04-16 11:13:11
+ * @LastEditTime: 2021-04-24 11:57:03
 -->
 <template>
   <div>
@@ -328,7 +328,7 @@ export default {
 
     /* 删除 Secret */
     delSecret: function (name, namespace) {
-      this.$confirm("确认删除 secret", {
+      this.$confirm("确认删除 密钥", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",

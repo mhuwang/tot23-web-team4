@@ -3,8 +3,8 @@
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-03-10 15:03:17
- * @LastEditors: Rex Joush
- * @LastEditTime: 2021-04-14 21:38:23
+ * @LastEditors: Anna
+ * @LastEditTime: 2021-04-26 13:21:30
  */
 import Vue from 'vue'
 
@@ -18,7 +18,7 @@ import '@/styles/index.scss' // global css
 
 // 引入 highlight
 import hljs from 'highlight.js';
-import 'highlight.js/styles/atom-one-dark.css' // 样式
+import 'highlight.js/styles/atelier-forest-light.css' // 样式
 
 // 引入 beautify
 import beautify from 'js-beautify'

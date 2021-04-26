@@ -4,7 +4,7 @@
  * @Author: Anna667
  * @Date: 
  * @LastEditors: Anna
- * @LastEditTime: 2021-04-16 11:06:39
+ * @LastEditTime: 2021-04-24 11:55:33
 -->
 <template>
   <div>
@@ -337,7 +337,7 @@ export default {
 
     /* 删除 ConfigMap */
     delConfigMap: function (name, namespace) {
-      this.$confirm("确认删除 configMap", {
+      this.$confirm("确认删除 配置字典", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",

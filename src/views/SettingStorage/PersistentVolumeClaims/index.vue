@@ -4,7 +4,7 @@
  * @Author: Anna
  * @Date: 2021-04-13 11:11:57
  * @LastEditors: Anna
- * @LastEditTime: 2021-04-16 11:05:44
+ * @LastEditTime: 2021-04-26 13:04:38
 -->
 <template>
   <div>
@@ -74,9 +74,21 @@
           </template>
         </el-table-column>
         <el-table-column prop="metadata.namespace" label="命名空间" width="150"> </el-table-column>
-
-        <el-table-column prop="status.phase" label="状态" width="100"> </el-table-column>
-        <el-table-column prop="spec.volumeName" label="Volume" width="100"> </el-table-column>
+        <!-- prop="status.phase" -->
+        <el-table-column  label="状态" width="100"> 
+          <template slot-scope="scope">
+            {{
+              scope.row.status.phase == "Bound"
+                ? "绑定"
+                : scope.row.status.phase == "Available"
+                ? "可用"
+                : scope.row.status.phase == "Released"
+                ? "释放"
+                : "失败"
+            }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="spec.volumeName" label="卷" width="100"> </el-table-column>
         <el-table-column label="容量" width="120">
           <template slot-scope="scope">
             <span>{{scope.row.status.capacity.storage.amount}} {{scope.row.status.capacity.storage.format}}</span>
@@ -340,7 +352,7 @@ export default {
 
     /* 删除 PersistentVolumeClaim */
     delPVC: function (name, namespace) {
-      this.$confirm("确认删除 PersistentVolumeClaim", {
+      this.$confirm("确认删除 持久化存储卷", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
