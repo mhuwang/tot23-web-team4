@@ -4,13 +4,13 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: Leo
- * @LastEditTime: 2021-04-15 21:58:23
+ * @LastEditTime: 2021-04-25 17:26:27
 -->
 <template>
   <div>
     <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <span>所有统一访问入口</span>
+        <span>负载均衡器</span>
       </div>
       <el-row :gutter="20">
         <el-col :span="5">
@@ -320,7 +320,7 @@ export default {
 
     /* 删除 ingress */
     delIngress: function (name, namespace) {
-      this.$confirm("确认删除 ingress？", {
+      this.$confirm("确认删除该负载均衡器？", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",

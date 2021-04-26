@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: Leo
- * @LastEditTime: 2021-04-15 21:12:46
+ * @LastEditTime: 2021-04-25 21:54:00
 
  -->
 <template>
@@ -323,7 +323,7 @@ export default {
 
     /* 删除 Service */
     delService: function (name, namespace) {
-      this.$confirm("确认删除 服务 ？", {
+      this.$confirm("确认删除该服务 ？", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",

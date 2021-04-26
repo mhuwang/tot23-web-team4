@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-30 19:58:14
  * @LastEditors: Leo
- * @LastEditTime: 2021-04-16 10:55:38
+ * @LastEditTime: 2021-04-26 09:52:18
 -->
 
 <template>
@@ -129,7 +129,7 @@
         </el-table-column>
         <el-table-column label="是否就绪" width="300"> 是 </el-table-column>
       </el-table>
-      <p v-else style="font-size: 18px; color: #909399">无数据</p>
+      <p v-else style="font-size: 14px; color: #909399" align="center" >暂无数据</p>
     </el-card>
     <br /><br />
 
