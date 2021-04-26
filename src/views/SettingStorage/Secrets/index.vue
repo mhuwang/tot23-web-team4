@@ -4,7 +4,7 @@
  * @Author: Anna667
  * @Date: 
  * @LastEditors: Anna
- * @LastEditTime: 2021-04-24 11:57:03
+ * @LastEditTime: 2021-04-26 15:20:27
 -->
 <template>
   <div>
@@ -43,7 +43,8 @@
             ></el-button> -->
         </el-col>
       </el-row>
-      <el-table :data="secrets" 
+      <el-table 
+      :data="currentSecrets" 
       style="width: 100%" 
       stripe
       v-loading="loading"
@@ -122,6 +123,15 @@
           </template>
         </el-table-column>
       </el-table>
+      <el-pagination
+        background
+        @current-change="handleSecretCurrentChange"
+        :current-page="1"
+        :page-size="6"
+        layout="total, prev, pager, next, jumper"
+        :total="totalSecret"
+      >
+      </el-pagination>
     </el-card>
 
     <!-- 编辑框 -->
@@ -190,6 +200,9 @@ export default {
       codeJSON: "", // 编辑框的 json 数据
       codeYaml: "", // 编辑框的 yaml 数据
 
+      currentSecrets: [],
+      totalSecret: 0,
+
       cmOptions: {
         // json codemirror 配置项
         tabSize: 4,
@@ -217,6 +230,11 @@ export default {
   },
 
   methods: {
+    // 处理命名空间分页
+    handleSecretCurrentChange(page) {
+      this.currentSecrets = this.secrets.slice((page - 1) * 6, page * 6);
+    },
+
     // 编辑器方法
     /* yaml */
     onYamlCmReady(cm) {
@@ -247,6 +265,8 @@ export default {
         .then((res) => {
           console.log(res);
           this.secrets = res.data;
+          this.totalSecret = res.data.length;
+          this.currentSecrets = res.data.slice(0, 6);
           this.loading = false;
         })
         .catch((error) => {
