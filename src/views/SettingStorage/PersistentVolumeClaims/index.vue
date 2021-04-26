@@ -4,7 +4,7 @@
  * @Author: Anna
  * @Date: 2021-04-13 11:11:57
  * @LastEditors: Anna
- * @LastEditTime: 2021-04-26 13:04:38
+ * @LastEditTime: 2021-04-26 13:30:13
 -->
 <template>
   <div>
@@ -94,7 +94,18 @@
             <span>{{scope.row.status.capacity.storage.amount}} {{scope.row.status.capacity.storage.format}}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="spec.accessModes[0]" label="访问模式" width="150"> </el-table-column>
+        <!-- prop="spec.accessModes[0]" -->
+        <el-table-column  label="访问模式" width="150"> 
+          <template slot-scope="scope">
+            {{
+              scope.row.spec.accessModes[0] == "ReadWriteOnce"
+                ? "仅允许单节点挂载读写"
+                : scope.row.spec.accessModes[0] == "ReadOnlyMany"
+                ? "允许多节点挂载且只读"
+                : "允许多节点挂载读写"
+            }}
+          </template>
+        </el-table-column>
         <el-table-column prop="spec.storageClassName" label="存储类" width="120"> </el-table-column>
 
 
