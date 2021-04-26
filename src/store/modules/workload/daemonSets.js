@@ -4,9 +4,9 @@
  * @Author: zqy
  * @Date: 2021.03.29 16:25
  * @LastEditors: zqy
- * @LastEditTime: 2021-04-13 20:25:47
+ * @LastEditTime: 2021-04-16 20:30:06
  */
-import { getAllDaemonSets, getDaemonSetByNameAndNamespace, deleteDaemonSetByNameAndNamespace, getDaemonSetYamlByNameAndNamespace, getDaemonSetPodsByNameAndNamespace } from '@/api/workload/daemonSets'
+import { getAllDaemonSets, getDaemonSetByNameAndNamespace, deleteDaemonSetByNameAndNamespace, getDaemonSetYamlByNameAndNamespace, getDaemonSetResources } from '@/api/workload/daemonSets'
 import { getToken } from '@/utils/auth'
 
 const getDefaultState = () => {
@@ -83,10 +83,10 @@ const actions = {
     })
   },
 
-  // 通过名字和命名空间获取 DaemonSet 和 DaemonSet 管理的 Pods
-  getDaemonSetPodsByNameAndNamespace({commit}, nameAndNamespace) {
+  // 通过名字和命名空间获取 DaemonSet 和 DaemonSet 管理的 相应资源
+  getDaemonSetResources({commit}, nameAndNamespace) {
     return new Promise((resolve, reject) => {
-      getDaemonSetPodsByNameAndNamespace(nameAndNamespace).then(response => {
+      getDaemonSetResources(nameAndNamespace).then(response => {
         const {data} =response
         if(!data){
           return reject('获取失败')

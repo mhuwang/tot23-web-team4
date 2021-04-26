@@ -4,9 +4,9 @@
  * @Author: zqy
  * @Date: 2021.03.29 16:14
  * @LastEditors: zqy
- * @LastEditTime: 2021-04-13 20:06:07
+ * @LastEditTime: 2021-04-16 12:16:39
  */
-import { getAllCronJobs, getCronJobByNameAndNamespace, deleteCronJobByNameAndNamespace, getCronJobYamlByNameAndNamespace } from '@/api/workload/cronJobs'
+import { getAllCronJobs, getCronJobByNameAndNamespace, deleteCronJobByNameAndNamespace, getCronJobYamlByNameAndNamespace, getCronJobResources } from '@/api/workload/cronJobs'
 import { getToken } from '@/utils/auth'
 
 const getDefaultState = () => {
@@ -73,6 +73,22 @@ const actions = {
   getCronJobYamlByNameAndNamespace({commit}, nameAndNamespace) {
     return new Promise((resolve, reject) => {
       getCronJobYamlByNameAndNamespace(nameAndNamespace).then(response => {
+        const {data} =response
+        if(!data){
+          return reject('获取失败')
+        }
+        resolve(data)
+      }).catch((error) => {
+        reject(error)
+      })
+    })
+  },
+
+  // 通过名字和命名空间获取  Cronjob 的 Resources
+  getCronJobResources({commit}, nameAndNamespace) {
+    console.log(nameAndNamespace, "in store")
+    return new Promise((resolve, reject) => {
+      getCronJobResources(nameAndNamespace).then(response => {
         const {data} =response
         if(!data){
           return reject('获取失败')

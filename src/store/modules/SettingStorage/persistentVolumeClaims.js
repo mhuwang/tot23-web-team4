@@ -3,15 +3,15 @@
  * @version: 1.0
  * @Author: Anna667
  * @Date: 
- * @LastEditors: Anna667
- * @LastEditTime: 
+ * @LastEditors: Anna
+ * @LastEditTime: 2021-04-16 10:28:24
  */
 import { getAllPVC, getPVCByNameAndNamespace, getPVCYamlByNameAndNamespace, delPVCByNameAndNamespace} from '@/api/SettingStorage/persistentVolumeClaims'
 import { getToken } from '@/utils/auth'
 
 
 
-const state = {
+const state = { 
     token: getToken(),
     persistentVolumeClaim: {
         persistentVolumeClaimName: '',

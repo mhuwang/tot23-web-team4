@@ -1,16 +1,16 @@
 <!--
- * @Descripttion: your project
+ * @Description: your project
  * @version: 1.0
- * @Author: Anna667
- * @Date: 
- * @LastEditors: Anna667
- * @LastEditTime: 
+ * @Author: Anna
+ * @Date: 2021-04-13 11:11:57
+ * @LastEditors: Anna
+ * @LastEditTime: 2021-04-16 11:05:44
 -->
 <template>
   <div>
     <el-card class="box-card">
-      <div slot="header" class="clearfix">
-        <span>所有 Persistent Volume Claims</span>
+      <div slot="header" class="clearfix"> 
+        <span>所有 持久化存储卷</span>
       </div>
       <el-row :gutter="20">
         <el-col :span="5">
@@ -55,7 +55,7 @@
             <svg-icon :icon-class="scope.row.status.conditions[3].status == 'True'? 'load-success': scope.row.status.conditions[3].status == 'Unknown'?'load-doubt':'load-failed'"/>
           </template>
         </el-table-column> -->
-        <el-table-column prop="metadata.name" label="名字" width="200">
+        <el-table-column prop="metadata.name" label="名称" width="200">
           <template slot-scope="scope">
             <router-link 
             :to="'/SettingStorage/persistentVolumeClaims/'+scope.row.metadata.name" 
@@ -137,7 +137,7 @@
 
     <!-- 编辑框 -->
     <el-dialog
-      title="编辑 persistentVolumeClaim"
+      title="编辑 持久化存储卷"
       :visible.sync="editDialogVisible"
       width="70%"
       @closed="handleClose"

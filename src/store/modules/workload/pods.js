@@ -4,9 +4,9 @@
  * @Author: Rex Joush
  * @Date: 2021-03-22 17:20:12
  * @LastEditors: zqy
- * @LastEditTime: 2021-04-14 21:13:09
+ * @LastEditTime: 2021-04-24 13:03:11
  */
-import { getAllPods, getPodsByNode, getPodByNameAndNamespace, getCompletePodsList, getPodYamlByNameAndNamespace, delPodByNameAndNamespace } from '@/api/workload/pods'
+import { getAllPods, getPodsByNode, getPodByNameAndNamespace, getCompletePodsList, getPodYamlByNameAndNamespace, delPodByNameAndNamespace,  createPodFromForm } from '@/api/workload/pods'
 import { getToken } from '@/utils/auth'
 
 
@@ -116,7 +116,22 @@ const actions = {
       })
     })
   },
-  
+
+  //通过表单创建 Pod
+  createPodFromForm({commit}, podInformation){
+    return new Promise((resolve, reject) => {
+      createPodFromForm(podInformation).then(response => {
+        const { data } = response
+        if (!data) {
+          return reject('创建失败')
+        }
+        resolve(data)
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
+
   // 点击名字进入详情页
   toDetails({commit}, podDetails) {
     console.log("actions", podDetails);

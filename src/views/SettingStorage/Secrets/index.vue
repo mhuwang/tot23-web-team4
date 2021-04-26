@@ -3,14 +3,14 @@
  * @version: 1.0
  * @Author: Anna667
  * @Date: 
- * @LastEditors: Anna667
- * @LastEditTime: 
+ * @LastEditors: Anna
+ * @LastEditTime: 2021-04-16 11:13:11
 -->
 <template>
   <div>
     <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <span>所有 Secrets</span>
+        <span>所有 密钥</span>
       </div>
       <el-row :gutter="20">
         <el-col :span="5">
@@ -54,7 +54,7 @@
             <svg-icon :icon-class="scope.row.status.conditions[3].status == 'True'? 'load-success': scope.row.status.conditions[3].status == 'Unknown'?'load-doubt':'load-failed'"/>
           </template>
         </el-table-column> -->
-        <el-table-column prop="metadata.name" label="名字">
+        <el-table-column prop="metadata.name" label="名称">
           <template slot-scope="scope">
             <router-link 
             :to="'/SettingStorage/secrets/'+scope.row.metadata.name" 
@@ -126,7 +126,7 @@
 
     <!-- 编辑框 -->
     <el-dialog
-      title="编辑 secret"
+      title="编辑 密钥"
       :visible.sync="editDialogVisible"
       width="70%"
       @closed="handleClose"

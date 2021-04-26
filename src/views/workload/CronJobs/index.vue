@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: zqy
- * @LastEditTime: 2021-04-14 16:34:37
+ * @LastEditTime: 2021-04-19 16:20:06
 -->
 
 <template>
@@ -62,52 +62,52 @@
             <svg-icon :icon-class="'load-success'"/>
           </template>
         </el-table-column>
-        <el-table-column prop="metadata.name" label="名称">
+        <el-table-column prop="name" label="名称">
           <template slot-scope="scope">
             <router-link
               :to="{
                 name: 'CronJob 详情',
                 params: {
                   name:
-                    scope.row.metadata.name +
+                    scope.row.name +
                     ',' +
-                    scope.row.metadata.namespace,
+                    scope.row.namespace,
                 },
               }"
               @click.native="
                 goToCronJobDetails(
-                  scope.row.metadata.name,
-                  scope.row.metadata.namespace
+                  scope.row.name,
+                  scope.row.namespace
                 )
               "
               class="link-type"
             >
               <span style="color: #409eff; text-decoration: underline">{{
-                scope.row.metadata.name
+                scope.row.name
               }}</span>
             </router-link>
           </template>
         </el-table-column>
         <!-- <el-table-column prop="apiVersion" label="版本"> </el-table-column> -->
-        <el-table-column prop="metadata.namespace" label="命名空间">
+        <el-table-column prop="namespace" label="命名空间">
         </el-table-column>
-        <el-table-column prop="spec.schedule" label="调度"> </el-table-column>
-        <el-table-column label="暂停">
+        <el-table-column prop="schedule" label="调度"> </el-table-column>
+        <!-- <el-table-column label="暂停">
           <template slot-scope="scope">
             <el-switch
-              v-model="scope.row.spec.suspend"
+              v-model="scope.row.status"
               active-color="#13ce66"
               inactive-color="#ff4949"
               active-text="运行"
               inactive-text="暂停"
-              @change="changeCronJobSuSpend()"
+              @change="changeCronJobSuSpend(scope.row)"
             >
             </el-switch>
           </template>
-        </el-table-column>
+        </el-table-column> -->
         <el-table-column label="运行中">
           <template slot-scope="scope">
-            {{ scope.row.status.active.length }}
+            {{ scope.row.runningJobs }}
           </template>
         </el-table-column>
         <!-- <el-table-column label="标签">
@@ -125,14 +125,14 @@
         <el-table-column label="最后调度时间" width="200">
           <template slot-scope="scope">
             <span>{{
-              scope.row.status.lastScheduleTime.replaceAll(/[TZ]/g, " ")
+              scope.row.lastSchedulingTime.replaceAll(/[TZ]/g, " ")
             }}</span>
           </template>
         </el-table-column>
         <el-table-column label="创建时间" width="200">
           <template slot-scope="scope">
             <span>{{
-              scope.row.metadata.creationTimestamp.replaceAll(/[TZ]/g, " ")
+              scope.row.creationTimestamp.replaceAll(/[TZ]/g, " ")
             }}</span>
           </template>
         </el-table-column>
@@ -146,8 +146,8 @@
               size="small"
               @click="
                 showCronJobEditDialog(
-                  scope.row.metadata.name,
-                  scope.row.metadata.namespace
+                  scope.row.name,
+                  scope.row.namespace
                 )
               "
               >编辑</el-button
@@ -160,8 +160,8 @@
               size="small"
               @click="
                 delCronJob(
-                  scope.row.metadata.name,
-                  scope.row.metadata.namespace
+                  scope.row.name,
+                  scope.row.namespace
                 )
               "
               >删除</el-button
@@ -288,7 +288,7 @@ export default {
     },
 
     //修改 CronJob 的为暂停或者运行
-    changeCronJobSuSpend() {
+    changeCronJobSuSpend(cronJob) {
       // this.$store.dispatch("cronJobs/changeCronJobSuSpend")
       // .then((res) => {
       //   this.cronJobSuSpend = res.data;

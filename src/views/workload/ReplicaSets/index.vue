@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: zqy
- * @LastEditTime: 2021-04-15 14:41:12
+ * @LastEditTime: 2021-04-16 22:35:52
 -->
 <!--<template>
   <h1>Replication Controllers</h1>
@@ -60,32 +60,32 @@
       </el-row>
       <el-table :data="replicaSets" style="width: 100%" stripe>
         <el-table-column width="40">
-          <!-- <template slot-scope="scope">
-            <svg-icon :icon-class="scope.row.status.conditions[3].status == 'True'? 'load-success': scope.row.status.conditions[3].status == 'Unknown'?'load-doubt':'load-failed'"/>
-          </template> -->
+          <template slot-scope="scope">
+            <svg-icon :icon-class="scope.row.status == '1'? 'load-success': 'load-failed'"/>
+          </template>
         </el-table-column>
-        <el-table-column prop="metadata.name" label="名称">
+        <el-table-column prop="name" label="名称">
           <template slot-scope="scope">
             <router-link
               :to="{
                 name: 'ReplicaSet Details',
                 params: {
                   name:
-                    scope.row.metadata.name +
+                    scope.row.name +
                     ',' +
-                    scope.row.metadata.namespace,
+                    scope.row.namespace,
                 },
               }"
               @click.native="goToReplicaSetsDetails(scope.row)"
               class="link-type"
             >
               <span style="color: #409eff; text-decoration: underline">{{
-                scope.row.metadata.name
+                scope.row.name
               }}</span>
             </router-link>
           </template>
         </el-table-column>
-        <el-table-column prop="metadata.namespace" label="命名空间">
+        <el-table-column prop="namespace" label="命名空间">
         </el-table-column>
         <!-- <el-table-column label="标签">
           <template slot-scope="scope">
@@ -101,12 +101,12 @@
         <!-- <el-table-column prop="status.podIP" width="140" label="主机ip地址"> </el-table-column> -->
       <el-table-column label="Pods">
         <template slot-scope="scope">
-          {{scope.row.status.readyReplicas ? scope.row.status.readyReplicas:0}}/{{scope.row.spec.replicas}}
+          {{scope.row.runningPods ? scope.row.runningPods : 0}}/{{scope.row.replicas}}
         </template>
       </el-table-column>
         <el-table-column label="启动时间" width="200">
           <template slot-scope="scope">
-            <span>{{scope.row.metadata.creationTimestamp.replaceAll(/[TZ]/g,' ')}}</span>
+            <span>{{scope.row.creationTimestamp.replaceAll(/[TZ]/g,' ')}}</span>
           </template>
         </el-table-column>
         <el-table-column label="操作">
@@ -117,7 +117,7 @@
               type="primary"
               icon="el-icon-edit"
               size="small"
-              @click="showReplicaSetEditDialog(scope.row.metadata.name, scope.row.metadata.namespace)"
+              @click="showReplicaSetEditDialog(scope.row.name, scope.row.namespace)"
               >编辑</el-button
             >
             <br />
@@ -127,7 +127,7 @@
               type="danger"
               icon="el-icon-delete"
               size="small"
-              @click="delReplicaSet(scope.row.metadata.name, scope.row.metadata.namespace)"
+              @click="delReplicaSet(scope.row.name, scope.row.namespace)"
               >删除</el-button
             >
           </template>
@@ -135,9 +135,9 @@
       </el-table>
     </el-card>
 
-    <!-- ReplicationController 编辑框 -->
+    <!-- ReplicaSet 编辑框 -->
     <el-dialog
-      title="编辑 Deployment"
+      title="编辑 ReplicaSet"
       :visible.sync="editDialogVisible"
       width="70%"
       @closed="handleClose"
@@ -352,7 +352,7 @@ export default {
       }, 1);
     },
 
-    //删除 CronJob
+    //删除 ReplicaSet
     delReplicaSet(name, namespace) {
       this.$confirm("确认删除 ReplicaSet", {
         confirmButtonText: "确定",

@@ -41,7 +41,11 @@
 
       <!-- 元数据 标签 注释部分 -->
       <List item-layout="horizontal" :split="false">
-        <div :labels="this.labels" v-if="labels.length > 0" class="metadata-item">
+        <div
+          :labels="this.labels"
+          v-if="labels.length > 0"
+          class="metadata-item"
+        >
           <p>标签</p>
           <li v-for="label in labels" :key="label">
             <el-tag
@@ -54,7 +58,11 @@
           </li>
         </div>
         <br />
-        <div :annotation="this.annotation" v-if="annotations.length > 0" class="metadata-item">
+        <div
+          :annotation="this.annotation"
+          v-if="annotations.length > 0"
+          class="metadata-item"
+        >
           <p>注释</p>
           <li v-for="(anno, index) in annotations" :key="index">
             <el-tag
@@ -118,18 +126,181 @@
     <!-- 运行中的Jobs -->
     <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <span style="font-size: 16px">运行中的Jobs</span>
+        <span style="font-size: 16px">运行中的任务</span>
       </div>
-      <List item-layout="horizontal" :split="false"> </List>
+      <el-table :data="runningJobs" style="width: 100%" stripe>
+        <el-table-column width="40">
+          <template slot-scope="scope">
+            <svg-icon
+              :icon-class="
+                scope.row.status == '1' ? 'load-success' : 'load-failed'
+              "
+            />
+          </template>
+        </el-table-column>
+        <el-table-column prop="name" label="名称">
+          <template slot-scope="scope">
+            <router-link
+              :to="{
+                name: 'Job 详情',
+                params: {
+                  name: scope.row.name + ',' + scope.row.namespace,
+                },
+              }"
+              @click.native="goToJobsDetails(scope.row)"
+              class="link-type"
+            >
+              <span style="color: #409eff; text-decoration: underline">{{
+                scope.row.name
+              }}</span>
+            </router-link>
+          </template>
+        </el-table-column>
+        <el-table-column prop="namespace" label="命名空间"> </el-table-column>
+        <!-- <el-table-column label="标签">
+          <template slot-scope="scope">
+            <span>k8s-app: {{scope.row.metadata.labels['k8s-app']}}</span>
+            <br>
+            <span>pod-template-hash: {{scope.row.metadata.labels['pod-template-hash']}}</span>
+          </template>
+        </el-table-column> -->
+        <!-- <el-table-column prop="apiVersion" label="apiVersion"> </el-table-column> -->
+        <!-- <el-table-column prop="kind" label="kind"> </el-table-column> -->
+        <!-- <el-table-column prop="metadata.uid" label="uid"> </el-table-column> -->
+        <!-- <el-table-column prop="spec.nodeName" width="140" label="所属节点"> </el-table-column> -->
+        <!-- <el-table-column prop="status.podIP" width="140" label="主机ip地址"> </el-table-column> -->
+        <el-table-column label="Pods" width="200">
+          <template slot-scope="scope">
+            <span>
+              {{ scope.row.runningPods ? scope.row.runningPods : 0 }}/{{
+                scope.row.replicas
+              }}
+            </span>
+          </template>
+        </el-table-column>
+        <el-table-column label="创建时间" width="200">
+          <template slot-scope="scope">
+            <span>{{
+              scope.row.creationTimestamp.replaceAll(/[TZ]/g, " ")
+            }}</span>
+          </template>
+        </el-table-column>
+        <!-- <el-table-column label="镜像" width="200">
+          <template slot-scope="scope">
+            <li v-for="image in images(scope.row)" :key="image" style = "list-style:none">
+            <li style = "list-style:none; display:inline-block;">
+              <el-tag
+                class="lebel-tag"
+                effect="dark"
+                size="medium"
+                color="#bedcfa"
+                >{{ image }}</el-tag
+              >
+            </li>
+          </template>
+        </el-table-column> -->
+
+        <el-table-column label="操作">
+          <template slot-scope="scope">
+            <!-- 编辑 -->
+            <el-button
+              style="margin-bottom: 5px"
+              type="primary"
+              icon="el-icon-edit"
+              size="small"
+              @click="showJobEditDialog(scope.row.name, scope.row.namespace)"
+              >编辑</el-button
+            >
+            <br />
+            <!-- 删除 -->
+            <el-button
+              style="margin-bottom: 5px"
+              type="danger"
+              icon="el-icon-delete"
+              size="small"
+              @click="delJob(scope.row.name, scope.row.namespace)"
+              >删除</el-button
+            >
+          </template>
+        </el-table-column>
+      </el-table>
     </el-card>
     <br /><br />
 
     <!-- 非工作的Jobs -->
     <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <span style="font-size: 16px">非工作的Jobs</span>
+        <span style="font-size: 16px">非工作的任务  </span>
       </div>
-      <List item-layout="horizontal" :split="false"> </List>
+      <el-table :data="jobs" style="width: 100%" stripe>
+        <el-table-column width="40">
+          <template slot-scope="scope">
+            <svg-icon
+              :icon-class="
+                scope.row.status == '1' ? 'load-success' : 'load-failed'
+              "
+            />
+          </template>
+        </el-table-column>
+        <el-table-column prop="name" label="名称">
+          <template slot-scope="scope">
+            <router-link
+              :to="{
+                name: 'Job 详情',
+                params: {
+                  name: scope.row.name + ',' + scope.row.namespace,
+                },
+              }"
+              @click.native="goToJobsDetails(scope.row)"
+              class="link-type"
+            >
+              <span style="color: #409eff; text-decoration: underline">{{
+                scope.row.name
+              }}</span>
+            </router-link>
+          </template>
+        </el-table-column>
+        <el-table-column prop="namespace" label="命名空间"> </el-table-column>
+        <el-table-column label="Pods" width="200">
+          <template slot-scope="scope">
+            <span>
+              {{ scope.row.runningPods ? scope.row.runningPods : 0 }}/{{
+                scope.row.replicas
+              }}
+            </span>
+          </template>
+        </el-table-column>
+        <el-table-column label="创建时间" width="200">
+          <template slot-scope="scope">
+            <span>{{
+              scope.row.creationTimestamp.replaceAll(/[TZ]/g, " ")
+            }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作">
+          <template slot-scope="scope">
+            <!-- 编辑 -->
+            <el-button
+              style="margin-bottom: 5px"
+              type="primary"
+              icon="el-icon-edit"
+              size="small"
+              @click="showJobEditDialog(scope.row.name, scope.row.namespace)"
+              >编辑</el-button
+            >
+            <br />
+            <!-- 删除 -->
+            <el-button
+              style="margin-bottom: 5px"
+              type="danger"
+              icon="el-icon-delete"
+              size="small"
+              @click="delJob(scope.row.name, scope.row.namespace)"
+              >删除</el-button
+            >
+          </template>
+        </el-table-column>
+      </el-table>
     </el-card>
     <br /><br />
 
@@ -153,23 +324,97 @@
     >
       <highlightjs javascript :code="annoDetails" />
       <span slot="footer" class="dialog-footer">
-        <el-button @click="annoDialogVisible=false">关闭</el-button>
+        <el-button @click="annoDialogVisible = false">关闭</el-button>
+      </span>
+    </el-dialog>
+
+    <!-- Job 编辑框 -->
+    <el-dialog
+      title="编辑 Job"
+      :visible.sync="jobEditDialogVisible"
+      width="70%"
+      @closed="jobHandleClose"
+      @close="jobEditDialogVisible = false"
+      :append-to-body="true"
+      :lock-scroll="true"
+    >
+      <el-tabs value="first" type="card">
+        <el-tab-pane label="YAML" name="first">
+          <codemirror
+            :value="jobCodeYaml"
+            :options="cmOptionsYaml"
+            @ready="onJobYamlCmReady"
+            @input="onJobYamlCmCodeChange"
+          />
+        </el-tab-pane>
+        <el-tab-pane label="JSON" name="second">
+          <codemirror
+            ref="cmYamlEditor"
+            :value="codeJSON"
+            :options="cmOptions"
+            @ready="onJSONCmReady"
+            @input="onJSONCmCodeChange"
+          />
+        </el-tab-pane>
+      </el-tabs>
+
+      <!-- <textarea style="width:100%" name="describe" id="pod" cols="30" rows="10">
+        {{code}}
+      </textarea> -->
+      <span slot="footer" class="dialog-footer">
+        <div class="foot-info">
+          <i class="el-icon-warning"></i> 此操作相当于 kubectl apply -f
+          &ltspec.yaml>
+        </div>
+        <el-button @click="jobEditDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="commitYamlChange">确 定</el-button>
       </span>
     </el-dialog>
   </div>
 </template>
 
 <script>
+import "codemirror/mode/javascript/javascript.js";
+import "codemirror/mode/yaml/yaml.js";
+// import theme style
+import "codemirror/theme/panda-syntax.css";
+
 export default {
   props: ["name"],
   data() {
     return {
+      jobs: {},
+      runningJobs: {},
       cronJob: {},
       cronJobName: "",
       cronJobNamespace: "",
       annoKey: "",
       annoDialogVisible: false,
       annoDetails: "",
+      jobEditDialogVisible: false, // 编辑详情框
+      codeJSON: "", // 编辑框的 json 数据
+      jobCodeYaml: "", // 编辑框的 yaml 数据
+      addYaml: "", // 添加框的 yaml 数据
+
+      cmOptions: {
+        // json codemirror 配置项
+        tabSize: 4,
+        mode: {
+          name: "javascript",
+          json: true,
+        },
+        theme: "panda-syntax",
+        lineNumbers: true,
+        line: true,
+      },
+      cmOptionsYaml: {
+        // yaml codemirror 配置项
+        tabSize: 4,
+        mode: "yaml",
+        theme: "panda-syntax",
+        lineNumbers: true,
+        line: true,
+      },
     };
   },
   // 生命周期方法
@@ -211,16 +456,18 @@ export default {
       name: this.name.split(",")[0],
       namespace: this.name.split(",")[1],
     };
-    // console.log('CronJobDetailes.name and namespace =', nameAndNamespace, "="),
-    this.$store
-      .dispatch("cronJobs/getCronJobByNameAndNamespace", nameAndNamespace)
-      .then((res) => {
-        console.log(res);
-        this.cronJob = res.data;
-      })
-      .catch((error) => {
-        throw error;
-      });
+    console.log("CronJobDetailes.name and namespace =", nameAndNamespace, "="),
+      this.$store
+        .dispatch("cronJobs/getCronJobResources", nameAndNamespace)
+        .then((res) => {
+          console.log(res);
+          this.cronJob = res.data.cronJob;
+          this.runningJobs = res.data.runningJobs;
+          this.jobs = res.data.jods;
+        })
+        .catch((error) => {
+          throw error;
+        });
   },
 
   computed: {
@@ -266,6 +513,130 @@ export default {
       // console.log(this.annoKey, "inhandleClose");
       this.annoKey = "";
       this.annoDialogVisible = false;
+    },
+
+    //编辑 Job
+    showJobEditDialog(name, namespace) {
+      let jobDetails = {
+        name: name,
+        namespace: namespace,
+      };
+      console.log("获取值之前的yaml：\n", this.jobCodeYaml, "\n");
+      // 获取 yaml 格式
+      this.$store
+        .dispatch("jobs/getJobYamlByNameAndNamespace", jobDetails)
+        .then((res) => {
+          console.log("showJobEditDialog\n");
+          this.jobCodeYaml = res.data;
+          this.jobEditDialogVisible = true; // 打开编辑对话框
+        })
+        .catch((error) => {
+          throw error;
+        });
+
+      // json 格式
+      this.$store
+        .dispatch("jobs/getJobByNameAndNamespace", jobDetails)
+        .then((res) => {
+          // console.log(res);
+          let json = JSON.stringify(res.data.job);
+          this.codeJSON = this.beautify(json, {
+            indent_size: 4,
+            space_in_empty_paren: true,
+          });
+        })
+        .catch((error) => {
+          throw error;
+        });
+
+      //this.editForm = res; // 查询结果写入表单
+    },
+
+    // 编辑器方法
+    /* yaml */
+    onJobYamlCmReady(cm) {
+      setTimeout(() => {
+        cm.refresh();
+      }, 50);
+    },
+    onJobYamlCmCodeChange(newCode) {
+      // console.log("onYamlCmCodeChange\n")
+      this.jobCodeYaml = newCode;
+    },
+
+    //点击确认按钮触发此修改 Job 事件
+    commitYamlChange() {
+      this.$confirm("确认修改？", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "info",
+      })
+        .then(() => {
+          this.$store
+            .dispatch("common/changeResourceByYaml", this.codeYaml)
+            .then((res) => {
+              switch (res.code) {
+                case 1200:
+                  this.$message.success("修改成功");
+                  break;
+                case 1201:
+                  this.$message.error("修改失败，请查看 yaml 文件格式");
+                  break;
+                case 1202:
+                  this.$message.error("创建失败，请查看云平台相关错误信息");
+                  break;
+                default:
+                  this.$message.info("提交成功");
+                  break;
+              }
+              this.editDialogVisible = false;
+            })
+            .catch((error) => {
+              throw error;
+            });
+        })
+        .catch(() => {
+          console.log("cancel");
+        });
+    },
+
+    // 关闭修改框
+    jobHandleClose: function () {
+      // console.log("jobHandleClose\n");
+      this.addYaml = "";
+      setTimeout(() => {
+        this.codemorror.refresh();
+      }, 1);
+    },
+
+    //删除 Job
+    delJob(name, namespace) {
+      this.$confirm("确认删除 Job？", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          let nameAndNamespace = {
+            name: name,
+            namespace: namespace,
+          };
+          this.$store
+            .dispatch("jobs/deleteJobByNameAndNamespace", nameAndNamespace)
+            .then((res) => {
+              if (res.data) {
+                this.$message.success("删除成功");
+                this.getJobs();
+              } else {
+                this.$message.error("删除失败");
+              }
+              console.log(res.data);
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        })
+        .catch(() => {});
     },
   },
 };
@@ -361,5 +732,15 @@ export default {
 }
 #anno_hover:hover {
   cursor: pointer;
+}
+// 编辑窗底部命令提示信息
+.foot-info {
+  position: absolute;
+  margin-bottom: 5px;
+  padding: 5px 5px;
+  background-color: #ccc;
+  left: 0%;
+  color: #606266;
+  font-size: 15px;
 }
 </style>

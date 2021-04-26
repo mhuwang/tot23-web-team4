@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-26 13:17:55
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-04-12 15:55:57
+ * @LastEditTime: 2021-04-19 11:15:45
 -->
 <template>
   <div>
@@ -181,7 +181,7 @@ export default {
   methods: {
     // 处理分页
     handleCurrentChange(page) {
-      console.log(page);
+      // console.log(page);
       this.currentEvents = this.events.slice((page - 1) * 10, page * 10);
     },
     // 获取 namespace 详情

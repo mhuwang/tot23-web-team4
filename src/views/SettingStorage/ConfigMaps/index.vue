@@ -3,14 +3,14 @@
  * @version: 1.0
  * @Author: Anna667
  * @Date: 
- * @LastEditors: Anna667
- * @LastEditTime: 
+ * @LastEditors: Anna
+ * @LastEditTime: 2021-04-16 11:06:39
 -->
 <template>
   <div>
     <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <span>所有 Config Map</span>
+        <span>所有 配置字典</span>
       </div>
       <el-row :gutter="20">
         <el-col :span="6">
@@ -61,7 +61,7 @@
             />
           </template>
         </el-table-column>  -->
-        <el-table-column prop="metadata.name" label="名字">
+        <el-table-column prop="metadata.name" label="名称">
           <template slot-scope="scope">
             <router-link
               :to="'/settingstorage/configmaps/' + scope.row.metadata.name"
@@ -137,7 +137,7 @@
 
     <!-- 编辑框 -->
     <el-dialog
-      title="编辑 configMap"
+      title="编辑 配置字典"
       :visible.sync="editDialogVisible"
       width="70%"
       @closed="handleClose"

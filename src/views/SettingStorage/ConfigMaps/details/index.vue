@@ -3,8 +3,8 @@
  * @version: 1.0
  * @Author: Anna667
  * @Date: 
- * @LastEditors: Anna667
- * @LastEditTime: 
+ * @LastEditors: Anna
+ * @LastEditTime: 2021-04-16 12:00:02
 -->
 <template>
   <div>
@@ -22,7 +22,7 @@
       </div>
       <List item-layout="horizontal" :split="false">
         <div class="metadata-item">
-          <p>名字</p>
+          <p>名称</p>
           <span>{{ configMap.metadata.name }}</span>
         </div>
         <div class="metadata-item">
@@ -61,6 +61,7 @@
               class="lebel-tag"
               effect="dark"
               size="medium"
+              id="anno_hover"
               color="#bedcfa"
               style="color: #409eff"
               @click="showAnnoDetails(anno.key)"
@@ -92,8 +93,6 @@
       <List item-layout="horizontal" :split="false">
           ca.crt&nbsp;&nbsp;<i :class="!caShow? 'el-icon-zoom-in' : 'el-icon-zoom-out'" @click="showCa"></i>
           <highlightjs v-show="caShow" style="width:100%" language='plaintext' :code="configMap.data['client-ca-file']" />
-          <!-- <span>{{  }}</span> -->
-          <!-- <input type="text" v-model="configMap.data.client-ca-file"> -->
       </List>
     </el-card>
     <br /><br />
@@ -182,6 +181,7 @@ export default {
       .catch((error) => {
         throw error;
       });
+      console.log(configMap.data)
   },
 
   computed: {
