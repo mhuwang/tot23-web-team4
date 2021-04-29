@@ -3,10 +3,10 @@
  * @version: 1.0
  * @Author: Anna667
  * @Date: 
- * @LastEditors: Anna667
- * @LastEditTime: 
+ * @LastEditors: zqy
+ * @LastEditTime: 2021-04-28 10:07:21
  */
-import { getAllSecrets, getSecretByNameAndNamespace, getSecretYamlByNameAndNamespace, delSecretByNameAndNamespace} from '@/api/SettingStorage/secrets'
+import { getAllSecrets, getSecretByNameAndNamespace, getSecretYamlByNameAndNamespace, delSecretByNameAndNamespace, getAllSecretsName} from '@/api/SettingStorage/secrets'
 import { getToken } from '@/utils/auth'
 
 
@@ -81,6 +81,21 @@ const actions = {
     delSecretByNameAndNamespace({ commit }, secretsDetails) {
         return new Promise((resolve, reject) => {
             delSecretByNameAndNamespace(secretsDetails).then(response => {
+                const { data } = response
+                if (!data) {
+                    return reject('获取失败')
+                }
+                resolve(data)
+            }).catch(error => {
+                reject(error)
+            })
+        })
+    },
+
+    //获取 Secret 的名字
+    getAllSecretsName({commit}, namespace){
+        return new Promise((resolve, reject) => {
+            getAllSecretsName(namespace).then(response => {
                 const { data } = response
                 if (!data) {
                     return reject('获取失败')

@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: zqy
- * @LastEditTime: 2021-04-24 13:16:35
+ * @LastEditTime: 2021-04-29 23:14:08
 -->
 <template>
   <div>
@@ -46,9 +46,30 @@
                 </el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="容器镜像" prop="image" required>
-              <el-input v-model="baseInformation.image"></el-input>
-            </el-form-item>
+            <el-form
+              :inline="true"
+              :label-position="'top'"
+              :model="baseInformation"
+            >
+              <el-form-item label="容器镜像" prop="image" required>
+                <el-input v-model="baseInformation.image"></el-input>
+              </el-form-item>
+              <el-form-item
+                label="镜像下载策略"
+                prop="imagePullPolicy"
+                required
+              >
+                <el-select
+                  v-model="baseInformation.imagePullPolicy"
+                  placeholder="请选策略"
+                >
+                  <el-option label="总是下载" value="Always"></el-option>
+                  <el-option label="不存在时" value="IfNotPresent"></el-option>
+                  <el-option label="从不下载" value="Never"></el-option>
+                </el-select>
+              </el-form-item>
+            </el-form>
+
             <el-form-item label="容器组 数量" required>
               <el-input-number
                 v-model="baseInformation.number"
@@ -119,7 +140,7 @@
             </List>
             <el-form-item v-if="!completeOption">
               <el-button type="primary" @click="submitPod()">创 建</el-button>
-              <el-button @click="resetForm('ruleForm')">重置</el-button>
+              <el-button @click="resetPodInformation()">重 置</el-button>
               <el-button @click="showCompleteOption(completeOption)" type="text"
                 >显示高级选项</el-button
               >
@@ -211,6 +232,25 @@
                 ></el-input-number>
               </el-form-item>
             </el-form>
+            <el-form-item label="镜像拉取密钥" prop="secret">
+              <el-select
+                v-model="seniorInformation.secret"
+                v-loading="secretLoading"
+                filterable
+                size="large"
+                style="width: 100%"
+                placeholder="请选密钥"
+                @focus="showSecretsInNamespace"
+                @visible-change="selectVisibleChange"
+              >
+                <el-option
+                  v-for="secret in secretsNameInNamespace"
+                  :key="secret"
+                  :label="secret"
+                  :value="secret"
+                ></el-option>
+              </el-select>
+            </el-form-item>
             <el-form-item label="运行命令" prop="command">
               <el-input
                 type="textarea"
@@ -262,7 +302,7 @@
             </el-form-item>
             <el-form-item>
               <el-button type="primary" @click="submitPod()">创 建</el-button>
-              <el-button @click="resetForm('ruleForm')">重 置</el-button>
+              <el-button @click="resetPodInformation()">重 置</el-button>
               <el-button
                 round="true"
                 @click="showCompleteOption(completeOption)"
@@ -299,11 +339,73 @@
         <!-- 从文件创建 -->
         <el-tab-pane>
           <span slot="label"><i class="el-icon-folder"></i>从文件创建</span>
+
+          <html>
+            <head>
+              <meta charset="UTF-8" />
+              <!-- <script src="js/jquery-3.2.1.min.js"></script>
+              <script src="js/test.js"></script> -->
+              <title>文件上传</title>
+              <!-- <style>
+                .myBtn {
+                  padding: 5px 10px;
+                  background: rgb(92, 184, 92);
+                  color: white;
+                  outline: none;
+                  border: none;
+                  border-radius: 5px;
+                  cursor: pointer;
+                }
+              </style> -->
+            </head>
+            <body>
+              <input
+                type="file"
+                id="file"
+                style="display: none"
+                onchange="upload(this)"
+              />
+              <button class="myBtn" onclick="fileBtn()">上传文件</button>
+
+              <img src="" id="img" style="width: 200px" />
+            </body>
+          </html>
+
+          <el-upload
+            style="display: inline-block"
+            :limit="uploadFileLimit"
+            class="upload-demo"
+            ref="upload"
+            :action="uploadUrl"
+            :file-list="fileList"
+            :http-request="uploadSectionFile"
+            :auto-upload="true"
+            :before-remove="handleRemove"
+          >
+            <el-button slot="trigger" size="small" type="primary" plain
+              >选取文件</el-button
+            >
+            <el-button
+              style="margin-left: 10px"
+              size="small"
+              icon="el-icon-upload2"
+              type="success"
+              @click="submitUpload"
+              >导入</el-button
+            >
+          </el-upload>
+
           <el-upload
             class="upload-demo"
             drag
-            action="https://jsonplaceholder.typicode.com/posts/"
+            action
             multiple
+            :show-file-list="true"
+            :auto-upload="false"
+            :limit="uploadFileLimit"
+            :name="fileName"
+            :file-list="fileList"
+            :http-request="uploadSectionFile"
           >
             <i class="el-icon-upload"></i>
             <div class="el-upload__text">
@@ -313,6 +415,14 @@
               只能上传Yaml格式的文件，且不超过500kb
             </div>
           </el-upload>
+          <br/>
+          <el-button
+              style="margin-left: 10px"
+              icon="el-icon-upload2"
+              type="primary"
+              @click="uploadSectionFile"
+              >导入</el-button
+            >
         </el-tab-pane>
       </el-tabs>
     </el-card>
@@ -325,16 +435,19 @@ import "codemirror/mode/javascript/javascript.js";
 import "codemirror/mode/yaml/yaml.js";
 // import theme style
 import "codemirror/theme/panda-syntax.css";
+import request from "@/utils/request";
 
 export default {
   data() {
     return {
-      namespaces: [],
-      textarea2: "",
-      amount: 1,
+      /**页面数据 */
+      namespaces: [], //命名空间
+      secretsName: {}, //Secrets 的名字 按命名空间分类
+      secretsNameInNamespace: [], //在某一命名空间下的 Secrets 名字
+
+      /**编辑框部分 */
       addDialogVisible: true, // 添加框详情
       addYaml: "", // 输入框的 yaml 数据
-
       cmOptionsYaml: {
         // yaml codemirror 配置项
         tabSize: 4,
@@ -344,15 +457,55 @@ export default {
         line: true,
       },
 
-      /**选项框部分 */
+      /**表单部分 */
       completeOption: false, //是否显示高级选项
+
+      // baseInformation: {
+      //   name: "zqytest3",
+      //   namespace: "default",
+      //   image: "nginx",
+      //   imagePullPolicy: "Always",
+      //   number: 1,
+      //   service: "None",
+      //   serviceCount: 1,
+      //   ports: [1],
+      //   targetPorts: [1],
+      //   protocols: ["TCP"],
+      // },
+      // //高级选项
+      // seniorInformation: {
+      //   annotations: "1",
+      //   labels: [
+      //     {
+      //       key: "name",
+      //       value: "zqytest3",
+      //     },
+      //   ],
+      //   labelsCount: 1,
+      //   secret: "",
+      //   cpuRequire: 1,
+      //   cpuLimit: 3,
+      //   memoryRequire: 1000,
+      //   memoryLimit: 2000,
+      //   command: "",
+      //   args: "",
+      //   env: [
+      //     {
+      //       key: "NAME",
+      //       value: "zqytest3",
+      //     },
+      //   ],
+      //   envCount: 1,
+      // },
+
       //基本选项
       baseInformation: {
         name: "",
-        namespace: "",
+        namespace: "default",
         image: "",
+        imagePullPolicy: "Always",
         number: 1,
-        service: "",
+        service: "None",
         serviceCount: 1,
         ports: [1],
         targetPorts: [1],
@@ -383,6 +536,7 @@ export default {
         ],
         envCount: 1,
       },
+      secretLoading: false,
       // baseInformationRules: {
       //   name: [
       //     { required: true, message: "请输入Pod名称", trigger: "blur" },
@@ -420,15 +574,28 @@ export default {
       //   ],
       //   protocol: [{ required: true, message: "请填写活动形式", trigger: "blur" }],
       // },
+
+      /**上传文件部分 */
+      uploadFileLimit: 2,
+      fileList: [],
+      fileName: "pod.yaml",
     };
   },
+
+  created() {
+    this.getAllSecretsName();
+  },
+
   methods: {
+    /**命名空间框的事件 */
     // 当选择框聚焦时获取命名空间
     initNamespaces() {
       if (this.namespaces.length == 0) {
-        this.namespaces = this.$store.state.namespaces.namespaces;
+        this.namespaces = this.$store.state.namespaces.namespaces.slice(1, -1);
       }
     },
+    //命名空间变化时
+    whenNamespaceChange() {},
 
     /** Pod 的选择服务框部分 */
     // Pod 的服务监控
@@ -507,24 +674,62 @@ export default {
       });
     },
 
+    /**Secret 部分 */
+    //获取全部 Secrets 名字
+    getAllSecretsName() {
+      this.$store
+        .dispatch("secrets/getAllSecretsName", "")
+        .then((res) => {
+          console.log(res.data);
+          this.secretsName = res.data;
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    //Secrets 选择框焦距事件
+    showSecretsInNamespace() {
+      // if(Object.keys(this.secretsName).length == 0) this.getAllSecretsName();
+      this.secretsNameInNamespace = this.secretsName[
+        this.baseInformation.namespace
+      ];
+    },
+
+    /**从表单创建 Pod 按钮部分 */
+    //显示高级选项
     showCompleteOption(completeOption) {
-      console.log(completeOption);
+      // console.log(completeOption);
       switch (completeOption) {
         case true:
           this.completeOption = false;
-          console.log(1);
+          // console.log(1);
           break;
         case false:
           this.completeOption = true;
-          console.log(2);
+          // console.log(2);
           break;
       }
     },
-
+    //提交并创建Pod
     submitPod() {
+      //整合数据
+
       let podImformation = {
-        baseImformation: this.baseInformation,
-        seniorInformation: this.seniorInformation,
+        name: this.baseInformation.name,
+        namespace: this.baseInformation.namespace,
+        // labels: this.seniorInformation.labels,
+        // annotations: this.seniorInformation.annotations,
+        // secretName:
+        // image: this.baseInformation.image,
+        // imagePullPolicy:
+        // command:
+        // args:
+        cpuLimit: this.seniorInformation.cpuLimit.toString(),
+        cpuRequest: this.seniorInformation.cpuRequire.toString(),
+        memoryLimit: this.seniorInformation.memoryLimit.toString(),
+        memoryRequest: this.seniorInformation.memoryRequire.toString(),
+        // envVar: [],
+        // amount: this.baseInformation.number,
       };
       this.$confirm("确认修改？", {
         confirmButtonText: "确定",
@@ -532,9 +737,11 @@ export default {
         type: "info",
       })
         .then(() => {
-          this.$store.dispatch("pods/createPodFromForm", podImformation).then((res) => {
-            console.log(res);
-            switch (res.code) {
+          this.$store
+            .dispatch("pods/createPodFromForm", podImformation)
+            .then((res) => {
+              console.log(res);
+              switch (res.code) {
                 case 1200:
                   this.$message.success("创建成功");
                   // this.addDialogVisible = false;
@@ -552,25 +759,53 @@ export default {
                   this.$message.info("提交成功");
                   break;
               }
-          }).catch((error) => {
-            console.log(error)
-          });
+            })
+            .catch((error) => {
+              console.log(error);
+            });
         })
         .catch(() => {
           console.log("wrong in views/establish/submitPod");
         });
-
-      this.$refs[formName].validate((valid) => {
-        if (valid) {
-          alert("submit!");
-        } else {
-          console.log("error submit!!");
-          return false;
-        }
-      });
     },
-    resetForm(formName) {
-      this.$refs[formName].resetFields();
+    //重置 Pod 信息
+    resetPodInformation() {
+      this.baseInformation = {
+        name: "",
+        namespace: "default",
+        image: "",
+        imagePullPolicy: "Always",
+        number: 1,
+        service: "None",
+        serviceCount: 1,
+        ports: [1],
+        targetPorts: [1],
+        protocols: ["TCP"],
+      };
+      this.seniorInformation = {
+        annotations: "",
+        labels: [
+          {
+            key: "",
+            value: "",
+          },
+        ],
+        labelsCount: 1,
+        secret: "",
+        cpuRequire: 0,
+        cpuLimit: 0,
+        memoryRequire: 0,
+        memoryLimit: 0,
+        command: "",
+        args: "",
+        env: [
+          {
+            key: "",
+            value: "",
+          },
+        ],
+        envCount: 1,
+      };
     },
 
     /* 从输入创建 */
@@ -621,6 +856,45 @@ export default {
         .catch(() => {
           console.log("cancel");
         });
+    },
+
+    /**从文件创建 */
+    uploadSectionFile(param) {
+      console.log(param)
+      let yamlFile = param.file;
+      let yamlForm = new FormData();
+      yamlForm.append("yaml", yamlFile);//文件以表单形式提交 文件名 yaml 与后台@RequestParam中参数对应  
+      this.$store
+        .dispatch("establish/createPodFromYamlFile", yamlForm)
+        .then((res) => {
+          console.log(res)
+          switch (res.code) {
+            case 1200:
+              this.$message.success("创建成功");
+              // this.addDialogVisible = false;
+              break;
+            case 1201:
+              this.$message.error("文件为空");
+              // this.addDialogVisible = false;
+              break;
+            case 1202:
+              this.$message.error("创建失败，请查看云平台相关信息");
+              // this.addDialogVisible = false;
+              break;
+            case 1203:
+              this.$message.error(
+                "创建失败，命名空间必须被指定，或已有重名资源"
+              );
+              break;
+            default:
+              this.$message.info("创建失败");
+              break;
+          }
+        })
+        .catch(() => {});
+    },
+    submitUpload() {
+      this.uploadSectionFile;
     },
   },
 };

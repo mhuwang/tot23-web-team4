@@ -4,14 +4,14 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: zqy
- * @LastEditTime: 2021-04-19 17:05:22
+ * @LastEditTime: 2021-04-27 22:00:19
 -->
 <template>
   <div>
     <!-- 主体部分 -->
     <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <span>所有 Deployment</span>
+        <span>所有 部署</span>
       </div>
       <el-row :gutter="20">
         <el-col :span="5">
@@ -55,7 +55,7 @@
           </el-button>
         </el-col> -->
       </el-row>
-      <el-table :data="deployments" style="width: 100%" stripe>
+      <el-table :data="deploymentsInCurrentPage" style="width: 100%" stripe>
         <el-table-column width="40">
           <template slot-scope="scope">
             <svg-icon
@@ -150,6 +150,14 @@
           </template>
         </el-table-column>
       </el-table>
+      <el-pagination
+        @current-change="handleCurrentChange"
+        :current-page="currentPage"
+        :page-size="pageSize"
+        layout=" prev, pager, next, jumper, ->, total, slot"
+        :total="deploymentsAmount"
+      >
+      </el-pagination>
     </el-card>
 
     <!-- Deployment 编辑窗 -->
@@ -209,6 +217,10 @@ export default {
 
   data() {
     return {
+      deploymentsAmount: 0, //Deployments 总数
+      currentPage: 1, //分页绑定当前页
+      deploymentsInCurrentPage: [], //页面中的 Deployments
+      pageSize: 6, //一页显示数量
       namespaces: [],
       deployments: [],
       loading: true, // 获取数据中
@@ -279,6 +291,8 @@ export default {
         .then((res) => {
           console.log(res.data);
           this.deployments = res.data;
+          this.deploymentsAmount = this.deployments.length;
+          this.deploymentsInCurrentPage = this.deployments.slice(0, this.pageSize);
         })
         .catch((error) => {
           console.log(error);
@@ -408,6 +422,15 @@ export default {
           });
       }).catch(() => {
       });
+    },
+
+    //分页事件
+    handleCurrentChange(currentPage) {
+      this.currentPage = currentPage;
+      this.deploymentsInCurrentPage = this.deployments.slice(
+        (this.currentPage - 1) * this.pageSize,
+        this.currentPage * this.pageSize
+      );
     },
   },
 };

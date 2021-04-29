@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-22 17:20:47
  * @LastEditors: zqy
- * @LastEditTime: 2021-04-24 13:12:23
+ * @LastEditTime: 2021-04-27 10:52:12
  */
 import request from '@/utils/request'
 let baseUrl = "http://localhost:8081"
@@ -65,14 +65,35 @@ export function getCompletePodsList(data) {
   })
 }
 export function createPodFromForm(data) {
+  console.log(data)
   return request({
     url: baseUrl + '/pods/createPodFromForm',
-    method: 'get',
+    method: 'post',
     params: {
-      name: data.baseImformation.name,
-      namespace: data.baseImformation.namespace,
-      image: data.baseImformation.image,
+      podForm: data,
     }
+    // params: {
+    //   pod: 
+      // name: data.baseImformation.name,
+      // namespace: data.baseImformation.namespace,
+      // image: data.baseImformation.image,
+
+      // labels: data.seniorInformation.labels,
+      // annotations: data.seniorInformation.annotations,
+      // secretName
+      // image
+      // imagePullPolicy
+      // command: JSON.stringify(data.seniorInformation.command),
+      // args: data.seniorInformation.args,
+      // cpuLimit: data.seniorInformation.cpuLimit,
+      // cpuRequest: data.seniorInformation.cpuRequire,
+      // memoryLimit: data.seniorInformation.memoryLimit,
+      // memoryRequest: data.seniorInformation.memoryRequire,
+      // envVar: data.seniorInformation.env,
+      // amount: data.baseInformation.number,/
+
+      
+    // }
   })
 }
 

@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: zqy
- * @LastEditTime: 2021-04-19 16:20:06
+ * @LastEditTime: 2021-04-27 21:55:15
 -->
 
 <template>
@@ -12,7 +12,7 @@
     <!-- CronJobs 主体部分 -->
     <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <span>所有 CronJobs</span>
+        <span>所有 定时任务</span>
       </div>
       <el-row :gutter="20">
         <el-col :span="6">
@@ -56,10 +56,10 @@
           </el-button>
         </el-col> -->
       </el-row>
-      <el-table :data="cronJobs" style="width: 100%" stripe>
+      <el-table :data="cronJobsInCurrentPage" style="width: 100%" stripe>
         <el-table-column width="40">
-          <template >
-            <svg-icon :icon-class="'load-success'"/>
+          <template>
+            <svg-icon :icon-class="'load-success'" />
           </template>
         </el-table-column>
         <el-table-column prop="name" label="名称">
@@ -68,17 +68,11 @@
               :to="{
                 name: 'CronJob 详情',
                 params: {
-                  name:
-                    scope.row.name +
-                    ',' +
-                    scope.row.namespace,
+                  name: scope.row.name + ',' + scope.row.namespace,
                 },
               }"
               @click.native="
-                goToCronJobDetails(
-                  scope.row.name,
-                  scope.row.namespace
-                )
+                goToCronJobDetails(scope.row.name, scope.row.namespace)
               "
               class="link-type"
             >
@@ -89,8 +83,7 @@
           </template>
         </el-table-column>
         <!-- <el-table-column prop="apiVersion" label="版本"> </el-table-column> -->
-        <el-table-column prop="namespace" label="命名空间">
-        </el-table-column>
+        <el-table-column prop="namespace" label="命名空间"> </el-table-column>
         <el-table-column prop="schedule" label="调度"> </el-table-column>
         <!-- <el-table-column label="暂停">
           <template slot-scope="scope">
@@ -145,10 +138,7 @@
               icon="el-icon-edit"
               size="small"
               @click="
-                showCronJobEditDialog(
-                  scope.row.name,
-                  scope.row.namespace
-                )
+                showCronJobEditDialog(scope.row.name, scope.row.namespace)
               "
               >编辑</el-button
             >
@@ -158,17 +148,20 @@
               type="danger"
               icon="el-icon-delete"
               size="small"
-              @click="
-                delCronJob(
-                  scope.row.name,
-                  scope.row.namespace
-                )
-              "
+              @click="delCronJob(scope.row.name, scope.row.namespace)"
               >删除</el-button
             >
           </template>
         </el-table-column>
       </el-table>
+      <el-pagination
+        @current-change="handleCurrentChange"
+        :current-page="currentPage"
+        :page-size="pageSize"
+        layout=" prev, pager, next, jumper, ->, total, slot"
+        :total="cronJobsAmount"
+      >
+      </el-pagination>
     </el-card>
 
     <!-- CronJob 编辑框 -->
@@ -228,9 +221,13 @@ export default {
 
   data() {
     return {
-      namespaces: [],
+      namespaces: [], //命名空间
+      cronJobsAmount: 0, //CronJob 总数
+      currentPage: 1, //分页绑定当前页
+      cronJobsInCurrentPage: [], //页面中的 CronJobs
+      pageSize: 2, //一页显示数量
       cronJobSuSpend: true,
-      cronJobs: [],
+      cronJobs: [], //所有CronJobs
       loading: true, // 获取数据中
       editDialogVisible: false, // 编辑详情框
       addDialogVisible: false, // 添加框详情
@@ -280,6 +277,8 @@ export default {
         .then((res) => {
           console.log(res.data);
           this.cronJobs = res.data;
+          this.cronJobsAmount = this.cronJobs.length;
+          this.cronJobsInCurrentPage = this.cronJobs.slice(0, this.pageSize);
         })
         .catch((error) => {
           console.log(error);
@@ -439,6 +438,15 @@ export default {
             });
         })
         .catch(() => {});
+    },
+
+    //分页事件
+    handleCurrentChange(currentPage) {
+      this.currentPage = currentPage;
+      this.cronJobsInCurrentPage = this.cronJobs.slice(
+        (this.currentPage - 1) * this.pageSize,
+        this.currentPage * this.pageSize
+      );
     },
   },
 };
