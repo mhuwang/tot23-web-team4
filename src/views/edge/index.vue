@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 19:37:28
  * @LastEditors: Bernie
- * @LastEditTime: 2021-04-20 18:19:46
+ * @LastEditTime: 2021-04-29 10:39:19
 -->
 <template>
   <div>
@@ -53,6 +53,15 @@
           </template>
         </el-table-column> -->
         <el-table-column prop="status.conditions[0].status" label="准备就绪">
+          <template slot-scope="scope">
+            {{
+              scope.row.status == "True"
+                ? "就绪"
+                : scope.row.status == "Unknown"
+                ? "未知"
+                : "失败"
+            }}
+          </template>
         </el-table-column>
         <el-table-column prop="metadata.creationTimestamp" label="创建时间">
           <template slot-scope="scope">
@@ -113,6 +122,15 @@
         <el-table-column prop="metadata.namespace" label="命名空间">
         </el-table-column>
         <el-table-column prop="status.twins[0].desired.value" label="状态">
+          <template slot-scope="scope">
+            {{
+              scope.row.value== "ON"
+                ? "启动"
+                : scope.row.value == "OFF"
+                ? "失败"
+                : "停止"
+            }}
+          </template>
         </el-table-column>
         <!-- 后期做连接映射 -->
         <el-table-column prop="" label="控制入口">

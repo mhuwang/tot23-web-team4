@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: Bernie
- * @LastEditTime: 2021-04-13 19:14:48
+ * @LastEditTime: 2021-04-29 10:31:53
 -->
 <template>
   <div>
@@ -46,7 +46,7 @@
           </template> -->
         </el-table-column>
         <!-- <el-table-column prop="apiVersion" label="版本"> </el-table-column> -->
-        <el-table-column prop="spec.group" label="Group"> </el-table-column>
+        <el-table-column prop="spec.group" label="API组"> </el-table-column>
         <!-- <el-table-column label="标签">
           <template slot-scope="scope">
             <span>k8s-app: {{scope.row.metadata.labels['k8s-app']}}</span>
@@ -59,7 +59,7 @@
         <!-- <el-table-column prop="metadata.uid" label="uid"> </el-table-column> -->
         <!-- <el-table-column prop="spec.nodeName" width="140" label="所属节点"> </el-table-column>
         <el-table-column prop="status.podIP" width="140" label="主机ip地址"> </el-table-column> -->
-        <el-table-column prop="spec.scope" label="scope"> </el-table-column>
+        <el-table-column prop="spec.scope" label="范围"> </el-table-column>
         <el-table-column label="创建时间" width="200">
           <template slot-scope="scope">
             <span>{{

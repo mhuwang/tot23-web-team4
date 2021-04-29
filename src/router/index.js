@@ -5,8 +5,8 @@
  * @Date: 2021-03-10 15:03:17
 <<<<<<< HEAD
 =======
- * @LastEditors: Leo
- * @LastEditTime: 2021-04-25 17:08:40
+ * @LastEditors: Bernie
+ * @LastEditTime: 2021-04-29 10:28:39
 >>>>>>> d2cc4104d629449534f1eaa0131152dcce57b092
  */
 import Vue from 'vue'
@@ -340,7 +340,7 @@ export const constantRoutes = [
       {
         path: 'details/object/:name([a-z0-9-.]+)',
         component: () => import('@/views/customize/details/object/index'),
-        name: 'Object 详情',
+        name: '自定义资源对象详情',
         meta: { title: 'Object Details', noCache: true, activeMenu: '/customize' },
         hidden: true
       },

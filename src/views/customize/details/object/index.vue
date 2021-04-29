@@ -4,7 +4,7 @@
  * @Author: Bernie
  * @Date: 2021-04-12 10:43:03
  * @LastEditors: Bernie
- * @LastEditTime: 2021-04-20 17:18:54
+ * @LastEditTime: 2021-04-29 10:25:55
 -->
 <!--
  * @Description: your project
@@ -105,19 +105,19 @@
         </el-tab-pane> -->
     </el-tabs>
     <el-row>
-      <el-button type="primary" @click="commitYamlChange">确 定</el-button>
+      <el-button type="primary" @click="commitYamlChange()">确 定</el-button>
     </el-row>
     </el-card>
    <!--- 活动-->
    <br /><br />
 
-    <el-card class="box-card">
+    <!-- <el-card class="box-card">
       <div slot="header" class="clearfix">
         <span style="font-size: 16px">活动</span>
       </div>
       <el-table :data="currentEvents"> -->
         <!-- <el-table-column type="index"></el-table-column> -->
-        <el-table-column prop="message" label="信息"> </el-table-column>
+        <!-- <el-table-column prop="message" label="信息"> </el-table-column>
         <el-table-column prop="resource" label="资源"> </el-table-column>
         <el-table-column
           prop="childObject"
@@ -146,7 +146,7 @@
         :total="total"
       >
       </el-pagination>
-    </el-card>
+    </el-card> --> 
 
 
     
@@ -174,9 +174,18 @@ export default {
       loading: true, // 获取数据中
       codeJSON: "", // 编辑框的 json 数据
       codeYaml: "", // 编辑框的 yaml 数据
+
+      total: 0, // 总事件数
+      events: [], // 所有事件
+      currentEvents: [], // 当前页面的事件
     };
   },
   methods: {
+    // 处理分页
+    handleCurrentChange(page) {
+      // console.log(page);
+      this.currentEvents = this.events.slice((page - 1) * 10, page * 10);
+    },
     // 编辑器方法
     /* yaml */
     onYamlCmReady(cm) {
@@ -212,16 +221,20 @@ export default {
     },
 
     // 提交修改
-    commitYamlChange() {
+    commitYamlChange(crdName) {
+     let data = {
+        codeyaml: this.codeYaml,
+        crdname: sessionStorage.getItem("crdName"),
+      };
+
       this.$confirm("确认修改？", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "info",
       })
         .then(() => {
-          console.log("code",this.codeYaml);
           this.$store
-            .dispatch("common/changeCrdObjectByYaml", this.codeYaml)
+            .dispatch("common/changeCrdObjectByYaml", data)
             .then((res) => {
               switch (res.code) {
                 case 1200:
@@ -340,13 +353,13 @@ export default {
       //     throw error;
       //   });
     
-   // 获取该CRD
+   // 获取该Object
     this.$store
       .dispatch(
         "customize/getObjectByNameAndNamespace",objectDetails)
       .then((res) => {
         console.log(res);
-        this.objects = res.data;
+        this.objects = res.data.objectdefinition;
       })
       .catch((error) => {
         throw error;

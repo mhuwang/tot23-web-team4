@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-04-02 13:11:07
  * @LastEditors: Bernie
- * @LastEditTime: 2021-04-10 16:52:11
+ * @LastEditTime: 2021-04-29 10:42:40
 -->
 
 <template>
@@ -295,6 +295,15 @@
       <el-table :data="node.status.conditions" style="width: 100%" stripe>
         <el-table-column prop="type" label="类别"> </el-table-column>
         <el-table-column prop="status" label="状态" width="120">
+          <template slot-scope="scope">
+            {{
+              scope.row.status == "True"
+                ? "就绪"
+                : scope.row.status == "Unknown"
+                ? "未知"
+                : "失败"
+            }}
+          </template>
         </el-table-column>
 
         <el-table-column label="最后检测时间">

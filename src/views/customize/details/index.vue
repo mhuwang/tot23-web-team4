@@ -4,7 +4,7 @@
  * @Author: Rex Bernie
  * @Date: 2021-04-4 13:57
  * @LastEditors: Bernie
- * @LastEditTime: 2021-04-20 16:42:55
+ * @LastEditTime: 2021-04-29 10:32:26
 -->
 <template>
   <div>
@@ -83,7 +83,7 @@
           <span>{{ customResourceDefinition.spec.scope }}</span>
         </div>
         <div class="metadata-item">
-          <p>Group</p>
+          <p>API组</p>
           <span>{{ customResourceDefinition.spec.group }}</span>
         </div>
       </List>
@@ -113,7 +113,7 @@
         </div>
         <div class="metadata-item">
           <p>短名称</p>
-          <span>{{ customResourceDefinition.spec.names.shortNames[0] }}</span>
+          <span>{{ customResourceDefinition.spec.names.shortNames   }}</span>
         </div>
       </List>
     </el-card>
@@ -122,7 +122,7 @@
     <!-- Objects -->
     <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <span style="font-size: 20px">Objects</span>
+        <span style="font-size: 20px">对象</span>
       </div>
       <el-table :data="objects" style="width: 100%" stripe>
         <!-- <el-table-column width="40">
@@ -220,6 +220,15 @@
       >
         <el-table-column prop="type" label="类别"> </el-table-column>
         <el-table-column prop="status" label="状态" width="120">
+          <template slot-scope="scope">
+            {{
+              scope.row.status == "True"
+                ? "就绪"
+                : scope.row.status == "Unknown"
+                ? "未知"
+                : "失败"
+            }}
+          </template>
         </el-table-column>
         <el-table-column label="最后迁移时间">
           <template slot-scope="scope">
