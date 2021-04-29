@@ -4,15 +4,13 @@
  * @Author: Anna667
  * @Date: 
  * @LastEditors: Anna
- * @LastEditTime: 2021-04-16 12:00:02
+ * @LastEditTime: 2021-04-26 12:58:39
 -->
 <template>
   <div>
     <el-divider content-position="left"
       ><span style="font-weight: bold; font-size: 20px">
-        {{
-        configMap.metadata.name
-      }}
+        {{ configMap.metadata.name }}
       </span></el-divider
     >
     <!-- 元数据 -->
@@ -44,7 +42,7 @@
       <List item-layout="horizontal" :split="false">
         <div class="metadata-item">
           <p>标签</p>
-          <li v-for="(label, index) in this.labels" :key="index">
+          <li v-for="label in this.labels" :key="label">
             <el-tag
               class="lebel-tag"
               effect="dark"
@@ -54,7 +52,7 @@
             >
           </li>
         </div>
-        <div v-if="annotations.length > 0" class="metadata-item">
+        <div v-if="this.annotations.length > 0" class="metadata-item">
           <p>注释</p>
           <li v-for="(anno, index) in this.annotations" :key="index">
             <el-tag
@@ -85,14 +83,25 @@
       </span>
     </el-dialog>
     <br /><br />
-    <!-- 数据  -->   
+    <!-- 数据  -->
     <el-card class="box-card">
       <div slot="header" class="clearfix">
         <span style="font-size: 16px">数据</span>
       </div>
       <List item-layout="horizontal" :split="false">
-          ca.crt&nbsp;&nbsp;<i :class="!caShow? 'el-icon-zoom-in' : 'el-icon-zoom-out'" @click="showCa"></i>
-          <highlightjs v-show="caShow" style="width:100%" language='plaintext' :code="configMap.data['client-ca-file']" />
+        <div v-if="configMap.data != undefined">
+          所有数据&nbsp;&nbsp;<i
+            :class="!caShow ? 'el-icon-zoom-in' : 'el-icon-zoom-out'"
+            @click="showCa"
+          ></i>
+          <highlightjs
+            v-show="caShow"
+            style="width: 100%"
+            language="plaintext"
+            :code="crtData"
+          />
+        </div>
+        <span v-else>没有要显示的数据</span>
       </List>
     </el-card>
     <br /><br />
@@ -100,9 +109,8 @@
 </template>
 
 <script>
-
 export default {
-  props: ['name','namespace'],
+  props: ["name", "namespace"],
   data() {
     return {
       configMap: {},
@@ -116,7 +124,7 @@ export default {
   },
 
   methods: {
-    showCa: function(){
+    showCa: function () {
       this.caShow = !this.caShow;
     },
     // 显示注解的详情
@@ -124,48 +132,62 @@ export default {
       this.annoDetailsVisible = true;
       // console.log(key);
       this.annoKey = key;
-      this.annoDetails = this.beautify(this.configMap.metadata.annotations[key], {
-        indent_size: 2,
-        space_in_empty_paren: true,
-      });
+      this.annoDetails = this.beautify(
+        this.configMap.metadata.annotations[key],
+        {
+          indent_size: 2,
+          space_in_empty_paren: true,
+        }
+      );
     },
   },
 
   // 生命周期方法
   mounted: function () {
-
     /* name */
     // 为空，直接存储
     if (sessionStorage.getItem("configMapName") == null) {
-      sessionStorage.setItem("configMapName", this.$store.state.configMaps.configMap.configMapName);
+      sessionStorage.setItem(
+        "configMapName",
+        this.$store.state.configMaps.configMap.configMapName
+      );
       this.configMapName = this.$store.state.configMaps.configMap.configMapName;
     }
     //不为空，且当前 configMapName 有值，同时和之前的不一样，更新 configMapName
     else if (
       this.$store.state.configMaps.configMap.configMapName != "" &&
-      sessionStorage.getItem("configMapName") != this.$store.state.configMaps.configMap.configMapName
+      sessionStorage.getItem("configMapName") !=
+        this.$store.state.configMaps.configMap.configMapName
     ) {
-      sessionStorage.setItem("configMapName", this.$store.state.configMaps.configMap.configMapName);
+      sessionStorage.setItem(
+        "configMapName",
+        this.$store.state.configMaps.configMap.configMapName
+      );
       this.configMapName = this.$store.state.configMaps.configMap.configMapName;
     }
 
-    
     /* namespace */
     // 为空，直接存储
     if (sessionStorage.getItem("configMapNamespace") == null) {
-      sessionStorage.setItem("configMapNamespace", this.$store.state.configMaps.configMap.configMapNamespace);
+      sessionStorage.setItem(
+        "configMapNamespace",
+        this.$store.state.configMaps.configMap.configMapNamespace
+      );
       this.configMapNamespace = this.$store.state.configMaps.configMap.configMapNamespace;
     }
     // 不为空，且当前 configMapNamespace 有值，同时和之前的不一样，更新 configMapNamespace
     else if (
       this.$store.state.configMaps.configMap.configMapNamespace != "" &&
-      sessionStorage.getItem("configMapNamespace") != this.$store.state.configMaps.configMap.configMapNamespace
+      sessionStorage.getItem("configMapNamespace") !=
+        this.$store.state.configMaps.configMap.configMapNamespace
     ) {
-      sessionStorage.setItem("configMapNamespace", this.$store.state.configMaps.configMap.configMapNamespace);
+      sessionStorage.setItem(
+        "configMapNamespace",
+        this.$store.state.configMaps.configMap.configMapNamespace
+      );
       this.configMapNamespace = this.$store.state.configMaps.configMap.configMapNamespace;
     }
 
-    
     // 获取数据
     let con = {
       name: sessionStorage.getItem("configMapName"),
@@ -175,13 +197,14 @@ export default {
     this.$store
       .dispatch("configMaps/getConfigMapByNameAndNamespace", con)
       .then((res) => {
-        console.log(res);
+        console.log(res, "\n", typeof res.data.data);
         this.configMap = res.data;
+        console.log(this.configMap.data);
       })
       .catch((error) => {
         throw error;
       });
-      console.log(configMap.data)
+    //console.log(configMap.data)
   },
 
   computed: {
@@ -202,13 +225,21 @@ export default {
       for (let anno in this.configMap.metadata.annotations) {
         annoArr.push({
           key: anno,
-          value: this.ingress.configMap.annotations[anno],
+          value: this.configMap.metadata.annotations[anno],
         });
       }
       return annoArr;
     },
+
+    // crt data
+    crtData(){
+      let crtArr = "";
+      for(let crt in this.configMap.data){
+        crtArr += crt + ": " + this.configMap.data[crt] + "\n";
+      }
+      return crtArr
+    }
   },
-  
 };
 </script>
 

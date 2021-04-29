@@ -4,7 +4,7 @@
  * @Author: Anna667
  * @Date: 
  * @LastEditors: Anna
- * @LastEditTime: 2021-04-16 11:21:36
+ * @LastEditTime: 2021-04-26 13:46:33
 -->
 <template>
   <div>
@@ -92,17 +92,23 @@
       </div>      
       <List item-layout="horizontal" :split="false">
           ca.crt&nbsp;&nbsp;<i :class="!caShow1? 'el-icon-zoom-in' : 'el-icon-zoom-out'" @click="showCa1"></i>
-          <highlightjs v-show="caShow1" style="width:100%" language='plaintext' :code="secret.data['ca.crt']" />
+          <highlightjs v-show="caShow1" style=" width:100% ,font-weight: bold; font-size: 20px" textcolor:red language='plaintext' :code="secret.data['ca.crt']" />
+          <br>
+          <span style="font-weight:bold; font-size:20px;"> {{secret.data['ca.crt'].length}} bytes  </span>         
       </List>
 
       <List item-layout="horizontal" :split="false">
         namespace&nbsp;&nbsp;<i :class="!caShow2? 'el-icon-zoom-in' : 'el-icon-zoom-out'" @click="showCa2"></i>
-        <highlightjs v-show="caShow2" style="width:100%" language='plaintext' :code="secret.metadata.namespace" />
+        <highlightjs v-show="caShow2"  style="width:100% ,font-weight: bold; font-size: 20px" language='plaintext' :code="secret.metadata.namespace" />
+        <br>
+        <span style="font-weight:bold; font-size:20px;"> {{secret.metadata.namespace.length}} bytes  </span>
       </List>
 
       <List item-layout="horizontal" :split="false">
         token&nbsp;&nbsp;<i :class="!caShow3? 'el-icon-zoom-in' : 'el-icon-zoom-out'" @click="showCa3"></i>
-        <highlightjs v-show="caShow3" style="width:100%" language='plaintext' :code="secret.data['token']" />
+        <highlightjs v-show="caShow3" style="width:100% ,font-weight: bold; font-size: 20px" language='plaintext' :code="secret.data['token']" />
+        <br>
+        <span style="font-weight:bold; font-size:20px;"> {{secret.data['token'].length}} bytes  </span>
       </List>
 
     </el-card>

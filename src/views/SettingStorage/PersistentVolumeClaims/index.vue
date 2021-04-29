@@ -4,7 +4,7 @@
  * @Author: Anna
  * @Date: 2021-04-13 11:11:57
  * @LastEditors: Anna
- * @LastEditTime: 2021-04-16 11:05:44
+ * @LastEditTime: 2021-04-26 15:14:55
 -->
 <template>
   <div>
@@ -44,7 +44,7 @@
         </el-col>
       </el-row>
       <el-table 
-        :data="persistentVolumeClaims" 
+        :data="currentPersistentVolumeClaims" 
         style="width: 100%" 
         stripe
         v-loading="loading"
@@ -74,15 +74,38 @@
           </template>
         </el-table-column>
         <el-table-column prop="metadata.namespace" label="命名空间" width="150"> </el-table-column>
-
-        <el-table-column prop="status.phase" label="状态" width="100"> </el-table-column>
-        <el-table-column prop="spec.volumeName" label="Volume" width="100"> </el-table-column>
+        <!-- prop="status.phase" -->
+        <el-table-column  label="状态" width="100"> 
+          <template slot-scope="scope">
+            {{
+              scope.row.status.phase == "Bound"
+                ? "绑定"
+                : scope.row.status.phase == "Available"
+                ? "可用"
+                : scope.row.status.phase == "Released"
+                ? "释放"
+                : "失败"
+            }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="spec.volumeName" label="卷" width="100"> </el-table-column>
         <el-table-column label="容量" width="120">
           <template slot-scope="scope">
             <span>{{scope.row.status.capacity.storage.amount}} {{scope.row.status.capacity.storage.format}}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="spec.accessModes[0]" label="访问模式" width="150"> </el-table-column>
+        <!-- prop="spec.accessModes[0]" -->
+        <el-table-column  label="访问模式" width="150"> 
+          <template slot-scope="scope">
+            {{
+              scope.row.spec.accessModes[0] == "ReadWriteOnce"
+                ? "仅允许单节点挂载读写"
+                : scope.row.spec.accessModes[0] == "ReadOnlyMany"
+                ? "允许多节点挂载且只读"
+                : "允许多节点挂载读写"
+            }}
+          </template>
+        </el-table-column>
         <el-table-column prop="spec.storageClassName" label="存储类" width="120"> </el-table-column>
 
 
@@ -133,6 +156,15 @@
           </template>
         </el-table-column>
       </el-table>
+      <el-pagination
+        background
+        @current-change="handlePVCCurrentChange"
+        :current-page="1"
+        :page-size="6"
+        layout="total, prev, pager, next, jumper"
+        :total="totalPersistentVolumeClaim"
+      >
+      </el-pagination>
     </el-card>
 
     <!-- 编辑框 -->
@@ -200,6 +232,9 @@ export default {
       codeJSON: "", // 编辑框的 json 数据
       codeYaml: "", // 编辑框的 yaml 数据
 
+      currentPersistentVolumeClaims: [],
+      totalPersistentVolumeClaim: 0,
+
       cmOptions: {
         // json codemirror 配置项
         tabSize: 4,
@@ -227,6 +262,11 @@ export default {
   },
 
   methods: {
+    // 处理命名空间分页
+    handlePVCCurrentChange(page) {
+      this.currentPersistentVolumeClaims = this.persistentVolumeClaims.slice((page - 1) * 6, page * 6);
+    },
+
     // 编辑器方法
     /* yaml */
     onYamlCmReady(cm) {
@@ -258,6 +298,8 @@ export default {
         .then((res) => {
           console.log(res.data);
           this.persistentVolumeClaims = res.data;
+          this.totalPersistentVolumeClaim = res.data.length;
+          this.currentPersistentVolumeClaims = res.data.slice(0, 6);
           this.loading = false;
         })
         .catch((error) => {
@@ -340,7 +382,7 @@ export default {
 
     /* 删除 PersistentVolumeClaim */
     delPVC: function (name, namespace) {
-      this.$confirm("确认删除 PersistentVolumeClaim", {
+      this.$confirm("确认删除 持久化存储卷", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",

@@ -3,6 +3,11 @@
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-03-10 15:03:17
+<<<<<<< HEAD
+=======
+ * @LastEditors: Leo
+ * @LastEditTime: 2021-04-25 17:08:40
+>>>>>>> d2cc4104d629449534f1eaa0131152dcce57b092
  */
 import Vue from 'vue'
 import Router from 'vue-router'
@@ -231,14 +236,14 @@ export const constantRoutes = [
         path: 'ingresses',
         name: 'Ingresses',
         component: () => import('@/views/ExploreBalancing/Ingresses/index'),
-        meta: { title: '访问权', icon: 'ingresses' }
+        meta: { title: '负载均衡器', icon: 'ingresses' }
       },
       // ingresses 详情
       {
         path: 'ingresses/:name',
         component: () => import('@/views/ExploreBalancing/Ingresses/details/index'),
         name: 'Ingress Details',
-        meta: { title: '访问权详情', noCache: true, activeMenu: '/ingresses' },
+        meta: { title: '负载均衡器详情', noCache: true, activeMenu: '/ingresses' },
         hidden: true
       },
       {
