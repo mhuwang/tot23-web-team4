@@ -4,7 +4,7 @@
  * @Author: Anna667
  * @Date: 
  * @LastEditors: Anna
- * @LastEditTime: 2021-04-16 11:03:55
+ * @LastEditTime: 2021-04-26 13:58:35
 -->
 <template>
   <div>
@@ -108,7 +108,16 @@
         </div>
         <div class="metadata-item">
           <p>访问模式</p>
-          <span>{{ persistentVolumeClaim.spec.accessModes[0] }}</span>
+            <span>
+              {{
+                persistentVolumeClaim.spec.accessModes[0] == "ReadWriteOnce"
+                  ? "仅允许单节点挂载读写"
+                  : persistentVolumeClaim.spec.accessModes[0] == "ReadOnlyMany"
+                  ? "允许多节点挂载且只读"
+                  : "允许多节点挂载读写"
+              }}
+            </span>
+          <!-- <span>{{ persistentVolumeClaim.spec.accessModes[0] }}</span> -->         
         </div>
       </List>
     </el-card>

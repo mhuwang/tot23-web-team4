@@ -3,8 +3,8 @@
  * @version: 1.0
  * @Author: Rex Bernie
  * @Date: 2021-04-4 13:57
- * @LastEditors: Rex Bernie
- * @LastEditTime: 
+ * @LastEditors: Bernie
+ * @LastEditTime: 2021-04-29 10:32:26
 -->
 <template>
   <div>
@@ -83,7 +83,7 @@
           <span>{{ customResourceDefinition.spec.scope }}</span>
         </div>
         <div class="metadata-item">
-          <p>Group</p>
+          <p>API组</p>
           <span>{{ customResourceDefinition.spec.group }}</span>
         </div>
       </List>
@@ -113,15 +113,16 @@
         </div>
         <div class="metadata-item">
           <p>短名称</p>
-          <span>{{ customResourceDefinition.spec.names.shortNames[0] }}</span>
+          <span>{{ customResourceDefinition.spec.names.shortNames   }}</span>
         </div>
       </List>
     </el-card>
     <br /><br />
+
     <!-- Objects -->
     <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <span style="font-size: 20px">Objects</span>
+        <span style="font-size: 20px">对象</span>
       </div>
       <el-table :data="objects" style="width: 100%" stripe>
         <!-- <el-table-column width="40">
@@ -140,8 +141,8 @@
         <el-table-column label="名字">
           <template slot-scope="scope">
             <router-link
-              :to="'/edge/edgenodes/' + scope.row.metadata.name"
-              @click.native="goToEdgeNodeDetails(scope.row.metadata.name)"
+              :to="'/customize/details/object/' + scope.row.metadata.name"
+              @click.native="goToObjectDetails(customResourceDefinition.metadata.name,scope.row.metadata.name, scope.row.metadata.namespace)"
               class="link-type"
             >
               <span style="color: #409eff; text-decoration: underline">{{
@@ -184,21 +185,21 @@
         <el-table-column label="操作">
           <template slot-scope="scope">
             <!-- 修改 -->
-            <el-button
+            <!-- <el-button
               style="margin-bottom: 5px"
               type="primary"
               icon="el-icon-edit"
               size="small"
               @click="showNodeEditDialog(scope.row)"
               >编辑</el-button
-            >
-            <br />
+            > -->
+            <!-- <br /> -->
             <!-- 删除 -->
             <el-button
               type="danger"
               icon="el-icon-delete"
               size="small"
-              @click="delNode(scope.row)"
+              @click="delObject(customResourceDefinition.metadata.name,scope.row.metadata.name, scope.row.metadata.namespace)"
               >删除</el-button
             >
           </template>
@@ -219,6 +220,15 @@
       >
         <el-table-column prop="type" label="类别"> </el-table-column>
         <el-table-column prop="status" label="状态" width="120">
+          <template slot-scope="scope">
+            {{
+              scope.row.status == "True"
+                ? "就绪"
+                : scope.row.status == "Unknown"
+                ? "未知"
+                : "失败"
+            }}
+          </template>
         </el-table-column>
         <el-table-column label="最后迁移时间">
           <template slot-scope="scope">
@@ -238,6 +248,7 @@
 </template>
 
 <script>
+import { get } from '@/api/httpconfig';
 export default {
   data() {
     return {
@@ -284,34 +295,14 @@ export default {
     //   sessionStorage.setItem("deploymentNamespace", this.$store.state.deployments.deployment.deploymentNamespace);
     //   this.deploymentNamespace = this.$store.state.deployments.deployment.deploymentNamespace;
     // }
+    this.getcrd();
+    this.getObjectList();
 
-    // 获取该CRD
-    this.$store
-      .dispatch(
-        "customize/getCustomResourceDefinitionByName",
-        sessionStorage.getItem("customResourceDefinitionName")
-      )
-      .then((res) => {
-        console.log(res);
-        this.customResourceDefinition = res.data;
-      })
-      .catch((error) => {
-        throw error;
-      });
-    //通过CRD名字获取对象列表
-    this.$store
-      .dispatch(
-        "customize/getCustomResourceDefinitionObjectListbyName",
-        sessionStorage.getItem("customResourceDefinitionName")
-      )
-      .then((res) => {
-        console.log(res);
-        this.objects = res.data.items;
-      })
-      .catch((error) => {
-        throw error;
-      });
+    
   },
+  // create() {
+
+  // },
 
   computed: {
     // 元数据下的标签
@@ -338,7 +329,79 @@ export default {
       return annoArr;
     },
   },
+  methods: {
+
+// 获取该CRD
+    getcrd(){
+    this.$store
+      .dispatch(
+        "customize/getCustomResourceDefinitionByName",
+        sessionStorage.getItem("customResourceDefinitionName")
+      )
+      .then((res) => {
+        console.log(res);
+        this.customResourceDefinition = res.data;
+      })
+      .catch((error) => {
+        throw error;
+      });
+    },
+    //通过CRD名字获取对象列表
+    getObjectList(){
+      console.log(sessionStorage.getItem("customResourceDefinitionName"))
+        this.$store
+        .dispatch(
+          "customize/getCustomResourceDefinitionObjectListbyName",
+          sessionStorage.getItem("customResourceDefinitionName")
+        )
+        .then((res) => {
+          console.log(res);
+          this.objects = res.data.items;
+        })
+        .catch((error) => {
+          throw error;
+        });
+    },
+
+
+    goToObjectDetails: function (crdname,name,namespace) {
+       let objectDetails = {
+        crdName: crdname,
+        objectName: name,
+        objectNamespace: namespace,
+      };
+      this.$store.dispatch("customize/toObjectDetails", objectDetails);
+    },
+    delObject: function (crdname,name,namespace) {
+       let objectDetails = {
+        crdName: crdname,
+        objectName: name,
+        objectNamespace: namespace,
+      };
+      this.$confirm("确认删除 CRD？", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      }).then(() => {
+        this.$store
+          .dispatch("customize/delObject", objectDetails)
+          .then((res) => {
+            if(res.code == 1200) {
+              this.getObjectList();
+            } else {
+              this.$message.error("删除失败");
+            }
+          })
+          .catch((error) => {
+            throw error;
+          });
+      }).catch(()=>{
+
+      });
+    },
+  },
 };
+
 </script>
 <style lang="scss" scoped>
 .usage-cpu-tag-success {

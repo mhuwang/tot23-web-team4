@@ -3,8 +3,8 @@
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-03-17 19:37:28
- * @LastEditors: Rex Joush
- * @LastEditTime: 2021-04-17 13:19:15
+ * @LastEditors: Bernie
+ * @LastEditTime: 2021-04-29 10:39:19
 -->
 <template>
   <div>
@@ -53,6 +53,15 @@
           </template>
         </el-table-column> -->
         <el-table-column prop="status.conditions[0].status" label="准备就绪">
+          <template slot-scope="scope">
+            {{
+              scope.row.status == "True"
+                ? "就绪"
+                : scope.row.status == "Unknown"
+                ? "未知"
+                : "失败"
+            }}
+          </template>
         </el-table-column>
         <el-table-column prop="metadata.creationTimestamp" label="创建时间">
           <template slot-scope="scope">
@@ -69,18 +78,10 @@
               type="primary"
               icon="el-icon-edit"
               size="small"
-              @click="showNodeEditDialog(scope.row)"
+              @click="showNodeEditDialog(scope.row.name)"
               >编辑</el-button
             >
-            <br />
-            <!-- 删除 -->
-            <el-button
-              type="danger"
-              icon="el-icon-delete"
-              size="small"
-              @click="delNode(scope.row)"
-              >删除</el-button
-            >
+      
           </template>
         </el-table-column>
       </el-table>
@@ -106,27 +107,41 @@
           </template>
         </el-table-column> -->
         <el-table-column label="设备名字">
-          <template slot-scope="scope">
-            <!-- <router-link
-              :to="'/edge/edgenodes/' + scope.row.metadata.name"
-              @click.native="goToEdgeNodeDetails(scope.row.metadata.name)"
+           <template slot-scope="scope">
+            <router-link
+              :to="'/customize/details/object/' + scope.row.metadata.name"
+              @click.native="goToObjectDetails(scope.row.metadata.name, scope.row.metadata.namespace)"
               class="link-type"
             >
               <span style="color: #409eff; text-decoration: underline">{{
                 scope.row.metadata.name
               }}</span>
-            </router-link> -->
-            <a
-              style="color: #409eff; text-decoration: underline"
-              href="http://172.18.7.17:8089"
-              target="_blank"
-              >{{ scope.row.metadata.name }}</a
-            >
+            </router-link>
           </template>
         </el-table-column>
         <el-table-column prop="metadata.namespace" label="命名空间">
         </el-table-column>
         <el-table-column prop="status.twins[0].desired.value" label="状态">
+          <template slot-scope="scope">
+            {{
+              scope.row.value== "ON"
+                ? "启动"
+                : scope.row.value == "OFF"
+                ? "失败"
+                : "停止"
+            }}
+          </template>
+        </el-table-column>
+        <!-- 后期做连接映射 -->
+        <el-table-column prop="" label="控制入口">
+         <template slot-scope="">
+            <a
+              style="color: #409eff; text-decoration: underline"
+              href="http://kubeedge-demo.mc.com"
+              target="_blank"
+              >{{ "kubeedge-demo.mc.com" }}</a
+            >
+          </template>
         </el-table-column>
         <el-table-column prop="metadata.creationTimestamp" label="创建时间">
           <template slot-scope="scope">
@@ -137,28 +152,57 @@
         </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
-            <!-- 修改 -->
-            <el-button
+            <!-- 控制 -->
+            <!-- <el-button
               style="margin-bottom: 5px"
               type="primary"
               icon="el-icon-edit"
               size="small"
-              @click="showNodeEditDialog(scope.row)"
-              >编辑</el-button
+              @click=""
+              >控制</el-button
             >
-            <br />
+            <br /> -->
             <!-- 删除 -->
             <el-button
               type="danger"
               icon="el-icon-delete"
               size="small"
-              @click="delNode(scope.row)"
+              @click="delObject(scope.row.metadata.name, scope.row.metadata.namespace)"
               >删除</el-button
             >
           </template>
         </el-table-column>
       </el-table>
     </el-card>
+    <!-- edgenode编辑框 -->
+     <el-dialog
+      title="编辑 Node"
+      :visible.sync="editDialogVisible"
+      width="70%"
+      @closed="handleClose"
+      @close="editDialogVisible = false"
+      :append-to-body="true"
+      :lock-scroll="true"
+    >
+      <el-tabs value="first" type="card">
+        <el-tab-pane label="YAML" name="first">
+          <codemirror
+            :value="codeYaml"
+            :options="cmOptionsYaml"
+            @ready="onYamlCmReady"
+            @input="onYamlCmCodeChange"
+          />
+        </el-tab-pane>
+      </el-tabs>
+      <span slot="footer" class="dialog-footer">
+        <div class="foot-info">
+          <i class="el-icon-warning"></i> 此操作相当于 kubectl apply -f
+          &ltspec.yaml>
+        </div>
+        <el-button @click="editDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="commitYamlChange">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -168,6 +212,17 @@ export default {
     return {
       nodes: [],
       devices: [],
+      /* 公共部分 */
+      editDialogVisible: false,
+      codeYaml: "", // 编辑框的 yaml 数据
+      cmOptionsYaml: {
+        // yaml codemirror 配置项
+        tabSize: 4,
+        mode: "yaml",
+        theme: "panda-syntax",
+        lineNumbers: true,
+        line: true,
+      },
     };
   },
 
@@ -182,6 +237,70 @@ export default {
   },
 
   methods: {
+    // 编辑器方法
+    /* yaml */
+    onYamlCmReady(cm) {
+      setTimeout(() => {
+        cm.refresh();
+      }, 50);
+    },
+
+    onYamlCmCodeChange(newCode) {
+      this.codeYaml = newCode;
+    },
+
+    /* 编辑部分 */
+
+    // 打开 node 编辑框
+    showNodeEditDialog(name) {
+      this.$store
+        .dispatch("nodes/getNodeYamlByName", name)
+        .then((res) => {
+          console.log(res);
+          this.codeYaml = res.data;
+          this.editDialogVisible = true; // 打开编辑对话框
+        })
+        .catch((error) => {
+          throw error;
+        });
+    },
+
+    // 提交修改
+    commitYamlChange() {
+      this.$confirm("确认修改？", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "info",
+      })
+        .then(() => {
+          this.$store
+            .dispatch("common/changeResourceByYaml", this.codeYaml)
+            .then((res) => {
+              switch (res.code) {
+                case 1200:
+                  this.$message.success("修改成功");
+                  break;
+                case 1201:
+                  this.$message.error("修改失败，请查看 yaml 文件格式");
+                  break;
+                case 1202:
+                  this.$message.error("创建失败，请查看云平台相关错误信息");
+                  break;
+                default:
+                  this.$message.info("提交成功");
+                  break;
+              }
+              this.editDialogVisible = false;
+            })
+            .catch((error) => {
+              throw error;
+            });
+        })
+        .catch(() => {
+          console.log("cancel");
+        });
+    },
+
     // 获取图表
     initEchart: function () {
       let self = this;
@@ -337,6 +456,42 @@ export default {
 
     goToEdgeNodeDetails: function (edgenodeName) {
       this.$store.dispatch("edge/toDetails", edgenodeName);
+    },
+
+    goToObjectDetails: function (name,namespace) {
+       let objectDetails = {
+        crdName: "devices.devices.kubeedge.io",
+        objectName: name,
+        objectNamespace: namespace,
+      };
+      this.$store.dispatch("customize/toObjectDetails", objectDetails);
+    },
+    delObject: function (name,namespace) {
+       let objectDetails = {
+        crdName: "devices.devices.kubeedge.io",
+        objectName: name,
+        objectNamespace: namespace,
+      };
+      this.$confirm("确认删除 CRD？", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      }).then(() => {
+        this.$store
+          .dispatch("customize/delObject", objectDetails)
+          .then((res) => {
+            if(res.code == 1200) {
+              this.getObjectList();
+            } else {
+              this.$message.error("删除失败");
+            }
+          })
+          .catch((error) => {
+            throw error;
+          });
+      }).catch(()=>{
+
+      });
     },
   },
 };

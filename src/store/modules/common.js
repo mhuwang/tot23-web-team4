@@ -3,10 +3,8 @@
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-04-07 20:07:51
- * @LastEditors: Leo
- * @LastEditTime: 2021-04-14 20:55:31
  */
-import { changeResourceByYaml } from '@/api/common'
+import { changeResourceByYaml ,changeCrdByYaml,changeCrdObjectByYaml} from '@/api/common'
 import { getToken } from '@/utils/auth'
 
 const getDefaultState = () => {
@@ -36,6 +34,20 @@ const actions = {
       })
     })
   },
+
+  // 根据 yaml 文件编辑资源
+  changeCrdByYaml({ commit }, yaml) {
+    return new Promise((resolve, reject) => {
+      changeCrdByYaml(yaml).then(response => {
+        const { data } = response
+        if (!data) {
+          return reject('修改失败')
+        }
+        resolve(data)
+      }).catch(error => {
+        reject(error)
+      })
+    })
   // // 根据 yaml 文件编辑 service
   // changeServicesByYaml({ commit }, yaml) {
   //   return new Promise((resolve, reject) => {
@@ -64,7 +76,23 @@ const actions = {
   //     })
   //   })
   // },
+  },
+  //changeCrdObjectByYaml
+  changeCrdObjectByYaml({ commit }, yaml) {
+    return new Promise((resolve, reject) => {
+      changeCrdObjectByYaml(yaml).then(response => {
+        const { data } = response
+        if (!data) {
+          return reject('修改失败')
+        }
+        resolve(data)
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
 }
+
 
 export default {
   namespaced: true,

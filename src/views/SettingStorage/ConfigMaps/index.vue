@@ -4,7 +4,7 @@
  * @Author: Anna667
  * @Date: 
  * @LastEditors: Anna
- * @LastEditTime: 2021-04-16 11:06:39
+ * @LastEditTime: 2021-04-26 15:11:35
 -->
 <template>
   <div>
@@ -43,8 +43,9 @@
             ></el-button> -->
         </el-col>
       </el-row>
-      <el-table
-        :data="configMaps"
+      <!-- :data="configMaps" -->
+      <el-table      
+        :data="currentConfigmaps"
         style="width: 100%"
         stripe
         v-loading="loading"
@@ -133,6 +134,15 @@
           </template>
         </el-table-column>
       </el-table>
+      <el-pagination
+        background
+        @current-change="handleConfigmapCurrentChange"
+        :current-page="1"
+        :page-size="6"
+        layout="total, prev, pager, next, jumper"
+        :total="totalConfigmap"
+      >
+      </el-pagination>
     </el-card>
 
     <!-- 编辑框 -->
@@ -200,6 +210,10 @@ export default {
       codeJSON: "", // 编辑框的 json 数据
       codeYaml: "", // 编辑框的 yaml 数据
 
+      //namespaces: [],
+      currentConfigmaps: [],
+      totalConfigmap: 0,
+
       cmOptions: {
         // json codemirror 配置项
         tabSize: 4,
@@ -227,6 +241,11 @@ export default {
   },
 
   methods: {
+    // 处理命名空间分页
+    handleConfigmapCurrentChange(page) {
+      this.currentConfigmaps = this.configMaps.slice((page - 1) * 6, page * 6);
+    },
+
     // 编辑器方法
     /* yaml */
     onYamlCmReady(cm) {
@@ -256,6 +275,8 @@ export default {
         .then((res) => {
           console.log(res);
           this.configMaps = res.data;
+          this.totalConfigmap = res.data.length;
+          this.currentConfigmaps = res.data.slice(0, 6);
           this.loading = false;
         })
         .catch((error) => {
@@ -337,7 +358,7 @@ export default {
 
     /* 删除 ConfigMap */
     delConfigMap: function (name, namespace) {
-      this.$confirm("确认删除 configMap", {
+      this.$confirm("确认删除 配置字典", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
