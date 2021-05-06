@@ -4,7 +4,7 @@
  * @Author: Bernie
  * @Date: 2021-04-12 10:43:03
  * @LastEditors: Bernie
- * @LastEditTime: 2021-04-29 10:25:55
+ * @LastEditTime: 2021-04-29 15:49:07
 -->
 <!--
  * @Description: your project
@@ -221,7 +221,7 @@ export default {
     },
 
     // 提交修改
-    commitYamlChange(crdName) {
+    commitYamlChange() {
      let data = {
         codeyaml: this.codeYaml,
         crdname: sessionStorage.getItem("crdName"),
