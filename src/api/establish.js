@@ -4,14 +4,15 @@
  * @Author: zqy
  * @Date: 2021-04-26 12:23:55
  * @LastEditors: zqy
- * @LastEditTime: 2021-04-29 22:56:08
+ * @LastEditTime: 2021-05-07 22:15:13
  */
 import request from '@/utils/request'
 let baseUrl = "http://localhost:8081"
 
-export function createResourceByFile(data) {
+export function createPodFromForm(data) {
+    console.log(data);
     return request({
-        url: baseUrl + "/establish/file2",
+        url: baseUrl + "/establish/createPodFromForm",
         method: 'post',
         data: data
     })
@@ -19,7 +20,7 @@ export function createResourceByFile(data) {
 export function createPodFromYamlFile(data) {
     console.log(data)
     return request({
-        url: baseUrl + "/pods/createPodFromYamlFile",
+        url: baseUrl + "/establish/createPodFromYamlFile",
         method: "post",
         headers: {
             'Content-Type': 'multipart/form-data'//可以不加 说明表单里传的是文件

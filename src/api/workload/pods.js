@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-22 17:20:47
  * @LastEditors: zqy
- * @LastEditTime: 2021-04-27 10:52:12
+ * @LastEditTime: 2021-05-06 18:57:23
  */
 import request from '@/utils/request'
 let baseUrl = "http://localhost:8081"
@@ -69,9 +69,7 @@ export function createPodFromForm(data) {
   return request({
     url: baseUrl + '/pods/createPodFromForm',
     method: 'post',
-    params: {
-      podForm: data,
-    }
+    data: data,
     // params: {
     //   pod: 
       // name: data.baseImformation.name,

@@ -4,9 +4,9 @@
  * @Author: zqy
  * @Date: 2021-04-26 12:21:50
  * @LastEditors: zqy
- * @LastEditTime: 2021-04-29 22:56:44
+ * @LastEditTime: 2021-05-06 18:44:50
  */
-import { createResourceByFile, createPodFromYamlFile } from '@/api/establish'
+import { createPodFromForm, createPodFromYamlFile } from '@/api/establish'
 import { getToken } from '@/utils/auth'
 
 const getDefaultState = () => {
@@ -23,9 +23,9 @@ const mutations = {
 
 const actions = {
     //从输入创建资源
-    createResourceByFile({ commit }, yamlFile) {
+    createPodFromForm({ commit }, podForm) {
         return new Promise((resolve, reject) => {
-            createResourceByFile(yamlFile).then(response => {
+            createPodFromForm(podForm).then(response => {
                 const { data } = response
                 if (!data) {
                     return reject('创建失败')

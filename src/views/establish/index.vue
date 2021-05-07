@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: zqy
- * @LastEditTime: 2021-04-29 23:14:08
+ * @LastEditTime: 2021-05-07 22:15:44
 -->
 <template>
   <div>
@@ -165,7 +165,7 @@
               >
               </el-input>
             </el-form-item>
-            <el-form-item label="标签" prop="labels">
+            <el-form-item label="标签" >
               <List
                 item-layout="horizontal"
                 :split="false"
@@ -178,7 +178,7 @@
                       size="medium"
                       placeholder="键"
                       suffix-icon="el-icon-key"
-                      v-model="seniorInformation.labels[count - 1].key"
+                      v-model="seniorInformation.labelsKeys[count - 1]"
                       @change="labelDetailedChange"
                     >
                     </el-input>
@@ -188,7 +188,7 @@
                       size="medium"
                       placeholder="值"
                       suffix-icon="el-icon-thumb"
-                      v-model="seniorInformation.labels[count - 1].value"
+                      v-model="seniorInformation.labelsValues[count - 1]"
                       @change="labelDetailedChange"
                     >
                     </el-input>
@@ -213,6 +213,15 @@
                   controls-position="right"
                 ></el-input-number>
               </el-form-item>
+              <el-form-item label="单位">
+                <el-select
+                  v-model="seniorInformation.cpuUnit"
+                  placeholder="请选单位"
+                >
+                  <el-option label="核" value=""></el-option>
+                  <el-option label="m" value="m"></el-option>
+                </el-select>
+              </el-form-item>
             </el-form>
             <el-form :inline="true" :label-position="'top'">
               <el-form-item label="Memory最低需求">
@@ -230,6 +239,15 @@
                   label="Memory最高限制"
                   controls-position="right"
                 ></el-input-number>
+              </el-form-item>
+              <el-form-item label="单位">
+                <el-select
+                  v-model="seniorInformation.memoryUnit"
+                  placeholder="请选单位"
+                >
+                  <el-option label="Gi" value="Gi"></el-option>
+                  <el-option label="Mi" value="Mi"></el-option>
+                </el-select>
               </el-form-item>
             </el-form>
             <el-form-item label="镜像拉取密钥" prop="secret">
@@ -251,7 +269,7 @@
                 ></el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="运行命令" prop="command">
+            <el-form-item label="运行命令" prop="commands">
               <el-input
                 type="textarea"
                 :autosize="{ minRows: 2, maxRows: 4 }"
@@ -269,7 +287,7 @@
               >
               </el-input>
             </el-form-item>
-            <el-form-item label="环境变量" prop="env">
+            <el-form-item label="环境变量" >
               <List
                 item-layout="horizontal"
                 :split="false"
@@ -282,7 +300,7 @@
                       size="medium"
                       placeholder="键"
                       suffix-icon="el-icon-key"
-                      v-model="seniorInformation.env[count - 1].key"
+                      v-model="seniorInformation.envKeys[count - 1]"
                       @change="envDetailedChange"
                     >
                     </el-input>
@@ -292,7 +310,7 @@
                       size="medium"
                       placeholder="值"
                       suffix-icon="el-icon-thumb"
-                      v-model="seniorInformation.env[count - 1].value"
+                      v-model="seniorInformation.envValues[count - 1]"
                       @change="envDetailedChange"
                     >
                     </el-input>
@@ -340,38 +358,7 @@
         <el-tab-pane>
           <span slot="label"><i class="el-icon-folder"></i>从文件创建</span>
 
-          <html>
-            <head>
-              <meta charset="UTF-8" />
-              <!-- <script src="js/jquery-3.2.1.min.js"></script>
-              <script src="js/test.js"></script> -->
-              <title>文件上传</title>
-              <!-- <style>
-                .myBtn {
-                  padding: 5px 10px;
-                  background: rgb(92, 184, 92);
-                  color: white;
-                  outline: none;
-                  border: none;
-                  border-radius: 5px;
-                  cursor: pointer;
-                }
-              </style> -->
-            </head>
-            <body>
-              <input
-                type="file"
-                id="file"
-                style="display: none"
-                onchange="upload(this)"
-              />
-              <button class="myBtn" onclick="fileBtn()">上传文件</button>
-
-              <img src="" id="img" style="width: 200px" />
-            </body>
-          </html>
-
-          <el-upload
+          <!-- <el-upload
             style="display: inline-block"
             :limit="uploadFileLimit"
             class="upload-demo"
@@ -393,7 +380,7 @@
               @click="submitUpload"
               >导入</el-button
             >
-          </el-upload>
+          </el-upload> -->
 
           <el-upload
             class="upload-demo"
@@ -401,7 +388,7 @@
             action
             multiple
             :show-file-list="true"
-            :auto-upload="false"
+            :auto-upload="true"
             :limit="uploadFileLimit"
             :name="fileName"
             :file-list="fileList"
@@ -416,13 +403,13 @@
             </div>
           </el-upload>
           <br/>
-          <el-button
+          <!-- <el-button
               style="margin-left: 10px"
               icon="el-icon-upload2"
               type="primary"
               @click="uploadSectionFile"
               >导入</el-button
-            >
+            > -->
         </el-tab-pane>
       </el-tabs>
     </el-card>
@@ -514,26 +501,20 @@ export default {
       //高级选项
       seniorInformation: {
         annotations: "",
-        labels: [
-          {
-            key: "",
-            value: "",
-          },
-        ],
+        labelsKeys: [""],
+        labelsValues: [""],
         labelsCount: 1,
         secret: "",
         cpuRequire: 0,
         cpuLimit: 0,
+        cpuUnit: "",
         memoryRequire: 0,
         memoryLimit: 0,
-        command: "",
+        memoryUnit: "Mi",
+        commands: "",
         args: "",
-        env: [
-          {
-            key: "",
-            value: "",
-          },
-        ],
+        envKeys: [""],
+        envValues: [""],
         envCount: 1,
       },
       secretLoading: false,
@@ -576,7 +557,7 @@ export default {
       // },
 
       /**上传文件部分 */
-      uploadFileLimit: 2,
+      uploadFileLimit: 5,
       fileList: [],
       fileName: "pod.yaml",
     };
@@ -632,28 +613,20 @@ export default {
     // label 和 env 的数量监控
     labelDetailedChange() {
       if (
-        this.seniorInformation.labels[this.seniorInformation.labelsCount - 1]
-          .key != "" &&
-        this.seniorInformation.labels[this.seniorInformation.labelsCount - 1]
-          .value != "" &&
-        this.seniorInformation.labels[this.seniorInformation.labelsCount - 1]
-          .key != null &&
-        this.seniorInformation.labels[this.seniorInformation.labelsCount - 1]
-          .value != null
+        this.seniorInformation.labelsKeys[this.seniorInformation.labelsCount - 1]
+          != "" &&
+        this.seniorInformation.labelsValues[this.seniorInformation.labelsCount - 1]
+          != "" 
       ) {
         this.addLabelsList();
       }
     },
     envDetailedChange() {
       if (
-        this.seniorInformation.env[this.seniorInformation.envCount - 1].key !=
+        this.seniorInformation.envKeys[this.seniorInformation.envCount - 1] !=
           "" &&
-        this.seniorInformation.env[this.seniorInformation.envCount - 1].value !=
-          "" &&
-        this.seniorInformation.env[this.seniorInformation.envCount - 1].key !=
-          null &&
-        this.seniorInformation.env[this.seniorInformation.envCount - 1].value !=
-          null
+        this.seniorInformation.envValues[this.seniorInformation.envCount - 1] !=
+          "" 
       ) {
         this.addEnvList();
       }
@@ -661,17 +634,13 @@ export default {
     //增加 label 和 env 列表
     addLabelsList() {
       this.seniorInformation.labelsCount += 1;
-      this.seniorInformation.labels.push({
-        key: "",
-        value: "",
-      });
+      this.seniorInformation.labelsKeys.push("");
+      this.seniorInformation.labelsValues.push("");
     },
     addEnvList() {
       this.seniorInformation.envCount += 1;
-      this.seniorInformation.env.push({
-        key: "",
-        value: "",
-      });
+      this.seniorInformation.envKeys.push("");
+      this.seniorInformation.envValues.push("");
     },
 
     /**Secret 部分 */
@@ -712,25 +681,36 @@ export default {
     },
     //提交并创建Pod
     submitPod() {
-      //整合数据
-
-      let podImformation = {
-        name: this.baseInformation.name,
-        namespace: this.baseInformation.namespace,
-        // labels: this.seniorInformation.labels,
-        // annotations: this.seniorInformation.annotations,
-        // secretName:
-        // image: this.baseInformation.image,
-        // imagePullPolicy:
-        // command:
-        // args:
-        cpuLimit: this.seniorInformation.cpuLimit.toString(),
-        cpuRequest: this.seniorInformation.cpuRequire.toString(),
-        memoryLimit: this.seniorInformation.memoryLimit.toString(),
-        memoryRequest: this.seniorInformation.memoryRequire.toString(),
-        // envVar: [],
-        // amount: this.baseInformation.number,
-      };
+      let podForm = new FormData();
+      podForm.append("name", this.baseInformation.name);
+      podForm.append("namespace",this.baseInformation.namespace);
+      podForm.append("labelsKeys", this.seniorInformation.labelsKeys.splice(0, this.seniorInformation.labelsKeys.length - 1));
+      podForm.append("labelsValues", this.seniorInformation.labelsValues.splice(0,  this.seniorInformation.labelsValues.length - 1));
+      let annotations = this.seniorInformation.annotations.split("\n");
+      let annotationsKeys = [];
+      let annotationsValues = [];
+      for(let index in annotations){
+        let tmp = annotations[index].split(':');
+        if(tmp.length == 2){
+          annotationsKeys.push(tmp[0]);
+          annotationsValues.push(tmp[1]);
+        }
+      }
+      podForm.append("annotationsKeys", annotationsKeys);
+      podForm.append("annotationsValues", annotationsValues);
+      podForm.append("image", this.baseInformation.image);
+      podForm.append("imagePullPolicy", this.baseInformation.imagePullPolicy);
+      podForm.append("commands", this.seniorInformation.commands.split('\n'));
+      podForm.append("args", this.seniorInformation.args.split('\n'));
+      podForm.append("cpuLimit", this.seniorInformation.cpuLimit.toString() + this.seniorInformation.cpuUnit);
+      podForm.append("cpuRequest", this.seniorInformation.cpuRequire.toString() + this.seniorInformation.cpuUnit);
+      podForm.append("memoryLimit", this.seniorInformation.memoryLimit.toString() + this.seniorInformation.memoryUnit);
+      podForm.append("memoryRequest", this.seniorInformation.memoryRequire.toString() + this.seniorInformation.memoryUnit);
+      console.log(this.seniorInformation.cpuLimit.toString() + this.seniorInformation.cpuUnit);
+      console.log(this.seniorInformation.memoryRequire.toString() + this.seniorInformation.memoryUnit);
+      podForm.append("envKeys", this.seniorInformation.envKeys.splice(0, this.seniorInformation.envKeys.length - 1));
+      podForm.append("envValues", this.seniorInformation.envValues.splice(0, this.seniorInformation.envValues.length - 1));
+      podForm.append("amount", this.baseInformation.number);
       this.$confirm("确认修改？", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
@@ -738,8 +718,9 @@ export default {
       })
         .then(() => {
           this.$store
-            .dispatch("pods/createPodFromForm", podImformation)
+            .dispatch("establish/createPodFromForm", podForm)
             .then((res) => {
+              this.resetPodInformation();
               console.log(res);
               switch (res.code) {
                 case 1200:
@@ -747,13 +728,8 @@ export default {
                   // this.addDialogVisible = false;
                   break;
                 case 1201:
-                  this.$message.error("创建失败，请查看云平台相关错误信息");
+                  this.$message.error("创建失败，请查看是否重名");
                   this.addDialogVisible = false;
-                  break;
-                case 1202:
-                  this.$message.error(
-                    "添加失败，请查看 yaml 文件格式，命名空间必须指定"
-                  );
                   break;
                 default:
                   this.$message.info("提交成功");
@@ -784,26 +760,20 @@ export default {
       };
       this.seniorInformation = {
         annotations: "",
-        labels: [
-          {
-            key: "",
-            value: "",
-          },
-        ],
+        labelsKeys: [""],
+        labelsValues: [""],
         labelsCount: 1,
         secret: "",
         cpuRequire: 0,
         cpuLimit: 0,
+        cpuUnit: "",
         memoryRequire: 0,
         memoryLimit: 0,
-        command: "",
+        memoryUnit: "Mi",
+        commands: "",
         args: "",
-        env: [
-          {
-            key: "",
-            value: "",
-          },
-        ],
+        envKeys: [""],
+        envValues: [""],
         envCount: 1,
       };
     },
