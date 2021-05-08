@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: Bernie
- * @LastEditTime: 2021-04-29 10:31:53
+ * @LastEditTime: 2021-05-07 11:06:11
 -->
 <template>
   <div>
@@ -13,7 +13,7 @@
         <span>所有 CRD</span>
       </div>
 
-      <el-table :data="customResourceDefinition" style="width: 100%" stripe>
+      <el-table :data="customResourceDefinition" style="width: 100%" stripe v-loading="loading" element-loading-text="获取数据中...">
         <!--<el-table-column width="40">
           <template slot-scope="scope">
             <svg-icon :icon-class="scope.row.status.conditions[1].status == 'True'? 'load-success': scope.row.status.conditions[1].status == 'Unknown'?'load-doubt':'load-failed'"/>
@@ -90,9 +90,19 @@
           </template>
         </el-table-column>
       </el-table>
+      <el-pagination
+        background
+        @current-change="handleCurrentChange"
+        :current-page="1"
+        :page-size="6"
+        layout="total, prev, pager, next, jumper"
+        :total="total"
+      >
+      </el-pagination>
     </el-card>
+    
 
-      <!-- 编辑框 -->
+    <!-- 编辑框 -->
     <el-dialog
       title="编辑 CRD"
       :visible.sync="editDialogVisible"
@@ -150,6 +160,10 @@ export default {
   data() {
     return {
       customResourceDefinition: [],
+      total: 0, // 总 pod 数
+      currentCrd: [], // 当前页面的事件
+
+
       objects: [],
       value: "", // 选择框的值
       loading: true, // 获取数据中
@@ -187,6 +201,11 @@ export default {
   },
 
   methods: {
+
+    // 处理分页
+    handleCurrentChange(page) {
+      this.currentCrd = this.customResourceDefinition.slice((page - 1) * 6, page * 6);
+    },
     // 编辑器方法
     /* yaml */
     onYamlCmReady(cm) {
@@ -220,14 +239,13 @@ export default {
       //console.log("this is new code", newCode);
       this.codeJSON = newCode;
     },
-     /* 编辑部分 */
+    /* 编辑部分 */
     showCrdEditDialog(name) {
-     
       // 获取 yaml 格式
       this.$store
         .dispatch("customize/getCrdYamlByName", name)
         .then((res) => {
-           console.log(res);
+          console.log(res);
           // let json = JSON.stringify(res.data);
           // this.codeJSON = this.beautify(json, {
           //   indent_size: 4,
@@ -257,7 +275,6 @@ export default {
 
       //this.editForm = res; // 查询结果写入表单
     },
-
 
     // 提交修改
     commitYamlChange() {
@@ -303,32 +320,30 @@ export default {
       }, 1);
     },
 
-     /* 删除 Pod */
+    /* 删除 Pod */
     delCrd: function (name) {
       this.$confirm("确认删除 CRD？", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
-      }).then(() => {
-        this.$store
-          .dispatch("customize/delCrd", name)
-          .then((res) => {
-            if(res.code == 1200) {
-              this.$message.success("删除成功");
-              this.getCustomResourceDefinition();
-            } else {
-              this.$message.error("删除失败");
-            }
-          })
-          .catch((error) => {
-            throw error;
-          });
-      }).catch(()=>{
-
-      });
+      })
+        .then(() => {
+          this.$store
+            .dispatch("customize/delCrd", name)
+            .then((res) => {
+              if (res.code == 1200) {
+                this.$message.success("删除成功");
+                this.getCustomResourceDefinition();
+              } else {
+                this.$message.error("删除失败");
+              }
+            })
+            .catch((error) => {
+              throw error;
+            });
+        })
+        .catch(() => {});
     },
-
-    
 
     // 获取所有 CRD
     getCustomResourceDefinition() {
@@ -337,6 +352,9 @@ export default {
         .then((res) => {
           console.log(res.data);
           this.customResourceDefinition = res.data;
+          this.total = res.data.length;
+          this.currentCrd = res.data.slice(0, 6);
+          this.loading = false;
         })
         .catch((error) => {
           console.log(error);
