@@ -3,8 +3,13 @@
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
+<<<<<<< HEAD
  * @LastEditors: Bernie
  * @LastEditTime: 2021-05-07 11:29:23
+=======
+ * @LastEditors: zqy
+ * @LastEditTime: 2021-04-27 22:04:50
+>>>>>>> 00560973b5f944cbe14c2a03f5ac850fca7e696c
 -->
 <!--<template>
   <h1>Jobs</h1>
@@ -14,7 +19,7 @@
     <!-- Job 主体部分 -->
     <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <span>所有 Job</span>
+        <span>所有 任务</span>
       </div>
       <el-row :gutter="20">
         <el-col :span="5">
@@ -58,7 +63,7 @@
           </el-button>
         </el-col> -->
       </el-row>
-      <el-table :data="jobs" style="width: 100%" stripe>
+      <el-table :data="jobsInCurrentPage" style="width: 100%" stripe>
         <el-table-column width="40">
           <template slot-scope="scope">
           <svg-icon :icon-class="scope.row.status == '1'? 'load-success': 'load-failed'"/>
@@ -158,6 +163,14 @@
           </template>
         </el-table-column>
       </el-table>
+      <el-pagination
+        @current-change="handleCurrentChange"
+        :current-page="currentPage"
+        :page-size="pageSize"
+        layout=" prev, pager, next, jumper, ->, total, slot"
+        :total="jobsAmount"
+      >
+      </el-pagination>
     </el-card>
 
     <!-- Job 编辑框 -->
@@ -216,6 +229,10 @@ export default {
 
   data() {
     return {
+      jobsAmount: 0, //Jobs 总数
+      currentPage: 1, //分页绑定当前页
+      jobsInCurrentPage: [], //页面中的 Jobs
+      pageSize: 6, //一页显示数量
       namespaces: [],
       jobs: [],
       loading: true, // 获取数据中
@@ -269,8 +286,10 @@ export default {
       this.$store
         .dispatch("jobs/getAllJobs", namespace)
         .then((res) => {
-          console.log("sssssssssss\n", res.data);
+          console.log(res.data);
           this.jobs = res.data;
+          this.jobsAmount = this.jobs.length;
+          this.jobsInCurrentPage = this.jobs.slice(0, this.pageSize);
         })
         .catch((error) => {
           console.log("333333错了", error);
@@ -434,6 +453,15 @@ export default {
       setTimeout(() => {
         this.codemorror.refresh();
       }, 1);
+    },
+
+    //分页事件
+    handleCurrentChange(currentPage) {
+      this.currentPage = currentPage;
+      this.jobsInCurrentPage = this.jobs.slice(
+        (this.currentPage - 1) * this.pageSize,
+        this.currentPage * this.pageSize
+      );
     },
   },
 };

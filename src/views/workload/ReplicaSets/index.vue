@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: zqy
- * @LastEditTime: 2021-04-16 22:35:52
+ * @LastEditTime: 2021-04-27 22:05:37
 -->
 <!--<template>
   <h1>Replication Controllers</h1>
@@ -14,7 +14,7 @@
     <!-- 主体部分 -->
     <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <span>所有 ReplicaSet</span>
+        <span>所有 副本集</span>
       </div>
       <el-row :gutter="20">
         <el-col :span="5">
@@ -58,7 +58,7 @@
           </el-button>
         </el-col> -->
       </el-row>
-      <el-table :data="replicaSets" style="width: 100%" stripe>
+      <el-table :data="replicaSetsInCurrentPage" style="width: 100%" stripe>
         <el-table-column width="40">
           <template slot-scope="scope">
             <svg-icon :icon-class="scope.row.status == '1'? 'load-success': 'load-failed'"/>
@@ -133,6 +133,14 @@
           </template>
         </el-table-column>
       </el-table>
+      <el-pagination
+        @current-change="handleCurrentChange"
+        :current-page="currentPage"
+        :page-size="pageSize"
+        layout=" prev, pager, next, jumper, ->, total, slot"
+        :total="replicaSetsAmount"
+      >
+      </el-pagination>
     </el-card>
 
     <!-- ReplicaSet 编辑框 -->
@@ -192,6 +200,10 @@ export default {
 
   data() {
     return {
+      replicaSetsAmount: 0, //ReplicaSets 总数
+      currentPage: 1, //分页绑定当前页
+      replicaSetsInCurrentPage: [], //页面中的 ReplicaSets
+      pageSize: 6, //一页显示数量
       namespaces: [],
       replicaSets: [],
       loading: true, // 获取数据中
@@ -235,6 +247,8 @@ export default {
         .then((res) => {
           console.log(res.data);
           this.replicaSets = res.data;
+          this.replicaSetsAmount = this.replicaSets.length;
+          this.replicaSetsInCurrentPage = this.replicaSets.slice(0, this.pageSize);
         })
         .catch((error) => {
           console.log(error);
@@ -383,6 +397,15 @@ export default {
             });
         })
         .catch(() => {});
+    },
+
+    //分页事件
+    handleCurrentChange(currentPage) {
+      this.currentPage = currentPage;
+      this.replicaSetsInCurrentPage = this.replicaSets.slice(
+        (this.currentPage - 1) * this.pageSize,
+        this.currentPage * this.pageSize
+      );
     },
   },
 };

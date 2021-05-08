@@ -3,14 +3,14 @@
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
- * @LastEditors: Rex Joush
- * @LastEditTime: 2021-04-19 14:26:33
+ * @LastEditors: zqy
+ * @LastEditTime: 2021-04-28 12:16:13
 -->
 <template>
   <div>
     <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <span>所有容器组</span>
+        <span>所有 容器组</span>
       </div>
       <el-row :gutter="20">
         <el-col :span="6">

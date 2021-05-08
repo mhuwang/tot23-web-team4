@@ -107,7 +107,7 @@
         </div>
         <div class="metadata-item">
           <p>暂停</p>
-          <span>{{ cronJob.spec.suspend }}</span>
+          <span>{{ cronJob.spec.suspend === false ? "否" : "是"}}</span>
         </div>
         <div class="metadata-item">
           <p>上次调度</p>
