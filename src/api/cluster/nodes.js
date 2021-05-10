@@ -4,10 +4,10 @@
  * @Author: Rex Joush
  * @Date: 2021-03-25 20:42:46
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-04-13 19:42:59
+ * @LastEditTime: 2021-05-10 18:45:36
  */
 import request from '@/utils/request'
-let baseUrl = "http://localhost:8081"
+let baseUrl = require("../api").baseurl;
 
 export function getAllNodes(data) {
   return request({

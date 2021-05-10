@@ -7,7 +7,7 @@
  * @LastEditTime: 2021-04-15 20:47:27
  */
 import request from "@/utils/request";
-let baseUrl = "http://localhost:8081"
+let baseUrl = require("../api").baseurl;
 
 export function getAllReplicaSets(data) {
   return request({

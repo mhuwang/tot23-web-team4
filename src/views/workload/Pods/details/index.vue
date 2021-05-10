@@ -2,9 +2,9 @@
  * @Description: your project
  * @version: 1.0
  * @Author: Rex Joush
- * @Date: 2021-04-02 14:00:48
+ * @Date: 2021-05-10 20:38:09
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-04-17 12:58:38
+ * @LastEditTime: 2021-05-10 20:38:10
 -->
 <template>
   <div>
@@ -378,7 +378,6 @@ export default {
       }
       return labelArr;
     },
-
     // 元数据下的注释
     annotations() {
       let annoArr = [];
@@ -390,7 +389,6 @@ export default {
       }
       return annoArr;
     },
-
     // 资源信息下的地址
     addressess() {
       let addrArr = [];
@@ -406,7 +404,6 @@ export default {
   },
   mounted: function () {
     /* name */
-
     // 为空，直接存储
     if (sessionStorage.getItem("podName") == null) {
       sessionStorage.setItem("podName", this.$store.state.pods.pod.podName);
@@ -420,7 +417,6 @@ export default {
       sessionStorage.setItem("podName", this.$store.state.pods.pod.podName);
       this.podName = this.$store.state.pods.pod.podName;
     }
-
     /* namespace */
     // 为空，直接存储
     if (sessionStorage.getItem("podNamespace") == null) {
@@ -442,12 +438,10 @@ export default {
       );
       this.podNamespace = this.$store.state.pods.pod.podNamespace;
     }
-
     let podDetails = {
       podName: sessionStorage.getItem("podName"),
       podNamespace: sessionStorage.getItem("podNamespace"),
     };
-
     this.$store
       .dispatch("pods/getPodByNameAndNamespace", podDetails)
       .then((res) => {
@@ -475,7 +469,6 @@ export default {
         // 格式化时间数据
         timeArr.push(this.usage[i].time.substring(11, 16));
       }
-
       // 配置 cpu 图表项
       let optionCpu = {
         title: {
@@ -534,7 +527,6 @@ export default {
           },
         ],
       };
-
       let cpuDom = document.getElementById("cpu-usage");
       // console.log(cpuDom);
       let memoryDom = document.getElementById("memory-usage");
@@ -583,20 +575,17 @@ export default {
   text-align: center;
   border-radius: 10px;
 }
-
 #cpu-usage,
 #memory-usage {
   width: 100%;
   height: 250px;
 }
-
 .my-card {
   & p {
     display: inline-block;
     font-size: 18px;
     text-align: center;
   }
-
   & .my-list {
     text-align: center;
     margin: 0 auto;
@@ -606,25 +595,21 @@ export default {
     }
   }
 }
-
 // 元数据
 .metadata-item {
   margin: 0 30px 0 0;
   display: inline-block;
   padding: 10px 10px;
-
   // 小标题
   & p {
     font-size: 14px;
     color: #909399;
   }
-
   // 小标题下的内容
   & span {
     font-size: 20px;
     color: #303133;
   }
-
   // 标签列表
   & li {
     display: inline-block;

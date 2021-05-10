@@ -3,11 +3,11 @@
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-03-22 17:20:47
- * @LastEditors: zqy
- * @LastEditTime: 2021-05-06 18:57:23
+ * @LastEditors: Rex Joush
+ * @LastEditTime: 2021-05-10 18:44:32
  */
 import request from '@/utils/request'
-let baseUrl = "http://localhost:8081"
+let baseUrl = require("../api").baseurl;
 
 export function getAllPods(data) {
   return request({

@@ -7,7 +7,7 @@
  * @LastEditTime: 2021-04-28 10:05:22
  */
 import request from '@/utils/request'
-let baseUrl = "http://localhost:8081"
+let baseUrl = require("../api").baseurl;
 
 export function getAllSecrets(data) {
   return request({

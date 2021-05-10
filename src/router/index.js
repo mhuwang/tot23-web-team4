@@ -3,11 +3,8 @@
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-03-10 15:03:17
-<<<<<<< HEAD
-=======
- * @LastEditors: Bernie
- * @LastEditTime: 2021-04-29 10:28:39
->>>>>>> d2cc4104d629449534f1eaa0131152dcce57b092
+ * @LastEditors: Rex Joush
+ * @LastEditTime: 2021-05-10 20:31:54
  */
 import Vue from 'vue'
 import Router from 'vue-router'
@@ -175,6 +172,14 @@ export const constantRoutes = [
         meta: { title: '容器组详情', noCache: true, activeMenu: '/pods'},
         hidden: true
 
+      },
+      // pod 详情
+      {
+        path: 'pods/:name([a-z0-9-]+)',
+        component: () => import('@/views/workload/Pods/details/index'),
+        name: 'Pods 详情',
+        meta: { title: 'Pods Details', noCache: true, activeMenu: '/pods'},
+        hidden: true
       },
       {
         path: 'replicasets',

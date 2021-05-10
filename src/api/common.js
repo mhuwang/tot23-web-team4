@@ -5,7 +5,7 @@
  * @Date: 2021-04-07 20:10:50
  */
 import request from '@/utils/request'
-let baseUrl = "http://localhost:8081"
+let baseUrl = require("./api").baseurl;
 
 export function changeResourceByYaml(data) {
   return request({

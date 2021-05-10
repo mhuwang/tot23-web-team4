@@ -7,7 +7,7 @@
  * @LastEditTime: 2021-04-17 11:21:54
  */
 import request from '@/utils/request'
-let baseUrl = "http://localhost:8081"
+let baseUrl = require("./api").baseurl;
 
 export function getAllEdgeNodes() {
   return request({

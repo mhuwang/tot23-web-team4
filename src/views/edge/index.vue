@@ -3,8 +3,8 @@
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-03-17 19:37:28
- * @LastEditors: Bernie
- * @LastEditTime: 2021-04-29 10:39:19
+ * @LastEditors: Rex Joush
+ * @LastEditTime: 2021-05-10 20:14:25
 -->
 <template>
   <div>
@@ -55,9 +55,9 @@
         <el-table-column prop="status.conditions[0].status" label="准备就绪">
           <template slot-scope="scope">
             {{
-              scope.row.status == "True"
+              scope.row.status.conditions[0].status == "True"
                 ? "就绪"
-                : scope.row.status == "Unknown"
+                : scope.row.status.conditions[0].status == "Unknown"
                 ? "未知"
                 : "失败"
             }}
@@ -137,9 +137,9 @@
          <template slot-scope="">
             <a
               style="color: #409eff; text-decoration: underline"
-              href="http://kubeedge-demo.mc.com"
+              href="http://kubeedge-counter-app.mc.com"
               target="_blank"
-              >{{ "kubeedge-demo.mc.com" }}</a
+              >{{ "kubeedge-counter-app.mc.com" }}</a
             >
           </template>
         </el-table-column>
@@ -405,7 +405,7 @@ export default {
                   self.$store.dispatch("edge/toDetails", params.value);
                   self.$router.push("/edge/edgenodes/" + params.value);
                 } else if (params.name === "Device") {
-                  window.location.href = "http://172.18.7.17:8089";
+                  window.location.href = "http://172.18.7.19:8089";
                 } else {
                   let podDetails = {
                     podName: params.value,

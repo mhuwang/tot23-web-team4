@@ -3,8 +3,8 @@
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-03-25 22:13:37
- * @LastEditors: Leo
- * @LastEditTime: 2021-04-16 10:42:54
+ * @LastEditors: Rex Joush
+ * @LastEditTime: 2021-05-10 20:23:42
 -->
 <template>
   <div>
@@ -375,7 +375,7 @@
         <el-table-column prop="phase" label="状态"> </el-table-column>
         <el-table-column align="center" prop="restartCount" label="重启次数">
         </el-table-column>
-        <el-table-column align="center" label="CPU 利用率" width="140">
+        <el-table-column align="center" label="CPU 利用量" width="140">
           <template slot-scope="scope">
             <!-- {{ scope.row.cpuUsage }} -->
             <div v-if="scope.row.cpuUsage != -1">
@@ -390,7 +390,7 @@
             <div class="usage-cpu-tag-failed" v-else>--</div>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="内存利用率" width="140">
+        <el-table-column align="center" label="内存利用量" width="140">
           <template slot-scope="scope">
             <!-- {{scope.row.memoryUsage == -1}} -->
             <div v-if="scope.row.memoryUsage != -1">

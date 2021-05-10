@@ -7,7 +7,7 @@
  * @LastEditTime: 2021-04-12 15:45:49
  */
 import request from '@/utils/request'
-let baseUrl = "http://localhost:8081"
+let baseUrl = require("../api").baseurl;
 
 export function getAllClusterRoles(data) {
   return request({

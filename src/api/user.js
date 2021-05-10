@@ -4,10 +4,10 @@
  * @Author: Rex Joush
  * @Date: 2021-03-19 16:14:56
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-03-30 17:08:39
+ * @LastEditTime: 2021-05-10 18:42:44
  */
 import request from '@/utils/request'
-let baseUrl = "http://localhost:8081"
+let baseUrl = require("./api").baseurl;
 
 export function login(data) {
   return request({

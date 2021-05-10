@@ -3,11 +3,11 @@
  * @version: 1.0
  * @Author: zqy
  * @Date: 2021.03.29 16:19
- * @LastEditors: zqy
- * @LastEditTime: 2021-04-15 22:49:47
+ * @LastEditors: Rex Joush
+ * @LastEditTime: 2021-05-10 18:43:59
  */
 import request from '@/utils/request'
-let baseUrl = "http://localhost:8081"
+let baseUrl = require("../api").baseurl;
 
 export function getAllStatefulSets(data) {
   return request({

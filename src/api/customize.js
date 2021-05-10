@@ -3,11 +3,11 @@
  * @version: 1.0
  * @Author: Bernie
  * @Date: 2021-03-29 17:51
- * @LastEditors: Bernie
- * @LastEditTime: 2021-04-20 16:47:06
+ * @LastEditors: Rex Joush
+ * @LastEditTime: 2021-05-10 18:43:02
  */
 import request from '@/utils/request'
-let baseUrl = "http://localhost:8081"
+let baseUrl = require("./api").baseurl;
 
 export function getCustomResourceDefinition(data) {
   return request({

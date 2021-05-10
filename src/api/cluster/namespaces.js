@@ -3,11 +3,11 @@
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-03-26 13:23:46
- * @LastEditors: Leo
- * @LastEditTime: 2021-04-14 20:40:57
+ * @LastEditors: Rex Joush
+ * @LastEditTime: 2021-05-10 18:44:59
  */
 import request from '@/utils/request'
-let baseUrl = "http://localhost:8081"
+let baseUrl = require("../api").baseurl;
 
 export function getAllNamespaces() {
   return request({

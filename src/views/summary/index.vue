@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-04-19 14:45:15
+ * @LastEditTime: 2021-05-10 20:40:26
 -->
 <template>
   <div>
@@ -361,7 +361,6 @@ import "codemirror/mode/javascript/javascript.js";
 import "codemirror/mode/yaml/yaml.js";
 // import theme style
 import "codemirror/theme/panda-syntax.css";
-
 export default {
   components: {},
   data() {
@@ -374,12 +373,10 @@ export default {
       namespaces: [],
       currentNamespaces: [],
       totalNamespace: 0,
-
       /* 集群角色部分 */
       clusterRoles: [],
       currentClusterRoles: [],
       totalClusterRoles: 0,
-
       /* 公共部分 */
       editDialogVisible: false,
       codeYaml: "", // 编辑框的 yaml 数据
@@ -393,7 +390,6 @@ export default {
       },
     };
   },
-
   // 初始化方法
   created: function () {
     this.getAllNodes();
@@ -403,7 +399,6 @@ export default {
   mounted: function () {
     this.initEchart();
   },
-
   methods: {
     // 初始化图
     initEchart: function () {
@@ -421,7 +416,6 @@ export default {
                 top: "top",
                 left: "center",
               },
-
               tooltip: {
                 formatter: (params) => {
                   if (params.dataType == "node") {
@@ -532,7 +526,6 @@ export default {
           throw error;
         });
     },
-
     // 编辑器方法
     /* yaml */
     onYamlCmReady(cm) {
@@ -540,11 +533,9 @@ export default {
         cm.refresh();
       }, 50);
     },
-
     onYamlCmCodeChange(newCode) {
       this.codeYaml = newCode;
     },
-
     // 获取 node 节点详情页
     goToNodeDetails: function (nodeName) {
       this.$store.dispatch("nodes/toDetails", nodeName);
@@ -569,7 +560,6 @@ export default {
           console.log(error);
         });
     },
-
     // 获取所有命名空间
     getAllNamespaces: function () {
       this.$store
@@ -584,12 +574,10 @@ export default {
           console.log(error);
         });
     },
-
     // 处理命名空间分页
     handleNamespaceCurrentChange(page) {
       this.currentNamespaces = this.namespaces.slice((page - 1) * 10, page * 10);
     },
-
     // 获取所有集群角色
     getAllClusterRoles: function () {
       this.$store
@@ -604,12 +592,10 @@ export default {
           console.log(error);
         });
     },
-
     // 处理集群角色分页
     handleClusterRolesCurrentChange(page) {
       this.currentClusterRoles = this.clusterRoles.slice((page - 1) * 10, page * 10);
     },
-
     /* 排序部分 */
     // 时间排序
     timeSort: function(row){
@@ -619,9 +605,7 @@ export default {
     nameSort: function(row){
       return row.name;
     },
-
     /* 编辑部分 */
-
     // 打开 node 编辑框
     showNodeEditDialog(name) {
       this.$store
@@ -635,7 +619,6 @@ export default {
           throw error;
         });
     },
-
     // 打开 namespace 编辑框
     showNamespaceEditDialog(name) {
       this.$store
@@ -662,7 +645,6 @@ export default {
           throw error;
         });
     },
-
     // 提交修改
     commitYamlChange() {
       this.$confirm("确认修改？", {
@@ -698,7 +680,6 @@ export default {
           console.log("cancel");
         });
     },
-
     /* 删除 namespace */
     delNamespace: function (name) {
       this.$confirm("确认删除 namespace", {
@@ -723,7 +704,6 @@ export default {
         })
         .catch(() => {});
     },
-
     /* 删除 clusterRole */
     delClusterRole: function (name) {
       this.$confirm("确认删除 clusterRole", {
@@ -749,7 +729,6 @@ export default {
         })
         .catch(() => {});
     },
-
     // 关闭添加或者修改框
     handleClose: function () {
       this.addYaml = "";
@@ -772,7 +751,6 @@ export default {
   color: #606266;
   font-size: 15px;
 }
-
 .my-progress {
   color: #000;
   & .el-progress-bar__outer {
@@ -785,12 +763,9 @@ export default {
     color: #1e212d !important;
   }
 }
-
 .el-card {
   width: 95%;
 }
-
-
 .el-table {
   margin-bottom: 15px;
   background: #f0f9eb;

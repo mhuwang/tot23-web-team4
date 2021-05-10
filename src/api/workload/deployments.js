@@ -7,7 +7,7 @@
  * @LastEditTime: 2021-04-16 22:27:15
  */
 import request from '@/utils/request'
-let baseUrl = "http://localhost:8081"
+let baseUrl = require("../api").baseurl;
 
 export function getAllDeployments(data) {
   return request({

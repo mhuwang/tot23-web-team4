@@ -7,7 +7,7 @@
  * @LastEditTime: 2021-04-14 21:23:28
  */
 import request from "@/utils/request"
-let baseUrl = "http://localhost:8081"
+let baseUrl = require("../api").baseurl;
 
 export function getAllJobs(data) {
   return request({

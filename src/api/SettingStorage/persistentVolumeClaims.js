@@ -3,11 +3,11 @@
  * @version: 1.0
  * @Author: Anna667
  * @Date:
- * @LastEditors: Anna667
- * @LastEditTime: 
+ * @LastEditors: Rex Joush
+ * @LastEditTime: 2021-05-10 18:43:34
  */
 import request from '@/utils/request'
-let baseUrl = "http://localhost:8081"
+let baseUrl = require("../api").baseurl;
 
 export function getAllPVC(data) {
   return request({
