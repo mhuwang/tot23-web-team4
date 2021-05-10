@@ -4,7 +4,7 @@
  * @Author: zqy
  * @Date: 2021.03.29 16:26
  * @LastEditors: zqy
- * @LastEditTime: 2021-04-15 22:49:08
+ * @LastEditTime: 2021-05-08 16:09:13
  */
 import { getAllStatefulSets, getStatefulSetYamlByNameAndNamespace, deleteStatefulSetByNameAndNamespace, getStatefulSetResources } from '@/api/workload/statefulSets'
 import { getToken } from '@/utils/auth'
@@ -26,7 +26,7 @@ const mutations = {
 const actions = {
   // getAllStatefulSets
   getAllStatefulSets({ commit }, namespace) {
-    console.log(namespace, "in store")
+    // console.log(namespace, "in store")
     return new Promise((resolve, reject) => {
       getAllStatefulSets(namespace).then(response => {
         const { data } = response

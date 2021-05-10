@@ -53,7 +53,7 @@ export function getCronJobYamlByNameAndNamespace(data) {
 }
 
 export function getCronJobResources(data) {
-  console.log(data, "in api");
+  // console.log(data, "in api");
   return request({
     url :baseUrl + '/cronJobs/getCronJobResources',
     method: 'get',
