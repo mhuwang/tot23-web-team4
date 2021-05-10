@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: zqy
- * @LastEditTime: 2021-04-27 21:58:57
+ * @LastEditTime: 2021-05-10 19:34:28
 -->
 <!--<template>-->
 <!--  <h1>Daemon Sets</h1>-->
@@ -171,7 +171,7 @@
             @input="onYamlCmCodeChange"
           />
         </el-tab-pane>
-        <el-tab-pane label="JSON" name="second">
+        <!-- <el-tab-pane label="JSON" name="second">
           <codemirror
             ref="cmYamlEditor"
             :value="codeJSON"
@@ -179,7 +179,7 @@
             @ready="onJSONCmReady"
             @input="onJSONCmCodeChange"
           />
-        </el-tab-pane>
+        </el-tab-pane> -->
       </el-tabs>
 
       <!-- <textarea style="width:100%" name="describe" id="pod" cols="30" rows="10">
@@ -218,21 +218,21 @@ export default {
       loading: true, // 获取数据中
       editDialogVisible: false, // 编辑详情框
       addDialogVisible: false, // 添加框详情
-      codeJSON: "", // 编辑框的 json 数据
+      // codeJSON: "", // 编辑框的 json 数据
       codeYaml: "", // 编辑框的 yaml 数据
       addYaml: "", // 添加框的 yaml 数据
       value: "",
-      cmOptions: {
-        // json codemirror 配置项
-        tabSize: 4,
-        mode: {
-          name: "javascript",
-          json: true,
-        },
-        theme: "panda-syntax",
-        lineNumbers: true,
-        line: true,
-      },
+      // cmOptions: {
+      //   // json codemirror 配置项
+      //   tabSize: 4,
+      //   mode: {
+      //     name: "javascript",
+      //     json: true,
+      //   },
+      //   theme: "panda-syntax",
+      //   lineNumbers: true,
+      //   line: true,
+      // },
       cmOptionsYaml: {
         // yaml codemirror 配置项
         tabSize: 4,
@@ -254,7 +254,7 @@ export default {
       this.$store
         .dispatch("daemonSets/getAllDaemonSets", namespace)
         .then((res) => {
-          console.log(res.data);
+          // console.log(res.data);
           this.daemonSets = res.data;
           this.daemonSetsAmount = this.daemonSets.length;
           this.daemonSetsInCurrentPage = this.daemonSets.slice(0, this.pageSize);
@@ -298,7 +298,7 @@ export default {
         )
         .then((res) => {
           this.codeYaml = res.data;
-          console.log("edit dialog init", this.codeYaml);
+          // console.log("edit dialog init", this.codeYaml);
           this.editDialogVisible = true; // 打开编辑对话框
         })
         .catch((error) => {

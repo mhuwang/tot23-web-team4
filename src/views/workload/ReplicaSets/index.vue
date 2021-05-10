@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: zqy
- * @LastEditTime: 2021-04-27 22:05:37
+ * @LastEditTime: 2021-05-08 10:01:17
 -->
 <!--<template>
   <h1>Replication Controllers</h1>
@@ -162,7 +162,7 @@
             @input="onYamlCmCodeChange"
           />
         </el-tab-pane>
-        <el-tab-pane label="JSON" name="second">
+        <!-- <el-tab-pane label="JSON" name="second">
           <codemirror
             ref="cmYamlEditor"
             :value="codeJSON"
@@ -170,7 +170,7 @@
             @ready="onJSONCmReady"
             @input="onJSONCmCodeChange"
           />
-        </el-tab-pane>
+        </el-tab-pane> -->
       </el-tabs>
 
       <!-- <textarea style="width:100%" name="describe" id="pod" cols="30" rows="10">
@@ -209,21 +209,21 @@ export default {
       loading: true, // 获取数据中
       editDialogVisible: false, // 编辑详情框
       addDialogVisible: false, // 添加框详情
-      codeJSON: "", // 编辑框的 json 数据
+      // codeJSON: "", // 编辑框的 json 数据
       codeYaml: "", // 编辑框的 yaml 数据
       addYaml: "", // 添加框的 yaml 数据
       value: "",
-      cmOptions: {
-        // json codemirror 配置项
-        tabSize: 4,
-        mode: {
-          name: "javascript",
-          json: true,
-        },
-        theme: "panda-syntax",
-        lineNumbers: true,
-        line: true,
-      },
+      // cmOptions: {
+      //   // json codemirror 配置项
+      //   tabSize: 4,
+      //   mode: {
+      //     name: "javascript",
+      //     json: true,
+      //   },
+      //   theme: "panda-syntax",
+      //   lineNumbers: true,
+      //   line: true,
+      // },
       cmOptionsYaml: {
         // yaml codemirror 配置项
         tabSize: 4,
@@ -245,7 +245,7 @@ export default {
       this.$store
         .dispatch("replicaSets/getAllReplicaSets", namespace)
         .then((res) => {
-          console.log(res.data);
+          // console.log(res.data);
           this.replicaSets = res.data;
           this.replicaSetsAmount = this.replicaSets.length;
           this.replicaSetsInCurrentPage = this.replicaSets.slice(0, this.pageSize);
@@ -286,7 +286,7 @@ export default {
         .dispatch("replicaSets/getReplicaSetYamlByNameAndNamespace", replicaSetDetails)
         .then((res) => {
           this.codeYaml = res.data;
-          console.log("edit dialog init", this.codeYaml);
+          // console.log("edit dialog init", this.codeYaml);
           this.editDialogVisible = true; // 打开编辑对话框
         })
         .catch((error) => {
@@ -390,7 +390,7 @@ export default {
               } else {
                 this.$message.error("删除失败");
               }
-              console.log(res.data);
+              // console.log(res.data);
             })
             .catch((error) => {
               console.log(error);

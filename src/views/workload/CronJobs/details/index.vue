@@ -47,7 +47,7 @@
           class="metadata-item"
         >
           <p>标签</p>
-          <li v-for="label in labels" :key="label">
+          <li v-for="(label, index) in labels" :key="index">
             <el-tag
               class="lebel-tag"
               effect="dark"
@@ -59,7 +59,6 @@
         </div>
         <br />
         <div
-          :annotation="this.annotation"
           v-if="annotations.length > 0"
           class="metadata-item"
         >
@@ -138,7 +137,7 @@
             />
           </template>
         </el-table-column>
-        <el-table-column prop="name" label="名称">
+        <el-table-column label="名称">
           <template slot-scope="scope">
             <router-link
               :to="{
@@ -347,7 +346,7 @@
             @input="onJobYamlCmCodeChange"
           />
         </el-tab-pane>
-        <el-tab-pane label="JSON" name="second">
+        <!-- <el-tab-pane label="JSON" name="second">
           <codemirror
             ref="cmYamlEditor"
             :value="codeJSON"
@@ -355,7 +354,7 @@
             @ready="onJSONCmReady"
             @input="onJSONCmCodeChange"
           />
-        </el-tab-pane>
+        </el-tab-pane> -->
       </el-tabs>
 
       <!-- <textarea style="width:100%" name="describe" id="pod" cols="30" rows="10">
@@ -392,21 +391,21 @@ export default {
       annoDialogVisible: false,
       annoDetails: "",
       jobEditDialogVisible: false, // 编辑详情框
-      codeJSON: "", // 编辑框的 json 数据
+      // codeJSON: "", // 编辑框的 json 数据
       jobCodeYaml: "", // 编辑框的 yaml 数据
       addYaml: "", // 添加框的 yaml 数据
 
-      cmOptions: {
-        // json codemirror 配置项
-        tabSize: 4,
-        mode: {
-          name: "javascript",
-          json: true,
-        },
-        theme: "panda-syntax",
-        lineNumbers: true,
-        line: true,
-      },
+      // cmOptions: {
+      //   // json codemirror 配置项
+      //   tabSize: 4,
+      //   mode: {
+      //     name: "javascript",
+      //     json: true,
+      //   },
+      //   theme: "panda-syntax",
+      //   lineNumbers: true,
+      //   line: true,
+      // },
       cmOptionsYaml: {
         // yaml codemirror 配置项
         tabSize: 4,
@@ -456,11 +455,11 @@ export default {
       name: this.name.split(",")[0],
       namespace: this.name.split(",")[1],
     };
-    console.log("CronJobDetailes.name and namespace =", nameAndNamespace, "="),
+    // console.log("CronJobDetailes.name and namespace =", nameAndNamespace, "="),
       this.$store
         .dispatch("cronJobs/getCronJobResources", nameAndNamespace)
         .then((res) => {
-          console.log(res);
+          // console.log(res);
           this.cronJob = res.data.cronJob;
           this.runningJobs = res.data.runningJobs;
           this.jobs = res.data.jods;
@@ -521,12 +520,10 @@ export default {
         name: name,
         namespace: namespace,
       };
-      console.log("获取值之前的yaml：\n", this.jobCodeYaml, "\n");
       // 获取 yaml 格式
       this.$store
         .dispatch("jobs/getJobYamlByNameAndNamespace", jobDetails)
         .then((res) => {
-          console.log("showJobEditDialog\n");
           this.jobCodeYaml = res.data;
           this.jobEditDialogVisible = true; // 打开编辑对话框
         })
@@ -630,7 +627,7 @@ export default {
               } else {
                 this.$message.error("删除失败");
               }
-              console.log(res.data);
+              // console.log(res.data);
             })
             .catch((error) => {
               console.log(error);

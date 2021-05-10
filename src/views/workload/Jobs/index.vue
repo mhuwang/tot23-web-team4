@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: zqy
- * @LastEditTime: 2021-04-27 22:04:50
+ * @LastEditTime: 2021-05-08 09:59:42
 -->
 <!--<template>
   <h1>Jobs</h1>
@@ -187,7 +187,7 @@
             @input="onYamlCmCodeChange"
           />
         </el-tab-pane>
-        <el-tab-pane label="JSON" name="second">
+        <!-- <el-tab-pane label="JSON" name="second">
           <codemirror
             ref="cmYamlEditor"
             :value="codeJSON"
@@ -195,7 +195,7 @@
             @ready="onJSONCmReady"
             @input="onJSONCmCodeChange"
           />
-        </el-tab-pane>
+        </el-tab-pane> -->
       </el-tabs>
 
       <!-- <textarea style="width:100%" name="describe" id="pod" cols="30" rows="10">
@@ -233,21 +233,21 @@ export default {
       loading: true, // 获取数据中
       editDialogVisible: false, // 编辑详情框
       addDialogVisible: false, // 添加框详情
-      codeJSON: "", // 编辑框的 json 数据
+      // codeJSON: "", // 编辑框的 json 数据
       codeYaml: "", // 编辑框的 yaml 数据
       addYaml: "", // 添加框的 yaml 数据
 
-      cmOptions: {
-        // json codemirror 配置项
-        tabSize: 4,
-        mode: {
-          name: "javascript",
-          json: true,
-        },
-        theme: "panda-syntax",
-        lineNumbers: true,
-        line: true,
-      },
+      // cmOptions: {
+      //   // json codemirror 配置项
+      //   tabSize: 4,
+      //   mode: {
+      //     name: "javascript",
+      //     json: true,
+      //   },
+      //   theme: "panda-syntax",
+      //   lineNumbers: true,
+      //   line: true,
+      // },
       cmOptionsYaml: {
         // yaml codemirror 配置项
         tabSize: 4,
@@ -281,13 +281,13 @@ export default {
       this.$store
         .dispatch("jobs/getAllJobs", namespace)
         .then((res) => {
-          console.log(res.data);
+          // console.log(res.data);
           this.jobs = res.data;
           this.jobsAmount = this.jobs.length;
           this.jobsInCurrentPage = this.jobs.slice(0, this.pageSize);
         })
         .catch((error) => {
-          console.log("333333错了", error);
+          console.log(error);
         });
     },
 
@@ -327,7 +327,6 @@ export default {
         name: name,
         namespace: namespace,
       };
-      console.log("获取值之前的yaml：\n", this.codeYaml, "\n")
       // 获取 yaml 格式
       this.$store
         .dispatch("jobs/getJobYamlByNameAndNamespace", jobDetails)
@@ -366,7 +365,7 @@ export default {
       }, 50);
     },
     onYamlCmCodeChange(newCode) {
-      console.log("onYamlCmCodeChange\n")
+      // console.log("onYamlCmCodeChange\n")
       this.codeYaml = newCode;
     },
 
@@ -395,7 +394,7 @@ export default {
             else{
               this.$message.error("删除失败");
             }
-            console.log(res.data);
+            // console.log(res.data);
           })
           .catch((error) => {
             console.log(error);
@@ -443,7 +442,7 @@ export default {
 
     // 关闭修改框
     handleClose: function () {
-      console.log("handleClose\n")
+      // console.log("handleClose\n")
       this.addYaml = "";
       setTimeout(() => {
         this.codemorror.refresh();
