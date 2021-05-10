@@ -4,10 +4,10 @@
  * @Author: zqy
  * @Date: 2021-04-26 12:23:55
  * @LastEditors: zqy
- * @LastEditTime: 2021-05-07 22:15:13
+ * @LastEditTime: 2021-05-10 21:26:16
  */
 import request from '@/utils/request'
-let baseUrl = "http://localhost:8081"
+let baseUrl = require("./api").baseurl;
 
 export function createPodFromForm(data) {
     console.log(data);

@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-27 14:23:44
  * @LastEditors: zqy
- * @LastEditTime: 2021-04-16 22:27:15
+ * @LastEditTime: 2021-05-10 22:23:18
  */
 import request from '@/utils/request'
 let baseUrl = require("../api").baseurl;
@@ -15,6 +15,20 @@ export function getAllDeployments(data) {
     method: 'get',
     params: {
       namespace: data
+    }
+  })
+}
+
+
+export function setReplica(data) {
+  console.log(data)
+  return request({
+    url: baseUrl + '/deployments/setReplica',
+    method: 'get',
+    params: {
+      name: data.name,
+      namespace: data.namespace,
+      replica: data.replica,
     }
   })
 }

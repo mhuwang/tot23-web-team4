@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: zqy
- * @LastEditTime: 2021-05-08 09:58:14
+ * @LastEditTime: 2021-05-10 22:33:45
 -->
 <template>
   <div>
@@ -60,9 +60,7 @@
           <template slot-scope="scope">
             <svg-icon
               :icon-class="
-                scope.row.status == '1'
-                  ? 'load-success'
-                  : 'load-failed'
+                scope.row.status == '1' ? 'load-success' : 'load-failed'
               "
             />
           </template>
@@ -70,12 +68,12 @@
         <el-table-column prop="name" label="名称">
           <template slot-scope="scope">
             <router-link
-              :to="{name: 'Deployment 详情', params:{name: scope.row.name + ',' + scope.row.namespace}}"
+              :to="{
+                name: 'Deployment 详情',
+                params: { name: scope.row.name + ',' + scope.row.namespace },
+              }"
               @click.native="
-                goToDeploymentsDetails(
-                  scope.row.name,
-                  scope.row.namespace
-                )
+                goToDeploymentsDetails(scope.row.name, scope.row.namespace)
               "
               class="link-type"
             >
@@ -86,13 +84,10 @@
           </template>
         </el-table-column>
         <!-- <el-table-column prop="apiVersion" label="版本"> </el-table-column> -->
-        <el-table-column prop="namespace" label="命名空间">
-        </el-table-column>
+        <el-table-column prop="namespace" label="命名空间"> </el-table-column>
         <el-table-column label="Pods">
           <template slot-scope="scope">
-            <span>
-              {{scope.row.runningPods}}/{{scope.row.replicas}}
-            </span>
+            <span> {{ scope.row.runningPods }}/{{ scope.row.replicas }} </span>
           </template>
         </el-table-column>
         <!-- <el-table-column label="标签">
@@ -126,26 +121,27 @@
               icon="el-icon-edit"
               size="small"
               @click="
-                showDeploymentEditDialog(
-                  scope.row.name,
-                  scope.row.namespace
-                )
+                showDeploymentEditDialog(scope.row.name, scope.row.namespace)
               "
               >编辑</el-button
             >
             <br />
             <!-- 删除 -->
             <el-button
+              style="margin-bottom: 5px"
               type="danger"
               icon="el-icon-delete"
               size="small"
-              @click="
-                delDeployment(
-                  scope.row.name,
-                  scope.row.namespace
-                )
-              "
+              @click="delDeployment(scope.row.name, scope.row.namespace)"
               >删除</el-button
+            >
+            <br/>
+            <el-button
+              type="warning"
+              icon="el-icon-document-copy"
+              size="small"
+              @click="setReplica(scope.row.name, scope.row.namespace)"
+              >副本</el-button
             >
           </template>
         </el-table-column>
@@ -230,7 +226,7 @@ export default {
       codeYaml: "", // 编辑框的 yaml 数据
       addYaml: "", // 添加框的 yaml 数据
       value: "",
-      
+
       // cmOptions: {
       //   // json codemirror 配置项
       //   tabSize: 4,
@@ -280,8 +276,10 @@ export default {
     // 详情页
     goToDeploymentsDetails: function (deploymentName, deploymentNamespace) {
       // console.log("deployments index namespace", deploymentNamespace);
-      this.$store
-        .dispatch("deployments/toDetails", {deploymentName, deploymentNamespace});
+      this.$store.dispatch("deployments/toDetails", {
+        deploymentName,
+        deploymentNamespace,
+      });
     },
 
     // 获取所有 Deployments
@@ -289,26 +287,32 @@ export default {
       this.$store
         .dispatch("deployments/getAllDeployments", namespace)
         .then((res) => {
-          // console.log(res.data);
+          console.log(res.data);
           this.deployments = res.data;
           this.deploymentsAmount = this.deployments.length;
-          this.deploymentsInCurrentPage = this.deployments.slice(0, this.pageSize);
+          this.deploymentsInCurrentPage = this.deployments.slice(
+            0,
+            this.pageSize
+          );
         })
         .catch((error) => {
           console.log(error);
         });
     },
 
-    //编辑 CronJob
+    //编辑 Deployment
     showDeploymentEditDialog(name, namespace) {
       let deploymentDetails = {
         name: name,
         namespace: namespace,
       };
-      
+
       // 获取 yaml 格式
       this.$store
-        .dispatch("deployments/getDeploymentYamlByNameAndNamespace", deploymentDetails)
+        .dispatch(
+          "deployments/getDeploymentYamlByNameAndNamespace",
+          deploymentDetails
+        )
         .then((res) => {
           this.codeYaml = res.data;
           // console.log("edit dialog init", this.codeYaml);
@@ -347,7 +351,7 @@ export default {
       this.codeYaml = newCode;
     },
 
-    //点击确认按钮触发此修改 CronJob 事件
+    //点击确认按钮触发此修改 Deployment 事件
     commitYamlChange() {
       this.$confirm("确认修改？", {
         confirmButtonText: "确定",
@@ -389,39 +393,69 @@ export default {
       setTimeout(() => {
         this.codemorror.refresh();
       }, 1);
-    }, 
+    },
 
-    //删除 CronJob
+    setReplica(name, namespace) {
+      this.$prompt("请输入副本数", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        // inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
+        // inputErrorMessage: "请输入数字",
+      })
+        .then(({ value }) => {
+          let data = {
+            replica: value,
+            name: name,
+            namespace: namespace,
+          }
+          this.$store.dispatch("deployments/setReplica", data).then((res) => {
+            if (res.code == 1200) {
+                this.$message.success("修改成功");
+                this.getDeployments();
+              } else {
+                this.$message.error("修改失败");
+              }
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "取消输入",
+          });
+        });
+    },
+
+    //删除 Deployment
     delDeployment(name, namespace) {
       this.$confirm("确认删除 Deployment？", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
-      }).then(() => {
-        let nameAndNamespace = {
-          name: name,
-          namespace: namespace,
-        };
-        this.$store
-          .dispatch(
-            "deployments/deleteDeploymentByNameAndNamespace",
-            nameAndNamespace
-          )
-          .then((res) => {
-            if(res.data){
-              this.$message.success("删除成功");
-              this.getDeployments();
-            }
-            else{
-              this.$message.error("删除失败");
-            }
-            // console.log(res.data);
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-      }).catch(() => {
-      });
+      })
+        .then(() => {
+          let nameAndNamespace = {
+            name: name,
+            namespace: namespace,
+          };
+          this.$store
+            .dispatch(
+              "deployments/deleteDeploymentByNameAndNamespace",
+              nameAndNamespace
+            )
+            .then((res) => {
+              if (res.data) {
+                this.$message.success("删除成功");
+                this.getDeployments();
+              } else {
+                this.$message.error("删除失败");
+              }
+              // console.log(res.data);
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        })
+        .catch(() => {});
     },
 
     //分页事件

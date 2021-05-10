@@ -4,9 +4,9 @@
  * @Author: Rex Joush
  * @Date: 2021-03-27 14:18:28
  * @LastEditors: zqy
- * @LastEditTime: 2021-04-16 22:27:33
+ * @LastEditTime: 2021-05-10 22:07:27
  */
-import { getAllDeployments, getDeploymentByNameAndNamespace, getDeploymentYamlByNameAndNamespace, deleteDeploymentByNameAndNamespace, getDeploymentResources } from '@/api/workload/deployments'
+import { getAllDeployments, setReplica, getDeploymentByNameAndNamespace, getDeploymentYamlByNameAndNamespace, deleteDeploymentByNameAndNamespace, getDeploymentResources } from '@/api/workload/deployments'
 import { getToken } from '@/utils/auth'
 
 
@@ -35,6 +35,20 @@ const actions = {
                 const { data } = response
                 if (!data) {
                     return reject('获取失败')
+                }
+                resolve(data)
+            }).catch(error => {
+                reject(error)
+            })
+        })
+    },
+    // 设置副本数量
+    setReplica({ commit }, data) {
+        return new Promise((resolve, reject) => {
+            setReplica(data).then(response => {
+                const { data } = response
+                if (!data) {
+                    return reject('设置失败')
                 }
                 resolve(data)
             }).catch(error => {
