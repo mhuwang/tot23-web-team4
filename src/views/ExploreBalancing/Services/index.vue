@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: Leo
- * @LastEditTime: 2021-04-25 21:54:00
+ * @LastEditTime: 2021-05-10 19:36:46
 
  -->
 <template>
@@ -44,7 +44,7 @@
             ></el-button> -->
         </el-col>
       </el-row>
-      <el-table :data="services" style="width: 100%" stripe>
+      <el-table :data="servicesInCurrentPage" style="width: 100%" stripe>
         <!-- <el-table-column width="40">
           <template slot-scope="scope">
             <svg-icon
@@ -92,8 +92,7 @@
         <!-- <el-table-column prop="apiVersion" label="版本"> </el-table-column> -->
         <el-table-column prop="metadata.namespace" label="命名空间">
         </el-table-column>
-        <el-table-column prop="spec.type" label="类型">
-        </el-table-column>
+        <el-table-column prop="spec.type" label="类型"> </el-table-column>
         <!-- <el-table-column label="标签">
           <template slot-scope="scope">
             <span>k8s-app: {{scope.row.metadata.labels['k8s-app']}}</span>
@@ -122,7 +121,10 @@
               style="margin-bottom: 5px"
               size="small"
               @click="
-                showServiceEditDialog(scope.row.metadata.name, scope.row.metadata.namespace)
+                showServiceEditDialog(
+                  scope.row.metadata.name,
+                  scope.row.metadata.namespace
+                )
               "
               >编辑</el-button
             >
@@ -132,12 +134,25 @@
               type="danger"
               icon="el-icon-delete"
               size="small"
-              @click="delService(scope.row.metadata.name, scope.row.metadata.namespace)"
+              @click="
+                delService(
+                  scope.row.metadata.name,
+                  scope.row.metadata.namespace
+                )
+              "
               >删除</el-button
             >
           </template>
         </el-table-column>
       </el-table>
+      <el-pagination
+        @current-change="handleCurrentChange"
+        :current-page="currentPage"
+        :page-size="pageSize"
+        layout=" prev, pager, next, jumper, ->, total, slot"
+        :total="servicesAmount"
+      >
+      </el-pagination>
     </el-card>
 
     <!-- 编辑框 -->
@@ -182,12 +197,17 @@ import "codemirror/mode/javascript/javascript.js";
 import "codemirror/mode/yaml/yaml.js";
 // import theme style
 import "codemirror/theme/panda-syntax.css";
+import services from "@/store/modules/ExploreBalancing/services";
 
 export default {
   name: "Services",
 
   data() {
     return {
+      servicesAmount: 0, //Services 总数
+      currentPage: 1, //分页绑定当前页
+      servicesInCurrentPage: [], //页面中的 Serivces
+      pageSize: 6, //一页显示数量
       services: [], //service 列表
       namespaces: [], // 命名空间选择框
       value: "", // 选择框的值
@@ -215,6 +235,14 @@ export default {
   },
 
   methods: {
+    /* 按命名空间查询 */
+    // 当选择框聚焦时获取命名空间
+    initNamespace() {
+      if (this.namespaces.length == 0) {
+        this.namespaces = this.$store.state.namespaces.namespaces;
+      }
+    },
+
     // 编辑器方法
     /* yaml */
     onYamlCmReady(cm) {
@@ -228,13 +256,14 @@ export default {
     },
 
     // 获取所有 Services
-    getServices(namespace) {
+    getServices(namespace = "") {
       this.$store
         .dispatch("services/getAllServices", namespace)
         .then((res) => {
           console.log(res.data);
           this.services = res.data;
-          this.loading = false;
+          this.servicesAmount = this.services.length;
+          this.servicesInCurrentPage = this.services.slice(0, this.pageSize);
         })
         .catch((error) => {
           console.log(error);
@@ -265,15 +294,14 @@ export default {
           // this.codeJSON = this.beautify(json, {
           //   indent_size: 4,
           //   space_in_empty_paren: true,
-          // }); 
+          // });
           this.codeYaml = res.data;
           this.editDialogVisible = true; // 打开编辑对话框
         })
         .catch((error) => {
           throw error;
         });
-        
-  
+
       //this.editForm = res; // 查询结果写入表单
     },
 
@@ -323,7 +351,7 @@ export default {
 
     /* 删除 Service */
     delService: function (name, namespace) {
-      this.$confirm("确认删除该服务 ？", {
+      this.$confirm("确认删除该 服务 ？", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
@@ -350,14 +378,6 @@ export default {
         .catch(() => {});
     },
 
-    /* 按命名空间查询 */
-
-    // 当选择框聚焦时获取命名空间
-    initNamespace() {
-      if (this.namespaces.length == 0) {
-        this.namespaces = this.$store.state.namespaces.namespaces;
-      }
-    },
     // 选择框变化事件
     selectChange(value) {
       this.loading = true;
@@ -367,6 +387,15 @@ export default {
     clearSelect() {
       this.loading = true;
       this.getServices();
+    },
+
+    //分页事件
+    handleCurrentChange(currentPage) {
+      this.currentPage = currentPage;
+      this.servicesInCurrentPage = this.services.slice(
+        (this.currentPage - 1) * this.pageSize,
+        this.currentPage * this.pageSize
+      );
     },
   },
 };

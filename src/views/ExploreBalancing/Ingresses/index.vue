@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: Leo
- * @LastEditTime: 2021-04-25 17:26:27
+ * @LastEditTime: 2021-05-10 20:03:17
 -->
 <template>
   <div>
@@ -44,7 +44,7 @@
         </el-col>
       </el-row>
 
-      <el-table :data="ingresses" style="width: 100%" stripe>
+      <el-table :data="ingressesInCurrentPage" style="width: 100%" stripe>
         <!-- <el-table-column width="40">
           <template slot-scope="scope">
             <svg-icon :icon-class="scope.row.status.conditions[1].status == 'True'? 'load-success': scope.row.status.conditions[1].status == 'Unknown'?'load-doubt':'load-failed'"/>
@@ -123,6 +123,14 @@
           </template>
         </el-table-column>
       </el-table>
+      <el-pagination
+        @current-change="handleCurrentChange"
+        :current-page="currentPage"
+        :page-size="pageSize"
+        layout=" prev, pager, next, jumper, ->, total, slot"
+        :total="ingressesAmount"
+      >
+      </el-pagination>
     </el-card>
 
     <!-- 编辑框 -->
@@ -181,6 +189,10 @@ export default {
 
   data() {
     return {
+      ingressesAmount: 0, //ingresses 总数
+      currentPage: 1, //分页绑定当前页
+      ingressesInCurrentPage: [], //页面中的 ingresses
+      pageSize: 6, //一页显示数量
       ingresses: [], //ingress 列表
       namespaces: [], // 命名空间选择框
       value: "", // 选择框的值
@@ -234,6 +246,8 @@ export default {
         .then((res) => {
           console.log(res.data);
           this.ingresses = res.data;
+          this.ingressesAmount = this.ingresses.length;
+          this.ingressesInCurrentPage = this.ingresses.slice(0, this.pageSize);
         })
         .catch((error) => {
           console.log(error);
@@ -247,7 +261,6 @@ export default {
       };
       this.$store.dispatch("ingresses/toDetails", ingressDetails);
     },
-
 
     /* 编辑部分 */
     showIngressEditDialog(name, namespace) {
@@ -364,6 +377,14 @@ export default {
     clearSelect() {
       this.loading = true;
       this.getIngresses();
+    },
+    //分页事件
+    handleCurrentChange(currentPage) {
+      this.currentPage = currentPage;
+      this.ingressesInCurrentPage = this.ingresses.slice(
+        (this.currentPage - 1) * this.pageSize,
+        this.currentPage * this.pageSize
+      );
     },
   },
 };
