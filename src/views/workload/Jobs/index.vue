@@ -3,8 +3,17 @@
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
+<<<<<<< HEAD
+ * @LastEditors: Bernie
+ * @LastEditTime: 2021-05-07 11:29:23
+=======
  * @LastEditors: zqy
+<<<<<<< HEAD
  * @LastEditTime: 2021-05-08 09:59:42
+=======
+ * @LastEditTime: 2021-04-27 22:04:50
+>>>>>>> 00560973b5f944cbe14c2a03f5ac850fca7e696c
+>>>>>>> ca60ba2b48cd0eb57de5b3c006d4075b03702fb1
 -->
 <!--<template>
   <h1>Jobs</h1>

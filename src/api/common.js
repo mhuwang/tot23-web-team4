@@ -47,11 +47,14 @@ export function changeCrdByYaml(data) {
 //changeCrdObjectByYaml
 export function changeCrdObjectByYaml(data) {
   console.log("yaml", data);
+
+  const params = new URLSearchParams();
+  params.append("yaml", data.codeyaml);
+  params.append("crdName", data.crdname);
+
   return request({
     url: baseUrl + '/common/changeCrdObjectByYaml',
     method: 'post',
-    data: {
-      yaml: data,
-    }
+    data: params
   })
 }
