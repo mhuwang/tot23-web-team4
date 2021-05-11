@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-05-10 20:40:26
+ * @LastEditTime: 2021-05-11 09:54:09
 -->
 <template>
   <div>
@@ -32,7 +32,7 @@
             />
           </template>
         </el-table-column>
-        <el-table-column label="名称" width="120">
+        <el-table-column label="名称" width="180">
           <template slot-scope="scope">
             <router-link
               :to="'/summary/nodes/' + scope.row.name"
@@ -190,7 +190,7 @@
         background
         @current-change="handleNamespaceCurrentChange"
         :current-page="1"
-        :page-size="10"
+        :page-size="6"
         layout="total, prev, pager, next, jumper"
         :total="totalNamespace"
       >
@@ -252,7 +252,7 @@
         background
         @current-change="handleClusterRolesCurrentChange"
         :current-page="1"
-        :page-size="10"
+        :page-size="6"
         layout="total, prev, pager, next, jumper"
         :total="totalClusterRoles"
       >
@@ -568,7 +568,7 @@ export default {
           console.log(res);
           this.namespaces = res.data;
           this.totalNamespace = res.data.length;
-          this.currentNamespaces = res.data.slice(0, 10);
+          this.currentNamespaces = res.data.slice(0, 6);
         })
         .catch((error) => {
           console.log(error);
@@ -576,7 +576,7 @@ export default {
     },
     // 处理命名空间分页
     handleNamespaceCurrentChange(page) {
-      this.currentNamespaces = this.namespaces.slice((page - 1) * 10, page * 10);
+      this.currentNamespaces = this.namespaces.slice((page - 1) * 6, page * 6);
     },
     // 获取所有集群角色
     getAllClusterRoles: function () {
@@ -586,7 +586,7 @@ export default {
           console.log(res);
           this.clusterRoles = res.data;
           this.totalClusterRoles = res.data.length;
-          this.currentClusterRoles = res.data.slice(0, 10);
+          this.currentClusterRoles = res.data.slice(0, 6);
         })
         .catch((error) => {
           console.log(error);
@@ -594,7 +594,7 @@ export default {
     },
     // 处理集群角色分页
     handleClusterRolesCurrentChange(page) {
-      this.currentClusterRoles = this.clusterRoles.slice((page - 1) * 10, page * 10);
+      this.currentClusterRoles = this.clusterRoles.slice((page - 1) * 6, page * 6);
     },
     /* 排序部分 */
     // 时间排序

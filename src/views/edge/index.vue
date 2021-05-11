@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 19:37:28
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-05-10 20:14:25
+ * @LastEditTime: 2021-05-10 21:46:55
 -->
 <template>
   <div>
@@ -137,7 +137,7 @@
          <template slot-scope="">
             <a
               style="color: #409eff; text-decoration: underline"
-              href="http://kubeedge-counter-app.mc.com"
+              href="http://172.18.7.19:8089"
               target="_blank"
               >{{ "kubeedge-counter-app.mc.com" }}</a
             >

@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-25 22:13:37
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-05-10 20:23:42
+ * @LastEditTime: 2021-05-11 09:59:37
 -->
 <template>
   <div>
@@ -340,7 +340,7 @@
         <span>Pod</span>
       </div>
       <el-table
-        :data="pods"
+        :data="currentPods"
         style="width: 100%"
         stripe
         v-loading="loading"
@@ -440,6 +440,15 @@
           </template>
         </el-table-column>
       </el-table>
+      <el-pagination
+        background
+        @current-change="handleCurrentChange"
+        :current-page="1"
+        :page-size="6"
+        layout="total, prev, pager, next, jumper"
+        :total="total"
+      >
+      </el-pagination>
     </el-card>
 
     <!-- 编辑框 -->
@@ -501,6 +510,9 @@ export default {
       strokeWidth: 5,
       usage: [],
       pods: [],
+      total: 0, // 总 pod 数
+      currentPods: [], // 当前页面的 pod
+
       nodeName: "",
       node: {},
       podsAmount: 0,
@@ -680,6 +692,9 @@ export default {
         console.log(res);
         this.pods = res.data;
         this.podsAmount = res.data.length;
+        
+        this.total = res.data.length;
+        this.currentPods = res.data.slice(0, 6);
       })
       .catch((error) => {
         throw error;
@@ -706,6 +721,11 @@ export default {
     saveNodeInfo() {
       alert("RELOAD", this.nodeName);
       sessionStorage.setItem("nodeName");
+    },
+
+    // 处理分页
+    handleCurrentChange(page) {
+      this.currentPods = this.pods.slice((page - 1) * 6, page * 6);
     },
 
     // 前往 pod 详情页

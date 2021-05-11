@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-05-10 20:22:57
+ * @LastEditTime: 2021-05-11 09:56:58
 -->
 <template>
   <div>
@@ -153,7 +153,7 @@
         background
         @current-change="handleCurrentChange"
         :current-page="1"
-        :page-size="10"
+        :page-size="6"
         layout="total, prev, pager, next, jumper"
         :total="total"
       >
@@ -210,7 +210,7 @@ export default {
     return {
       pods: [], // pod 列表
       total: 0, // 总 pod 数
-      currentPods: [], // 当前页面的事件
+      currentPods: [], // 当前页面的 pod
 
       namespaces: [], // 命名空间选择框
       value: "", // 选择框的值
@@ -238,7 +238,7 @@ export default {
 
     // 处理分页
     handleCurrentChange(page) {
-      this.currentPods = this.pods.slice((page - 1) * 10, page * 10);
+      this.currentPods = this.pods.slice((page - 1) * 6, page * 6);
     },
     // 编辑器方法
     /* yaml */
@@ -260,7 +260,7 @@ export default {
           // console.log(res);
           this.pods = res.data;
           this.total = res.data.length;
-          this.currentPods = res.data.slice(0, 10);
+          this.currentPods = res.data.slice(0, 6);
           this.loading = false;
         })
         .catch((error) => {
