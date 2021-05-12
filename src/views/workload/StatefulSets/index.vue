@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: zqy
- * @LastEditTime: 2021-05-10 19:49:52
+ * @LastEditTime: 2021-05-12 19:38:49
 -->
 <!--<template>
   <h1>Stateful Sets</h1>
@@ -95,7 +95,7 @@
         <el-table-column label="创建时间" width="200">
           <template slot-scope="scope">
             <span>{{
-              scope.row.creationTimestamp
+              scope.row.creationTimestamp.replaceAll(/[TZ]/g, " ")
             }}</span>
           </template>
         </el-table-column>
@@ -235,7 +235,7 @@ export default {
       this.$store
         .dispatch("statefulSets/getAllStatefulSets", namespace)
         .then((res) => {
-          console.log(res.data);
+          // console.log(res.data);
           this.statefulSets = res.data;
           this.statefulSetsAmount = this.statefulSets.length;
           this.statefulSetsInCurrentPage = this.statefulSets.slice(0, this.pageSize);

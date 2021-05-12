@@ -6,7 +6,7 @@
  * @LastEditors: zqy
  * @LastEditTime: 2021-05-10 22:07:27
  */
-import { getAllDeployments, setReplica, getDeploymentByNameAndNamespace, getDeploymentYamlByNameAndNamespace, deleteDeploymentByNameAndNamespace, getDeploymentResources } from '@/api/workload/deployments'
+import { getAllDeployments, setReplica, getDeploymentByNameAndNamespace, getDeploymentYamlByNameAndNamespace, deleteDeploymentByNameAndNamespace, getDeploymentResources, changeDeploymentByYaml } from '@/api/workload/deployments'
 import { getToken } from '@/utils/auth'
 
 
@@ -115,7 +115,20 @@ const actions = {
             })
         })
     },
-
+    
+    changeDeploymentByYaml({ commit }, yamlData) {
+        return new Promise((resolve, reject) => {
+            changeDeploymentByYaml(yamlData).then((response) => {
+                const { data } = response
+                if (!data) {
+                    return reject('删除失败')
+                }
+                resolve(data)
+            }).catch((error) => {
+                reject(error)
+            })
+        })
+    },
     // 点击名字进入详情页
     toDetails({ commit }, dep) {
         commit("TO_DEPLOYMENTS_DETIALS", dep);

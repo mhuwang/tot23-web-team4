@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: zqy
- * @LastEditTime: 2021-05-10 19:34:28
+ * @LastEditTime: 2021-05-12 20:57:28
 -->
 <!--<template>-->
 <!--  <h1>Daemon Sets</h1>-->
@@ -63,7 +63,7 @@
           <template slot-scope="scope">
             <svg-icon
               :icon-class="scope.row.status == '0'
-                    ? 'load-doubt'
+                    ? 'load-failed'
                     : 'load-success'
               "
             />

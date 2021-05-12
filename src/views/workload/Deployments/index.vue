@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: zqy
- * @LastEditTime: 2021-05-10 22:33:45
+ * @LastEditTime: 2021-05-12 19:39:21
 -->
 <template>
   <div>
@@ -323,21 +323,21 @@ export default {
         });
 
       // json 格式
-      this.$store
-        .dispatch("cronJobs/getCronJobByNameAndNamespace", cronJobDetails)
-        .then((res) => {
-          // console.log(res);
-          let json = JSON.stringify(res.data.cronJob);
-          this.codeJSON = this.beautify(json, {
-            indent_size: 4,
-            space_in_empty_paren: true,
-          });
-        })
-        .catch((error) => {
-          throw error;
-        });
+    //   this.$store
+    //     .dispatch("cronJobs/getCronJobByNameAndNamespace", cronJobDetails)
+    //     .then((res) => {
+    //       // console.log(res);
+    //       let json = JSON.stringify(res.data.cronJob);
+    //       this.codeJSON = this.beautify(json, {
+    //         indent_size: 4,
+    //         space_in_empty_paren: true,
+    //       });
+    //     })
+    //     .catch((error) => {
+    //       throw error;
+    //     });
 
-      //this.editForm = res; // 查询结果写入表单
+    //   //this.editForm = res; // 查询结果写入表单
     },
 
     // 编辑器方法
@@ -360,7 +360,7 @@ export default {
       })
         .then(() => {
           this.$store
-            .dispatch("common/changeResourceByYaml", this.codeYaml)
+            .dispatch("deployments/changeDeploymentByYaml", this.codeYaml)
             .then((res) => {
               switch (res.code) {
                 case 1200:

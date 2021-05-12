@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-27 14:23:44
  * @LastEditors: zqy
- * @LastEditTime: 2021-05-10 22:23:18
+ * @LastEditTime: 2021-05-12 20:31:09
  */
 import request from '@/utils/request'
 let baseUrl = require("../api").baseurl;
@@ -18,8 +18,6 @@ export function getAllDeployments(data) {
     }
   })
 }
-
-
 export function setReplica(data) {
   console.log(data)
   return request({
@@ -32,7 +30,6 @@ export function setReplica(data) {
     }
   })
 }
-
 export function getDeploymentByNameAndNamespace(dep) {
   return request({
     url: baseUrl + '/deployments/getDeploymentByNameAndNamespace',
@@ -43,7 +40,6 @@ export function getDeploymentByNameAndNamespace(dep) {
     }
   })
 }
-
 export function getDeploymentYamlByNameAndNamespace(data) {
   return request({
     url :baseUrl + '/deployments/getDeploymentYamlByNameAndNamespace',
@@ -54,7 +50,6 @@ export function getDeploymentYamlByNameAndNamespace(data) {
     }
   })
 }
-
 export function deleteDeploymentByNameAndNamespace(data) {
   return request({
     url: baseUrl + '/deployments/deleteDeploymentByNameAndNamespace',
@@ -65,7 +60,6 @@ export function deleteDeploymentByNameAndNamespace(data) {
     }
   })
 }
-
 export function getDeploymentResources(data) {
   return request({
     url: baseUrl + '/deployments/getDeploymentResources',
@@ -76,4 +70,14 @@ export function getDeploymentResources(data) {
     }
   })
 }
-getDeploymentResources
+export function changeDeploymentByYaml(data) {
+  console.log(data);
+  return request({
+    url: baseUrl + '/deployments/changeDeploymentByYaml',
+    method: 'post',
+    data: {
+      yaml: data,
+    }
+  })
+}
+
