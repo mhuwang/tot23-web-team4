@@ -3,8 +3,8 @@
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
- * @LastEditors: zqy
- * @LastEditTime: 2021-05-12 19:39:21
+ * @LastEditors: Rex Joush
+ * @LastEditTime: 2021-05-13 00:04:01
 -->
 <template>
   <div>
@@ -360,7 +360,7 @@ export default {
       })
         .then(() => {
           this.$store
-            .dispatch("deployments/changeDeploymentByYaml", this.codeYaml)
+            .dispatch("common/changeDeploymentByYaml", this.codeYaml)
             .then((res) => {
               switch (res.code) {
                 case 1200:

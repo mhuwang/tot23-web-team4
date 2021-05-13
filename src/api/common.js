@@ -34,6 +34,15 @@ export function changeIngressesByYaml(data) {
     }
   })
 }
+export function changeDeploymentByYaml(data) {
+  return request({
+    url: baseUrl + '/common/changeDeploymentByYaml',
+    method: 'post',
+    data: {
+      ingress: data,
+    }
+  })
+}
 export function changeCrdByYaml(data) {
   console.log("yaml", data);
   return request({
@@ -44,6 +53,7 @@ export function changeCrdByYaml(data) {
     }
   })
 }
+
 //changeCrdObjectByYaml
 export function changeCrdObjectByYaml(data) {
   console.log("yaml", data);

@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-05-11 09:56:58
+ * @LastEditTime: 2021-05-13 09:11:37
 -->
 <template>
   <div>
@@ -128,6 +128,17 @@
         </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
+            <!-- 日志 -->
+            <el-button
+              type="info"
+              icon="el-icon-edit"
+              style="margin-bottom: 5px"
+              size="small"
+              @click="getLogs(scope.row.name, scope.row.namespace)"
+              >日志</el-button
+            >
+            <br />
+
             <!-- 修改 -->
             <el-button
               type="primary"
@@ -137,7 +148,8 @@
               @click="showPodEditDialog(scope.row.name, scope.row.namespace)"
               >编辑</el-button
             >
-            <br />
+            <br >
+            
             <!-- 删除 -->
             <el-button
               type="danger"
@@ -146,6 +158,7 @@
               @click="delPod(scope.row.name, scope.row.namespace)"
               >删除</el-button
             >
+
           </template>
         </el-table-column>
       </el-table>
@@ -180,6 +193,7 @@
           />
         </el-tab-pane>
       </el-tabs>
+     
 
       <!-- <textarea style="width:100%" name="describe" id="pod" cols="30" rows="10">
         {{code}}
@@ -192,6 +206,32 @@
         <el-button @click="editDialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="commitYamlChange">确 定</el-button>
       </span>
+    </el-dialog>
+
+     <!-- 日志 框 -->
+    <el-dialog
+      title="pod日志"
+      :visible.sync="logDialogVisible"
+      width="70%"
+      @closed="handleClose"
+      @close="logDialogVisible = false"
+      :append-to-body="true"
+      :lock-scroll="true"
+    >
+      <el-tabs value="first" type="card">
+        <el-tab-pane label="日志" name="first">
+          <codemirror
+            :value="codeYaml"
+            :options="cmOptionsYaml"
+            @ready="onYamlCmReady"
+            @input="onYamlCmCodeChange"
+          />
+        </el-tab-pane>
+      </el-tabs>
+
+      <!-- <textarea style="width:100%" name="describe" id="pod" cols="30" rows="10">
+        {{code}}
+      </textarea> -->
     </el-dialog>
   </div>
 </template>
@@ -216,6 +256,7 @@ export default {
       value: "", // 选择框的值
       loading: true, // 获取数据中
       editDialogVisible: false, // 编辑详情框
+      logDialogVisible: false, // 框
       codeYaml: "", // 编辑框的 yaml 数据
       cmOptionsYaml: {
         // yaml codemirror 配置项
@@ -284,6 +325,7 @@ export default {
         podNamespace: namespace,
       };
 
+     
       // 获取 yaml 格式
       this.$store
         .dispatch("pods/getPodYamlByNameAndNamespace", podDetails)
@@ -317,6 +359,25 @@ export default {
       //   });
 
       //this.editForm = res; // 查询结果写入表单
+    },
+     // 打开 日志
+    getLogs(podName,nameSpace) {
+      let pod ={
+        podName:podName,
+        nameSpace:nameSpace,
+      };
+      console.log(podName);
+      this.$store
+        .dispatch("edge/getLogs", pod)
+        .then((res) => {
+          console.log(res);
+          console.log(pod);
+          this.codeYaml = res.data;
+          this.logDialogVisible = true; // 打开编辑对话框
+        })
+        .catch((error) => {
+          throw error;
+        });
     },
 
     // 提交修改

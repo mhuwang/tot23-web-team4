@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 19:37:28
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-05-10 21:46:55
+ * @LastEditTime: 2021-05-13 00:38:14
 -->
 <template>
   <div>
@@ -78,7 +78,7 @@
               type="primary"
               icon="el-icon-edit"
               size="small"
-              @click="showNodeEditDialog(scope.row.name)"
+              @click="showNodeEditDialog(scope.row.metadata.name)"
               >编辑</el-button
             >
       
@@ -137,7 +137,7 @@
          <template slot-scope="">
             <a
               style="color: #409eff; text-decoration: underline"
-              href="http://172.18.7.19:8089"
+              href="http://kubeedge-counter-app.mc.com"
               target="_blank"
               >{{ "kubeedge-counter-app.mc.com" }}</a
             >
@@ -405,7 +405,7 @@ export default {
                   self.$store.dispatch("edge/toDetails", params.value);
                   self.$router.push("/edge/edgenodes/" + params.value);
                 } else if (params.name === "Device") {
-                  window.location.href = "http://172.18.7.19:8089";
+                  window.location.href = "http://kubeedge-counter-app.mc.com";
                 } else {
                   let podDetails = {
                     podName: params.value,

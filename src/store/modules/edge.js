@@ -4,9 +4,9 @@
  * @Author: Rex Joush
  * @Date: 2021-04-02 12:44:04
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-04-17 11:21:28
+ * @LastEditTime: 2021-05-12 22:24:31
  */
-import { initEdgeGraph, getAllEdgeNodes, getNodeByName, getAllDevices } from '@/api/edge'
+import { initEdgeGraph, getAllEdgeNodes, getNodeByName, getAllDevices ,getLogs } from '@/api/edge'
 import { getToken } from '@/utils/auth'
 
 const state = {
@@ -30,6 +30,22 @@ const actions = {
   initEdgeGraph({ commit }) {
     return new Promise((resolve, reject) => {
       initEdgeGraph().then(response => {
+        const { data } = response
+        if (!data) {
+          return reject('获取失败')
+        }
+        resolve(data)
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
+  
+  //获得日志
+  getLogs({ commit }, pod) {
+    console.log(pod.podName);
+    return new Promise((resolve, reject) => {
+      getLogs(pod).then(response => {
         const { data } = response
         if (!data) {
           return reject('获取失败')

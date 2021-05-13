@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-10 15:03:17
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-05-10 20:31:54
+ * @LastEditTime: 2021-05-12 20:00:11
  */
 import Vue from 'vue'
 import Router from 'vue-router'
@@ -354,17 +354,17 @@ export const constantRoutes = [
   },
 
   // 负载预测
-  {
-    path: '/loadforecasting',
-    component: Layout,
-    redirect: '/loadforecasting',
-    children: [{
-      path: 'loadforecasting',
-      name: '负载预测',
-      component: () => import('@/views/LoadForecasting/index'),
-      meta: { title: '负载预测', icon: 'load-forecasting' }
-    }]
-  },
+  // {
+  //   path: '/loadforecasting',
+  //   component: Layout,
+  //   redirect: '/loadforecasting',
+  //   children: [{
+  //     path: 'loadforecasting',
+  //     name: '负载预测',
+  //     component: () => import('@/views/LoadForecasting/index'),
+  //     meta: { title: '负载预测', icon: 'load-forecasting' }
+  //   }]
+  // },
   // 边缘节点
   {
     path: '/edge',
@@ -398,6 +398,18 @@ export const constantRoutes = [
       meta: { title: '创建资源', icon: 'establish' }
     }]
   },
+  // 容器管理
+  // {
+  //   path: '/container',
+  //   component: Layout,
+  //   redirect: '/container',
+  //   children: [{
+  //     path: 'loadforecacontainersting',
+  //     name: '容器管理',
+  //     component: () => import('@/views/container/index'),
+  //     meta: { title: '容器管理', icon: 'container' }
+  //   }]
+  // },
   // 用户管理
   // {
   //   path: '/account',
@@ -422,6 +434,7 @@ export const constantRoutes = [
   //     meta: { title: '个人信息', icon: 'information' }
   //   }]
   // },
+  
   // 关于
   {
     path: '/about',

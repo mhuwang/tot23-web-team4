@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-04-07 20:07:51
  */
-import { changeResourceByYaml ,changeCrdByYaml,changeCrdObjectByYaml} from '@/api/common'
+import { changeResourceByYaml ,changeCrdByYaml,changeCrdObjectByYaml,changeDeploymentByYaml,changeIngressesByYaml,changeServicesByYaml} from '@/api/common'
 import { getToken } from '@/utils/auth'
 
 const getDefaultState = () => {
@@ -34,7 +34,45 @@ const actions = {
       })
     })
   },
-
+  changeDeploymentByYaml({ commit }, yaml) {
+    return new Promise((resolve, reject) => {
+      changeDeploymentByYaml(yaml).then(response => {
+        const { data } = response
+        if (!data) {
+          return reject('修改失败')
+        }
+        resolve(data)
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
+  changeIngressesByYaml({ commit }, yaml) {
+    return new Promise((resolve, reject) => {
+      changeIngressesByYaml(yaml).then(response => {
+        const { data } = response
+        if (!data) {
+          return reject('修改失败')
+        }
+        resolve(data)
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
+  changeServicesByYaml({ commit }, yaml) {
+    return new Promise((resolve, reject) => {
+      changeServicesByYaml(yaml).then(response => {
+        const { data } = response
+        if (!data) {
+          return reject('修改失败')
+        }
+        resolve(data)
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
   // 根据 yaml 文件编辑资源
   changeCrdByYaml({ commit }, yaml) {
     return new Promise((resolve, reject) => {

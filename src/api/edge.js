@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-04-02 12:46:51
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-04-17 11:21:54
+ * @LastEditTime: 2021-05-12 22:24:50
  */
 import request from '@/utils/request'
 let baseUrl = require("./api").baseurl;
@@ -21,6 +21,16 @@ export function getNodeByName(data) {
     method: 'get',
     params: {
       nodeName: data,
+    }
+  })
+}
+export function getLogs(data) {
+  return request({
+    url: baseUrl + '/edge/getLogs',
+    method: 'get',
+    params: {
+      podName: data.podName,
+      nameSpace: data.nameSpace,
     }
   })
 }
