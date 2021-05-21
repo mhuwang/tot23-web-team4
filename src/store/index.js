@@ -3,8 +3,8 @@
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-03-19 16:14:56
- * @LastEditors: zqy
- * @LastEditTime: 2021-04-29 23:03:08
+ * @LastEditors: Rex Joush
+ * @LastEditTime: 2021-05-16 12:47:07
  */
 import Vue from 'vue'
 import Vuex from 'vuex'
@@ -36,6 +36,7 @@ import persistentVolumeClaims from './modules/SettingStorage/persistentVolumeCla
 
 import customize from './modules/customize'
 import edge from './modules/edge'
+import image from './modules/image'
 
 import establish from './modules/establish'
 
@@ -69,6 +70,7 @@ const store = new Vuex.Store({
     clusterRoles,
     customize,
     edge,
+    image,
 
     establish,
   },

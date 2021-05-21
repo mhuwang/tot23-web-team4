@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-10 15:03:17
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-05-12 20:00:11
+ * @LastEditTime: 2021-05-16 16:36:04
  */
 import Vue from 'vue'
 import Router from 'vue-router'
@@ -169,7 +169,7 @@ export const constantRoutes = [
         path: 'pods/:name',
         component: () => import('@/views/workload/Pods/details/index'),
         name: 'Pods 详情',
-        meta: { title: '容器组详情', noCache: true, activeMenu: '/pods'},
+        meta: { title: '容器组详情', noCache: true, activeMenu: '/pods' },
         hidden: true
 
       },
@@ -178,7 +178,7 @@ export const constantRoutes = [
         path: 'pods/:name([a-z0-9-]+)',
         component: () => import('@/views/workload/Pods/details/index'),
         name: 'Pods 详情',
-        meta: { title: 'Pods Details', noCache: true, activeMenu: '/pods'},
+        meta: { title: 'Pods Details', noCache: true, activeMenu: '/pods' },
         hidden: true
       },
       {
@@ -354,17 +354,17 @@ export const constantRoutes = [
   },
 
   // 负载预测
-  // {
-  //   path: '/loadforecasting',
-  //   component: Layout,
-  //   redirect: '/loadforecasting',
-  //   children: [{
-  //     path: 'loadforecasting',
-  //     name: '负载预测',
-  //     component: () => import('@/views/LoadForecasting/index'),
-  //     meta: { title: '负载预测', icon: 'load-forecasting' }
-  //   }]
-  // },
+  {
+    path: '/loadforecasting',
+    component: Layout,
+    redirect: '/loadforecasting',
+    children: [{
+      path: 'loadforecasting',
+      name: '负载预测',
+      component: () => import('@/views/LoadForecasting/index'),
+      meta: { title: '负载预测', icon: 'load-forecasting' }
+    }]
+  },
   // 边缘节点
   {
     path: '/edge',
@@ -399,17 +399,26 @@ export const constantRoutes = [
     }]
   },
   // 容器管理
-  // {
-  //   path: '/container',
-  //   component: Layout,
-  //   redirect: '/container',
-  //   children: [{
-  //     path: 'loadforecacontainersting',
-  //     name: '容器管理',
-  //     component: () => import('@/views/container/index'),
-  //     meta: { title: '容器管理', icon: 'container' }
-  //   }]
-  // },
+  {
+    path: '/image',
+    component: Layout,
+    redirect: '/image',
+    children: [
+      {
+        path: 'image',
+        name: '镜像管理',
+        component: () => import('@/views/image/index'),
+        meta: { title: '镜像管理', icon: 'image' }
+      },
+      {
+        path: ':id',
+        component: () => import('@/views/image/details/index'),
+        name: '镜像详情',
+        meta: { title: '镜像详情', noCache: true, activeMenu: '/image' },
+        hidden: true
+      },
+    ]
+  },
   // 用户管理
   // {
   //   path: '/account',
@@ -434,7 +443,7 @@ export const constantRoutes = [
   //     meta: { title: '个人信息', icon: 'information' }
   //   }]
   // },
-  
+
   // 关于
   {
     path: '/about',
