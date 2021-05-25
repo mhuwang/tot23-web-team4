@@ -4,7 +4,7 @@
  * @Author: Anna667
  * @Date: 
  * @LastEditors: Anna
- * @LastEditTime: 2021-04-26 12:58:39
+ * @LastEditTime: 2021-05-13 11:19:15
 -->
 <template>
   <div>
@@ -41,7 +41,7 @@
       <!-- 元数据 标签 注释部分 -->
       <List item-layout="horizontal" :split="false">
         <div class="metadata-item">
-          <p>标签</p>
+          <p v-if="configMap.metadata.labels">标签</p>
           <li v-for="label in this.labels" :key="label">
             <el-tag
               class="lebel-tag"
