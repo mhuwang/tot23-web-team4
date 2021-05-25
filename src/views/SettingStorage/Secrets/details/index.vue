@@ -4,7 +4,7 @@
  * @Author: Anna667
  * @Date: 
  * @LastEditors: Anna
- * @LastEditTime: 2021-05-25 17:23:23
+ * @LastEditTime: 2021-05-25 20:31:16
 -->
 <template>
   <div>
@@ -93,21 +93,10 @@
       </div>   
 
       <List item-layout="horizontal" :split="false">
-        <div class="metadata-item">
-          <li v-for="data in this.datas" :key="data">
-            <el-tag
-              class="lebel-tag"
-              effect="dark"
-              size="medium"
-              color="#bedcfa"
-              >
-             
-              <h3>{{ data.key }} :</h3> &nbsp;&nbsp;
-                <highlightjs v-show="caShow1" style=" width:100% ,font-weight: bold; font-size: 20px" textcolor:red language='plaintext' :code="data.value" />
-                <!-- <span style="font-weight:bold; font-size:20px;">  -->
-                  —— {{ data.value.length }} bytes 
-            </el-tag>
-          </li>
+        <div v-for="data in this.datas" :key="data">
+            <h3>{{ data.key }} :</h3> &nbsp;&nbsp;<i :class="!caShow1? 'el-icon-zoom-in' : 'el-icon-zoom-out'" @click="showCa1"></i>
+              <highlightjs v-show="caShow1" style=" width:100% ,font-weight: bold; font-size: 20px" autodetect  textcolor:red language='plaintext' :code="data.value" />
+              <span style="font-weight:bold; font-size:20px;">—— {{ data.value.length }} bytes </span>
         </div>
       </List>
          
