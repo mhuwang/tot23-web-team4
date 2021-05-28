@@ -6,7 +6,7 @@
  * @LastEditors: zqy
  * @LastEditTime: 2021-05-08 16:09:13
  */
-import { getAllStatefulSets, getStatefulSetYamlByNameAndNamespace, deleteStatefulSetByNameAndNamespace, getStatefulSetResources } from '@/api/workload/statefulSets'
+import { getStatefulSetLogs, getAllStatefulSets, getStatefulSetYamlByNameAndNamespace, deleteStatefulSetByNameAndNamespace, getStatefulSetResources } from '@/api/workload/statefulSets'
 import { getToken } from '@/utils/auth'
 
 const getDefaultState = () => {
@@ -39,7 +39,7 @@ const actions = {
       })
     })
   },
-  
+
   // 通过名字和命名空间获取 Yaml 格式的 StatefulSet
   getStatefulSetYamlByNameAndNamespace({ commit }, nameAndNamespace) {
     return new Promise((resolve, reject) => {
@@ -84,6 +84,21 @@ const actions = {
       })
     })
   },
+
+  // 通过名字和命名空间查找 StatefulSet 所有日志
+  getStatefulSetLogs({ commit }, nameAndNamespace) {
+    return new Promise((resolve, reject) => {
+      getStatefulSetLogs(nameAndNamespace).then((response) => {
+        const { data } = response
+        if (!data) {
+          return reject('删除失败')
+        }
+        resolve(data)
+      }).catch((error) => {
+        reject(error)
+      })
+    })
+  }
 }
 
 export default {

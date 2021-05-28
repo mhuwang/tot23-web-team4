@@ -6,7 +6,7 @@
  * @LastEditors: zqy
  * @LastEditTime: 2021-04-24 13:03:11
  */
-import { getAllPods, getPodsByNode, getPodByNameAndNamespace, getCompletePodsList, getPodYamlByNameAndNamespace, delPodByNameAndNamespace,  createPodFromForm } from '@/api/workload/pods'
+import { getAllPods, getPodsByNode, getPodByNameAndNamespace, getCompletePodsList, getPodYamlByNameAndNamespace, delPodByNameAndNamespace, createPodFromForm, getPodLogFromContainer, getPodAllLogs, getPodResources } from '@/api/workload/pods'
 import { getToken } from '@/utils/auth'
 
 
@@ -58,7 +58,7 @@ const actions = {
   },
   // 通过名称和命名空间获取对应的 pod 的详情，带利用率信息
   getPodByNameAndNamespace({ commit }, podDetails) {
-    
+
     return new Promise((resolve, reject) => {
       getPodByNameAndNamespace(podDetails).then(response => {
         const { data } = response
@@ -73,7 +73,7 @@ const actions = {
   },
   // 通过名称和命名空间获取对应的 pod yaml 文件
   getPodYamlByNameAndNamespace({ commit }, podDetails) {
-    
+
     return new Promise((resolve, reject) => {
       getPodYamlByNameAndNamespace(podDetails).then(response => {
         const { data } = response
@@ -102,7 +102,22 @@ const actions = {
     })
   },
 
-  // 查找完整的 Pod 列表 
+  // 通过名称和命名空间删除 pod
+  getPodResources({ commit }, podDetails) {
+    return new Promise((resolve, reject) => {
+      getPodResources(podDetails).then(response => {
+        const { data } = response
+        if (!data) {
+          return reject('获取失败')
+        }
+        resolve(data)
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
+
+  // 查找完整的 Pod 列表
   getCompletePodsList({ commit }) {
     return new Promise((resolve, reject) => {
       getCompletePodsList().then(response => {
@@ -117,10 +132,40 @@ const actions = {
     })
   },
 
-  //通过表单创建 Pod
-  createPodFromForm({commit}, podInformation){
+  // 通过表单创建 Pod
+  createPodFromForm({ commit: commit }, podInformation) {
     return new Promise((resolve, reject) => {
       createPodFromForm(podInformation).then(response => {
+        const { data } = response
+        if (!data) {
+          return reject('创建失败')
+        }
+        resolve(data)
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
+
+  // 获取某个容器 Log
+  getPodLogFromContainer({ commit: commit }, data) {
+    return new Promise((resolve, reject) => {
+      getPodLogFromContainer(data).then(response => {
+        const { data } = response
+        if (!data) {
+          return reject('创建失败')
+        }
+        resolve(data)
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
+
+  // 获取所有容器Logs
+  getPodAllLogs({ commit: commit }, data) {
+    return new Promise((resolve, reject) => {
+      getPodAllLogs(data).then(response => {
         const { data } = response
         if (!data) {
           return reject('创建失败')

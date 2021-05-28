@@ -62,4 +62,15 @@ export function getStatefulSetResources(data) {
       namespace: data.namespace
     }
   })
+}getStatefulSetLogs
+export function getStatefulSetLogs(data) {
+  console.log(data, "in api")
+  return request({
+    url :baseUrl + '/statefulSets/getStatefulSetLogs',
+    method: 'get',
+    params: {
+      name: data.name,
+      namespace: data.namespace
+    }
+  })
 }

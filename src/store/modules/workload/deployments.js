@@ -115,7 +115,7 @@ const actions = {
             })
         })
     },
-    
+
     changeDeploymentByYaml({ commit }, yamlData) {
         return new Promise((resolve, reject) => {
             changeDeploymentByYaml(yamlData).then((response) => {

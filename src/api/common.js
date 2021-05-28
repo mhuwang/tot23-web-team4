@@ -68,3 +68,12 @@ export function changeCrdObjectByYaml(data) {
     data: params
   })
 }
+export function getEventByInvolvedObjectUid(data) {
+  return request({
+    url: baseUrl + '/common/getEventByInvolvedObjectUid',
+    method: 'get',
+    params: {
+      uid: data
+    }
+  })
+}

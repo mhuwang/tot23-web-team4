@@ -52,9 +52,20 @@ export function getJobYamlByNameAndNamespace(data) {
   })
 }
 
-export function getJobPodsByNameAndNamespace(data) {
+export function getJobResources(data) {
   return request({
-    url :baseUrl + '/jobs/getJobPodsByNameAndNamespace',
+    url :baseUrl + '/jobs/getJobResources',
+    method: 'get',
+    params: {
+      name: data.name,
+      namespace: data.namespace
+    }
+  })
+}
+export function getJobLogs(data) {
+  console.log(data)
+  return request({
+    url: baseUrl + '/jobs/getJobLogs',
     method: 'get',
     params: {
       name: data.name,

@@ -6,7 +6,7 @@
  * @LastEditors: zqy
  * @LastEditTime: 2021-04-15 20:36:01
  */
-import { getAllReplicaSets, getReplicaSetByNameAndNamespace, getReplicaSetYamlByNameAndNamespace, deleteReplicaSetByNameAndNamespace, getReplicaSetResources } from '@/api/workload/replicaSets'
+import { getReplicaSetLogs, getAllReplicaSets, getReplicaSetByNameAndNamespace, getReplicaSetYamlByNameAndNamespace, deleteReplicaSetByNameAndNamespace, getReplicaSetResources } from '@/api/workload/replicaSets'
 import { getToken } from '@/utils/auth'
 
 const getDefaultState = () => {
@@ -88,6 +88,21 @@ const actions = {
   getReplicaSetResources({ commit }, nameAndNamespace) {
     return new Promise((resolve, reject) => {
       getReplicaSetResources(nameAndNamespace).then((response) => {
+        const { data } = response
+        if (!data) {
+          return reject('删除失败')
+        }
+        resolve(data)
+      }).catch((error) => {
+        reject(error)
+      })
+    })
+  },
+
+  // 获取 ReplicaSet 所有日志
+  getReplicaSetLogs({ commit }, nameAndNamespace) {
+    return new Promise((resolve, reject) => {
+      getReplicaSetLogs(nameAndNamespace).then((response) => {
         const { data } = response
         if (!data) {
           return reject('删除失败')

@@ -58,10 +58,41 @@ export function delPodByNameAndNamespace(data) {
     }
   })
 }
+export function getPodResources(data) {
+  return request({
+    url: baseUrl + '/pods/getPodResources',
+    method: 'get',
+    params: {
+      name: data.podName,
+      namespace: data.podNamespace,
+    }
+  })
+}
 export function getCompletePodsList(data) {
   return request({
     url: baseUrl + '/pods/getCompletePodsList',
     method: 'get'
+  })
+}
+export function getPodLogFromContainer(data) {
+  return request({
+    url: baseUrl + '/pods/getPodLogFromContainer',
+    method: 'get',
+    params: {
+      name: data.name,
+      namespace: data.namespace,
+      containerName: data.containerName,
+    }
+  })
+}
+export function getPodAllLogs(data) {
+  return request({
+    url: baseUrl + '/pods/getPodAllLogs',
+    method: 'get',
+    params: {
+      name: data.podName,
+      namespace: data.podNamespace,
+    }
   })
 }
 export function createPodFromForm(data) {
@@ -71,7 +102,7 @@ export function createPodFromForm(data) {
     method: 'post',
     data: data,
     // params: {
-    //   pod: 
+    //   pod:
       // name: data.baseImformation.name,
       // namespace: data.baseImformation.namespace,
       // image: data.baseImformation.image,
@@ -90,7 +121,7 @@ export function createPodFromForm(data) {
       // envVar: data.seniorInformation.env,
       // amount: data.baseInformation.number,/
 
-      
+
     // }
   })
 }

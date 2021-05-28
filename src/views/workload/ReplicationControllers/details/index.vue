@@ -326,22 +326,34 @@
     </el-card>
     <br /><br />
 
-    <!-- 活动 -->
-    <!-- <el-card class="box-card">
+    <!-- 事件 -->
+    <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <span style="font-size: 16px">活动</span>
+        <span style="font-size: 16px">事件</span>
       </div>
-      <el-table
-        :data="services"
-        style="width: 100%"
-        stripe
-        v-loading="loading"
-        element-loading-text="获取数据中..."
-      >
-        未找到资源
+      <el-table :data="events" style="width: 100%" stripe>
+        <el-table-column label="类型" prop="type" width="100"></el-table-column>
+        <el-table-column label="原因" prop="reason" width="170"></el-table-column>
+        <el-table-column label="时间" width="150">
+          <template slot-scope="scope">
+            <span>{{
+                scope.row.lastTimestamp ? scope.row.lastTimestamp.replaceAll(/[TZ]/g, " ")
+                  : scope.row.eventTime.time ? scope.row.eventTime.time.replaceAll(/[TZ]/g, " ") :
+                  "无"
+              }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="来自"  width="170">
+          <template slot-scope="scope">
+            <span>
+              {{scope.row.involvedObject.kind + '/' + scope.row.involvedObject.name}}
+            </span>
+          </template>
+        </el-table-column>
+        <el-table-column label="信息" prop="message" width=""></el-table-column>
       </el-table>
     </el-card>
-    <br /><br /> -->
+    <br /><br />
 
     <!-- anno 详情 -->
     <el-dialog
@@ -452,6 +464,7 @@ export default {
       replicationControllerStatus: {},
       replicationControllerName: "",
       replicationControllerNamespace: "",
+      events: [],
       annoKey: "",
       annoDialogVisible: false,
       annoDetails: "",
@@ -530,10 +543,10 @@ export default {
       )
       .then((res) => {
         console.log(res);
-        this.replicationController = res.dataReplicationController;
-        this.pods = res.dataPods;
-        this.services = res.dataServices;
-        // this.replicationControllerStatus = res.data.status.conditions;
+        this.replicationController = res.data.replicationController;
+        this.pods = res.data.pods;
+        this.services = res.data.services;
+        this.events = res.data.events;
         this.loading = false;
         // console.log(this.replicationControllerStatus)
       })
@@ -698,7 +711,7 @@ export default {
         .catch((error) => {
           throw error;
         });
-        
+
       // json 格式
       this.$store
         .dispatch("services/getServiceByNameAndNamespace", serviceDetails)

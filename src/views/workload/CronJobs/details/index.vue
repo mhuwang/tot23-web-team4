@@ -168,7 +168,7 @@
         <!-- <el-table-column prop="metadata.uid" label="uid"> </el-table-column> -->
         <!-- <el-table-column prop="spec.nodeName" width="140" label="所属节点"> </el-table-column> -->
         <!-- <el-table-column prop="status.podIP" width="140" label="主机ip地址"> </el-table-column> -->
-        <el-table-column label="Pods" width="200">
+        <el-table-column label="容器组" width="200">
           <template slot-scope="scope">
             <span>
               {{ scope.row.runningPods ? scope.row.runningPods : 0 }}/{{
@@ -260,7 +260,7 @@
           </template>
         </el-table-column>
         <el-table-column prop="namespace" label="命名空间"> </el-table-column>
-        <el-table-column label="Pods" width="200">
+        <el-table-column label="容器组" width="200">
           <template slot-scope="scope">
             <span>
               {{ scope.row.runningPods ? scope.row.runningPods : 0 }}/{{
@@ -303,12 +303,32 @@
     </el-card>
     <br /><br />
 
-    <!-- 活动 -->
+    <!-- 事件 -->
     <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <span style="font-size: 16px">活动</span>
+        <span style="font-size: 16px">事件</span>
       </div>
-      <List item-layout="horizontal" :split="false"> </List>
+      <el-table :data="events" style="width: 100%" stripe>
+        <el-table-column label="类型" prop="type" width="100"></el-table-column>
+        <el-table-column label="原因" prop="reason" width="170"></el-table-column>
+        <el-table-column label="时间" width="150">
+          <template slot-scope="scope">
+            <span>{{
+                scope.row.lastTimestamp ? scope.row.lastTimestamp.replaceAll(/[TZ]/g, " ")
+                  : scope.row.eventTime.time ? scope.row.eventTime.time.replaceAll(/[TZ]/g, " ") :
+                  "无"
+              }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="来自"  width="170">
+          <template slot-scope="scope">
+            <span>
+              {{scope.row.involvedObject.kind + '/' + scope.row.involvedObject.name}}
+            </span>
+          </template>
+        </el-table-column>
+        <el-table-column label="信息" prop="message" width=""></el-table-column>
+      </el-table>
     </el-card>
     <br /><br />
 
@@ -382,11 +402,12 @@ export default {
   props: ["name"],
   data() {
     return {
-      jobs: {},
-      runningJobs: {},
+      jobs: [],
+      runningJobs: [],
       cronJob: {},
       cronJobName: "",
       cronJobNamespace: "",
+      events: [],
       annoKey: "",
       annoDialogVisible: false,
       annoDetails: "",
@@ -459,10 +480,11 @@ export default {
       this.$store
         .dispatch("cronJobs/getCronJobResources", nameAndNamespace)
         .then((res) => {
-          // console.log(res);
+           console.log(res);
           this.cronJob = res.data.cronJob;
           this.runningJobs = res.data.runningJobs;
           this.jobs = res.data.jods;
+          this.events = res.data.events;
         })
         .catch((error) => {
           throw error;

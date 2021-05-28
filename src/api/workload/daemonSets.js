@@ -6,8 +6,8 @@
  * @LastEditors: Rex Joush
  * @LastEditTime: 2021-05-10 18:43:42
  */
-import request from "@/utils/request";
-let baseUrl = require("../api").baseurl;
+import request from '@/utils/request'
+const baseUrl = require('../api').baseurl
 
 export function getAllDaemonSets(data) {
   return request({
@@ -43,7 +43,7 @@ export function deleteDaemonSetByNameAndNamespace(data) {
 
 export function getDaemonSetYamlByNameAndNamespace(data) {
   return request({
-    url :baseUrl + '/daemonSets/getDaemonSetYamlByNameAndNamespace',
+    url: baseUrl + '/daemonSets/getDaemonSetYamlByNameAndNamespace',
     method: 'get',
     params: {
       name: data.name,
@@ -55,7 +55,25 @@ export function getDaemonSetYamlByNameAndNamespace(data) {
 export function getDaemonSetResources(data) {
   // console.log(data, "in api")
   return request({
-    url :baseUrl + '/daemonSets/getDaemonSetResources',
+    url: baseUrl + '/daemonSets/getDaemonSetResources',
+    method: 'get',
+    params: {
+      name: data.name,
+      namespace: data.namespace
+    }
+  })
+}
+export function createOrReplaceDaemonSetByYaml(data) {
+  // console.log(data, "in api")
+  return request({
+    url: baseUrl + '/daemonSets/createOrReplaceDaemonSetByYaml',
+    method: 'post',
+    data: data
+  })
+}
+export function getDaemonSetLogs(data) {
+  return request({
+    url: baseUrl + '/daemonSets/getDaemonSetLogs',
     method: 'get',
     params: {
       name: data.name,

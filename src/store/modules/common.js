@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-04-07 20:07:51
  */
-import { changeResourceByYaml ,changeCrdByYaml,changeCrdObjectByYaml,changeDeploymentByYaml,changeIngressesByYaml,changeServicesByYaml} from '@/api/common'
+import { changeResourceByYaml ,changeCrdByYaml,changeCrdObjectByYaml,changeDeploymentByYaml,changeIngressesByYaml,changeServicesByYaml, getEventByInvolvedObjectUid} from '@/api/common'
 import { getToken } from '@/utils/auth'
 
 const getDefaultState = () => {
@@ -119,6 +119,20 @@ const actions = {
   changeCrdObjectByYaml({ commit }, yaml) {
     return new Promise((resolve, reject) => {
       changeCrdObjectByYaml(yaml).then(response => {
+        const { data } = response
+        if (!data) {
+          return reject('修改失败')
+        }
+        resolve(data)
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
+
+  getEventByInvolvedObjectUid({ commit }, uid) {
+    return new Promise((resolve, reject) => {
+      getEventByInvolvedObjectUid(uid).then(response => {
         const { data } = response
         if (!data) {
           return reject('修改失败')

@@ -61,7 +61,7 @@
       <el-table :data="statefulSetsInCurrentPage" style="width: 100%" stripe>
         <el-table-column width="40">
           <template slot-scope="scope">
-            <svg-icon :icon-class="scope.row.status == '1'? 'load-success': 'load-failed'"/>
+            <svg-icon :icon-class="scope.row.status == '1' ? 'load-success': 'load-failed'"/>
           </template>
         </el-table-column>
         <el-table-column prop="name" label="名称">
@@ -101,6 +101,16 @@
         </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
+            <!-- 日志 -->
+            <el-button
+              type="info"
+              icon="el-icon-document"
+              style="margin-bottom: 5px"
+              size="small"
+              @click="showLogDialog(scope.row.name, scope.row.namespace)"
+            >日志</el-button
+            >
+            <br >
             <!-- 编辑 -->
             <el-button
               style="margin-bottom: 5px"
@@ -132,6 +142,46 @@
       >
       </el-pagination>
     </el-card>
+
+    <!-- 日志 -->
+    <el-dialog
+      title="日志"
+      :visible.sync="logDialogVisible"
+      width="70%"
+      @close="logDialogVisible = false"
+      :append-to-body="true"
+      :lock-scroll="true"
+    >
+      <template >
+        <el-select v-model="podName" placeholder="请选择容器组" style="margin-right: 5px" @change="logSelectChange">
+          <el-option
+            v-for="item in podNames"
+            :key="item"
+            :label="item"
+            :value="item"
+            :disabled="item === podName">
+          </el-option>
+        </el-select>
+      </template>
+      <template>
+        <el-select v-model="containerName" placeholder="请选择容器" @change="logSelectChange">
+          <el-option
+            v-for="item in containerNames"
+            :key="item"
+            :label="item"
+            :value="item"
+            :disabled="item === containerName">
+          </el-option>
+        </el-select>
+      </template>
+      <highlightjs javascript :code="log" />
+      <span slot="footer" class="dialog-footer">
+        <div class="foot-info">
+          <i class="el-icon-warning"></i> 请选择要查看日志的 容器组 和 容器组中的容器
+        </div>
+        <el-button type="primary" @click="logDialogVisible = false">确 定</el-button>
+      </span>
+    </el-dialog>
 
     <!-- StatefulSet 编辑框 -->
     <el-dialog
@@ -203,6 +253,20 @@ export default {
       codeYaml: "", // 编辑框的 yaml 数据
       addYaml: "", // 添加框的 yaml 数据
       value: "",
+      /* 日志部分*/
+      logs: [],
+      log: '',
+      podName: '',
+      containerName: '',
+      logDialogVisible: false,
+      cmOptionsLog: {
+        // 日志 codemirror 配置项
+        tabSize: 4,
+        mode: 'log',
+        theme: 'panda-syntax',
+        lineNumbers: true,
+        line: true
+      },
       // cmOptions: {
       //   // json codemirror 配置项
       //   tabSize: 4,
@@ -227,6 +291,26 @@ export default {
 
   created() {
     this.getStatefulSets();
+  },
+
+  computed: {
+    /* 日志部分*/
+    podNames() {
+      const names = []
+      const tmp = Object.keys(this.logs)
+      for (const name in tmp) {
+        names.push(tmp[name])
+      }
+      return names
+    },
+    containerNames() {
+      const pod = this.logs[this.podName]
+      const names = []
+      for (const name in pod) {
+        names.push(name)
+      }
+      return names
+    }
   },
 
   methods: {
@@ -262,6 +346,27 @@ export default {
     clearSelect() {
       this.loading = true;
       this.getStatefulSets();
+    },
+
+    /* 日志部分*/
+    showLogDialog(name, namespace) {
+      const data = {
+        name: name,
+        namespace: namespace
+      }
+      this.$store.dispatch('statefulSets/getStatefulSetLogs', data).then(res => {
+        console.log(res)
+        this.logs = res.data
+        this.podName = Object.keys(this.logs)[0]
+        this.containerName = Object.keys(this.logs[this.podName])[0]
+        this.log = this.logs[this.podName][this.containerName]
+        this.logDialogVisible = true
+      }).catch(error => {
+        throw error
+      })
+    },
+    logSelectChange() {
+      this.log = this.logs[this.podName][this.containerName]
     },
 
     //编辑 StatefulSets

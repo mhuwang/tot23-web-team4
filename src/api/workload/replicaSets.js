@@ -62,3 +62,14 @@ export function getReplicaSetResources(data) {
     }
   })
 }
+export function getReplicaSetLogs(data) {
+  console.log(data)
+  return request({
+    url :baseUrl + '/replicaSets/getReplicaSetLogs',
+    method: 'get',
+    params: {
+      name: data.name,
+      namespace: data.namespace
+    }
+  })
+}

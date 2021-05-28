@@ -6,7 +6,7 @@
  * @LastEditors: zqy
  * @LastEditTime: 2021-04-16 20:30:06
  */
-import { getAllDaemonSets, getDaemonSetByNameAndNamespace, deleteDaemonSetByNameAndNamespace, getDaemonSetYamlByNameAndNamespace, getDaemonSetResources } from '@/api/workload/daemonSets'
+import { getAllDaemonSets, getDaemonSetByNameAndNamespace, deleteDaemonSetByNameAndNamespace, getDaemonSetYamlByNameAndNamespace, getDaemonSetResources, createOrReplaceDaemonSetByYaml, getDaemonSetLogs } from '@/api/workload/daemonSets'
 import { getToken } from '@/utils/auth'
 
 const getDefaultState = () => {
@@ -25,7 +25,7 @@ const mutations = {
 
 const actions = {
   // getAllDaemonSets
-  getAllDaemonSets({commit}, namespace) {
+  getAllDaemonSets({ commit }, namespace) {
     return new Promise((resolve, reject) => {
       getAllDaemonSets(namespace).then(response => {
         const { data } = response
@@ -38,7 +38,7 @@ const actions = {
       })
     })
   },
-  //通过名字和命名空间获取 DaemonSet
+  // 通过名字和命名空间获取 DaemonSet
   getDaemonSetByNameAndNamespace({ commit }, nameAndNamespace) {
     return new Promise((resolve, reject) => {
       getDaemonSetByNameAndNamespace(nameAndNamespace).then(response => {
@@ -53,12 +53,12 @@ const actions = {
     })
   },
 
-  //通过名字和命名空间删除 DaemonSet
-  deleteDaemonSetByNameAndNamespace({commit}, nameAndNamespace) {
+  // 通过名字和命名空间删除 DaemonSet
+  deleteDaemonSetByNameAndNamespace({ commit }, nameAndNamespace) {
     return new Promise((resolve, reject) => {
       deleteDaemonSetByNameAndNamespace(nameAndNamespace).then((response) => {
         const { data } = response
-        if (!data){
+        if (!data) {
           return reject('删除失败')
         }
         resolve(data)
@@ -69,11 +69,11 @@ const actions = {
   },
 
   // 通过名字和命名空间获取 Yaml 格式的 DaemonSet
-  getDaemonSetYamlByNameAndNamespace({commit}, nameAndNamespace) {
+  getDaemonSetYamlByNameAndNamespace({ commit }, nameAndNamespace) {
     return new Promise((resolve, reject) => {
       getDaemonSetYamlByNameAndNamespace(nameAndNamespace).then(response => {
-        const {data} =response
-        if(!data){
+        const { data } = response
+        if (!data) {
           return reject('获取失败')
         }
         resolve(data)
@@ -84,11 +84,11 @@ const actions = {
   },
 
   // 通过名字和命名空间获取 DaemonSet 和 DaemonSet 管理的 相应资源
-  getDaemonSetResources({commit}, nameAndNamespace) {
+  getDaemonSetResources({ commit }, nameAndNamespace) {
     return new Promise((resolve, reject) => {
       getDaemonSetResources(nameAndNamespace).then(response => {
-        const {data} =response
-        if(!data){
+        const { data } = response
+        if (!data) {
           return reject('获取失败')
         }
         resolve(data)
@@ -97,6 +97,34 @@ const actions = {
       })
     })
   },
+
+  createOrReplaceDaemonSetByYaml({ commit }, yaml) {
+    return new Promise((resolve, reject) => {
+      createOrReplaceDaemonSetByYaml(yaml).then(response => {
+        const { data } = response
+        if (!data) {
+          return reject('创建失败')
+        }
+        resolve(data)
+      }).catch((error) => {
+        reject(error)
+      })
+    })
+  },
+
+  getDaemonSetLogs({ commit }, yaml) {
+    return new Promise((resolve, reject) => {
+      getDaemonSetLogs(yaml).then(response => {
+        const { data } = response
+        if (!data) {
+          return reject('创建失败')
+        }
+        resolve(data)
+      }).catch((error) => {
+        reject(error)
+      })
+    })
+  }
 }
 
 export default {

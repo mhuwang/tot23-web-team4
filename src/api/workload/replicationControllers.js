@@ -61,3 +61,13 @@ export function getReplicationControllerResources(data) {
     }
   })
 }
+export function getReplicationControllerLogs(data) {
+  return request({
+    url :baseUrl + '/replicationControllers/getReplicationControllerLogs',
+    method: 'get',
+    params: {
+      name: data.name,
+      namespace: data.namespace
+    }
+  })
+}

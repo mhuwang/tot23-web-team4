@@ -139,7 +139,7 @@
             deployment.spec.strategy.rollingUpdate.maxSurge.strVal
           }}</span>
         </div>
-        <div class="metadata-item">
+        <div class="metadata-item" v-if="deployment.spec.strategy.rollingUpdate.maxUnavailable.strVal">
           <p>最多不可用数</p>
           <span>{{
             deployment.spec.strategy.rollingUpdate.maxUnavailable.strVal
@@ -407,6 +407,35 @@
     </el-card>
     <br/><br/> -->
 
+    <!-- 事件 -->
+    <el-card class="box-card">
+      <div slot="header" class="clearfix">
+        <span style="font-size: 16px">事件</span>
+      </div>
+      <el-table :data="events" style="width: 100%" stripe>
+        <el-table-column label="类型" prop="type" width="100"></el-table-column>
+        <el-table-column label="原因" prop="reason" width="170"></el-table-column>
+        <el-table-column label="时间" width="150">
+          <template slot-scope="scope">
+            <span>{{
+                scope.row.lastTimestamp ? scope.row.lastTimestamp.replaceAll(/[TZ]/g, " ")
+                  : scope.row.eventTime.time ? scope.row.eventTime.time.replaceAll(/[TZ]/g, " ") :
+                  "无"
+              }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="来自"  width="170">
+          <template slot-scope="scope">
+            <span>
+              {{scope.row.involvedObject.kind + '/' + scope.row.involvedObject.name}}
+            </span>
+          </template>
+        </el-table-column>
+        <el-table-column label="信息" prop="message" width=""></el-table-column>
+      </el-table>
+    </el-card>
+    <br /><br />
+
     <!-- 活动 -->
     <!-- <el-card class="box-card">
       <div slot="header" class="clearfix">
@@ -449,15 +478,6 @@
             @input="onYamlCmCodeChange"
           />
         </el-tab-pane>
-        <el-tab-pane label="JSON" name="second">
-          <codemirror
-            ref="cmYamlEditor"
-            :value="codeJSON"
-            :options="cmOptions"
-            @ready="onJSONCmReady"
-            @input="onJSONCmCodeChange"
-          />
-        </el-tab-pane>
       </el-tabs>
 
       <!-- <textarea style="width:100%" name="describe" id="pod" cols="30" rows="10">
@@ -492,6 +512,8 @@ export default {
       newReplicaSets: {},
       oldReplicaSets: {},
       deploymentStatus: {},
+      events: [],
+      displayLog: false,
       deploymentName: "",
       deploymentNamespace: "",
       annoKey: "",
@@ -499,21 +521,9 @@ export default {
       annoDetails: "",
       loading: true,
       replicaSetEditDialogVisible: false, // 编辑详情框
-      codeJSON: "", // 编辑框的 json 数据
       codeYaml: "", // 编辑框的 yaml 数据
       addYaml: "", // 添加框的 yaml 数据
       value: "",
-      cmOptions: {
-        // json codemirror 配置项
-        tabSize: 4,
-        mode: {
-          name: "javascript",
-          json: true,
-        },
-        theme: "panda-syntax",
-        lineNumbers: true,
-        line: true,
-      },
       cmOptionsYaml: {
         // yaml codemirror 配置项
         tabSize: 4,
@@ -571,6 +581,7 @@ export default {
         this.newReplicaSets = res.data.newReplicaSets;
         this.oldReplicaSets = res.data.oldReplicaSets;
         this.deploymentStatus = res.data.deployment.status.conditions;
+        this.events = res.data.events;
         this.loading = false;
         // console.log(this.deploymentStatus)
       })
@@ -655,21 +666,6 @@ export default {
         this.codeYaml = res.data;
         console.log("edit dialog init", this.codeYaml);
         this.replicaSetEditDialogVisible = true; // 打开编辑对话框
-      })
-      .catch((error) => {
-        throw error;
-      });
-
-    // json 格式
-    this.$store
-      .dispatch("cronJobs/getCronJobByNameAndNamespace", cronJobDetails)
-      .then((res) => {
-        // console.log(res);
-        let json = JSON.stringify(res.data.cronJob);
-        this.codeJSON = this.beautify(json, {
-          indent_size: 4,
-          space_in_empty_paren: true,
-        });
       })
       .catch((error) => {
         throw error;
@@ -765,6 +761,11 @@ export default {
       })
       .catch(() => {});
   },
+
+  //显示Log
+    showLog() {
+      this.displayLog = !this.displayLog;
+    },
   },
 };
 </script>

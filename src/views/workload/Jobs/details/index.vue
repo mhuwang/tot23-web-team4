@@ -236,12 +236,34 @@
     </el-card>
     <br /><br />
 
-    <!-- 活动 -->
-    <!-- <el-card class="box-card">
+    <!-- 事件 -->
+    <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <span style="font-size: 16px">活动</span>
+        <span style="font-size: 16px">事件</span>
       </div>
-    </el-card> -->
+      <el-table :data="events" style="width: 100%" stripe>
+        <el-table-column label="类型" prop="type" width="100"></el-table-column>
+        <el-table-column label="原因" prop="reason" width="170"></el-table-column>
+        <el-table-column label="时间" width="150">
+          <template slot-scope="scope">
+            <span>{{
+                scope.row.lastTimestamp ? scope.row.lastTimestamp.replaceAll(/[TZ]/g, " ")
+                  : scope.row.eventTime.time ? scope.row.eventTime.time.replaceAll(/[TZ]/g, " ") :
+                  "无"
+              }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="来自"  width="170">
+          <template slot-scope="scope">
+            <span>
+              {{scope.row.involvedObject.kind + '/' + scope.row.involvedObject.name}}
+            </span>
+          </template>
+        </el-table-column>
+        <el-table-column label="信息" prop="message" width=""></el-table-column>
+      </el-table>
+    </el-card>
+    <br /><br />
 
     <!-- Pod 编辑框 -->
     <el-dialog
@@ -303,6 +325,7 @@ export default {
       job: {},
       jobName: "",
       jobNamespace: "",
+      events: [],
       loading: true,
       editDialogVisible: false,
       codeYaml: "",
@@ -369,11 +392,12 @@ export default {
       namespace: this.name.split(",")[1],
     };
     this.$store
-      .dispatch("jobs/getJobPodsByNameAndNamespace", nameAndNamespace)
+      .dispatch("jobs/getJobResources", nameAndNamespace)
       .then((res) => {
         console.log(res);
-        this.job = res.dataJob;
-        this.pods = res.dataPods;
+        this.job = res.data.job;
+        this.pods = res.data.pods;
+        this.events = res.data.events;
         this.loading = false;
       })
       .catch((error) => {
@@ -478,7 +502,7 @@ export default {
 
       //this.editForm = res; // 查询结果写入表单
     },
-    
+
     // 编辑器方法
     /* yaml */
     onYamlCmReady(cm) {

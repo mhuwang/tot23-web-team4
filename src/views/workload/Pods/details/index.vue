@@ -327,6 +327,7 @@
       </List>
     </el-card>
     <br /><br />
+
     <div v-if="pod.status.containerStatuses.length > 0">
       <el-divider content-position="left"
       ><span style="font-weight: bold; font-size: 18px">容器</span></el-divider
@@ -344,13 +345,73 @@
             <p>镜像</p>
             <span>{{ container.image }}</span>
             </div>
+          <div class="metadata-item">
+            <p>日志</p>
+            显示日志&nbsp;&nbsp;<i
+            :class="displayLog ? 'el-icon-zoom-out' : 'el-icon-zoom-in'"
+            @click="showLog(container.name)"
+          ></i>
+          </div>
             <!-- <div class="metadata-item">
             <p>容器 id</p>
             <span>{{ container.containerID }}</span>
             </div> -->
         </el-card>
+      <br />
     </div>
     </div>
+
+
+    <!-- 日志框 -->
+    <el-dialog
+      title="日志"
+      :visible.sync="displayLog"
+      width="70%"
+      @close="displayLog = false"
+      :append-to-body="true"
+      :lock-scroll="true"
+    >
+      <el-tabs value="first" type="card">
+        <highlightjs
+          v-show="displayLog"
+          style="width: 100%"
+          language="plaintext"
+          :code="log"
+        />
+      </el-tabs>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="displayLog = false">确 定</el-button>
+      </span>
+    </el-dialog>
+
+    <!-- 事件 -->
+    <el-card class="box-card">
+      <div slot="header" class="clearfix">
+        <span style="font-size: 16px">事件</span>
+      </div>
+      <el-table :data="events" style="width: 100%" stripe>
+        <el-table-column label="类型" prop="type" width="100"></el-table-column>
+        <el-table-column label="原因" prop="reason" width="170"></el-table-column>
+        <el-table-column label="时间" width="150">
+          <template slot-scope="scope">
+            <span>{{
+                scope.row.lastTimestamp ? scope.row.lastTimestamp.replaceAll(/[TZ]/g, " ")
+                  : scope.row.eventTime.time ? scope.row.eventTime.time.replaceAll(/[TZ]/g, " ") :
+                "无"
+              }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="来自"  width="170">
+          <template slot-scope="scope">
+            <span>
+              {{scope.row.involvedObject.kind + '/' + scope.row.involvedObject.name}}
+            </span>
+          </template>
+        </el-table-column>
+        <el-table-column label="信息" prop="message" width=""></el-table-column>
+      </el-table>
+    </el-card>
+    <br /><br />
   </div>
 </template>
 
@@ -361,9 +422,12 @@ export default {
     return {
       trailWidth: 5,
       strokeWidth: 5,
+      events: [],
       usage: [],
-      podName: "",
+      podName: '',
       pod: {},
+      displayLog: false,
+      log: '',
     };
   },
   computed: {
@@ -401,6 +465,14 @@ export default {
       }
       return addrArr;
     },
+    // 容器名
+    containersName() {
+      let name = [];
+      for(let index in this.pod.spec.containers) {
+        name.push(this.pod.spec.containers[index].name);
+      }
+      return name;
+    }
   },
   mounted: function () {
     /* name */
@@ -443,11 +515,12 @@ export default {
       podNamespace: sessionStorage.getItem("podNamespace"),
     };
     this.$store
-      .dispatch("pods/getPodByNameAndNamespace", podDetails)
+      .dispatch("pods/getPodResources", podDetails)
       .then((res) => {
         console.log(res);
-        this.pod = res.data.pod;
-        this.usage = res.data.podUsagesList;
+        this.pod = res.data.podDetails.pod;
+        this.usage = res.data.podDetails.podUsagesList;
+        this.events = res.data.events;
       })
       .catch((error) => {
         throw error;
@@ -545,6 +618,30 @@ export default {
     savepodInfo() {
       sessionStorage.setItem("podName");
     },
+
+    showLog(name) {
+      this.getPodLogFromContainer(name);
+      this.displayLog = true;
+    },
+
+    getPodLogFromContainer(name) {
+      let data = {
+        name: sessionStorage.getItem("podName"),
+        namespace: sessionStorage.getItem("podNamespace"),
+        containerName: name
+      };
+      console.log(data);
+      this.$store
+        .dispatch("pods/getPodLogFromContainer", data)
+        .then((res) => {
+          console.log(res.data);
+          this.log = res.data;
+        })
+        .catch((error) => {
+          throw error;
+        });
+    },
+
   },
 };
 </script>
