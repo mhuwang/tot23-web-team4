@@ -11,11 +11,11 @@
   <div>
     <!-- {{name}}
     {{namespace}} -->
-    <el-divider content-position="left"
-      ><span style="font-weight: bold; font-size: 20px">
-        {{ job.metadata.name }}
-      </span></el-divider
-    >
+    <el-divider
+      content-position="left"
+    ><span style="font-weight: bold; font-size: 20px">
+      {{ job.metadata.name }}
+    </span></el-divider>
     <!-- 元数据 -->
     <el-card class="box-card">
       <div slot="header" class="clearfix">
@@ -43,7 +43,7 @@
       </List>
       <!-- 元数据 标签 注释部分 -->
       <List item-layout="horizontal" :split="false">
-        <div :labels="this.labels" v-if="labels.length > 0" class="metadata-item">
+        <div v-if="labels.length > 0" :labels="this.labels" class="metadata-item">
           <p>标签</p>
           <li v-for="label in labels" :key="label">
             <el-tag
@@ -51,11 +51,10 @@
               effect="dark"
               size="medium"
               color="#bedcfa"
-              >{{ label.key }}: {{ label.value }}</el-tag
-            >
+            >{{ label.key }}: {{ label.value }}</el-tag>
           </li>
         </div>
-        <div :annotation="this.annotations" v-if="annotations.length > 0" class="metadata-item">
+        <div v-if="annotations.length > 0" :annotation="this.annotations" class="metadata-item">
           <p>注释</p>
           <li v-for="anno in annotations" :key="anno">
             <el-tag
@@ -63,13 +62,12 @@
               effect="dark"
               size="medium"
               color="#bedcfa"
-              >{{ anno.key }}: {{ anno.value }}</el-tag
-            >
+            >{{ anno.key }}: {{ anno.value }}</el-tag>
           </li>
         </div>
       </List>
     </el-card>
-    <br /><br />
+    <br><br>
 
     <!-- 资源信息 -->
     <el-card class="box-card">
@@ -85,7 +83,7 @@
           <p>可并行Pod</p>
           <span>{{ job.spec.parallelism }}</span>
         </div>
-        <br />
+        <br>
         <div class="metadata-item">
           <p>镜像</p>
           <li
@@ -98,13 +96,12 @@
               effect="dark"
               size="medium"
               color="#bedcfa"
-              >{{ container.image }}</el-tag
-            >
+            >{{ container.image }}</el-tag>
           </li>
         </div>
       </List>
     </el-card>
-    <br /><br />
+    <br><br>
 
     <!-- Pod 状态 -->
     <el-card class="box-card">
@@ -112,17 +109,17 @@
         <span style="font-size: 16px">Pod 状态</span>
       </div>
       <List item-layout="horizontal" :split="false">
-        <div :runningPods="this.runningPods" v-if="runningPods > 0" class="metadata-item">
+        <div v-if="runningPods > 0" :runningPods="this.runningPods" class="metadata-item">
           <p>运行</p>
-          <span >{{ runningPods }}</span>
+          <span>{{ runningPods }}</span>
         </div>
         <div v-if="job.status.succeeded" class="metadata-item">
           <p>成功</p>
           <span>{{ job.status.succeeded }}</span>
         </div>
-        <div :pendingPods="this.pendingPods" v-if="pendingPods > 0" class="metadata-item">
+        <div v-if="pendingPods > 0" :pendingPods="this.pendingPods" class="metadata-item">
           <p>启动中</p>
-          <span >{{ pendingPods   }}</span>
+          <span>{{ pendingPods }}</span>
         </div>
         <div class="metadata-item">
           <p>期望</p>
@@ -130,7 +127,7 @@
         </div>
       </List>
     </el-card>
-    <br /><br />
+    <br><br>
 
     <!-- Pods 列表 -->
     <el-card class="box-card">
@@ -138,10 +135,10 @@
         <span style="font-size: 16px">Pods 列表</span>
       </div>
       <el-table
+        v-loading="loading"
         :data="pods"
         style="width: 100%"
         stripe
-        v-loading="loading"
         element-loading-text="获取数据中..."
       >
         <el-table-column width="40">
@@ -152,16 +149,16 @@
                   ? 'load-success'
                   : 'load-failed'
               "
-          /></template>
+            /></template>
         </el-table-column>
         <el-table-column prop="name" label="名字">
           <template slot-scope="scope">
             <router-link
               :to="'/workload/pods/' + scope.row.name"
+              class="link-type"
               @click.native="
                 goToPodsDetails(scope.row.name, scope.row.namespace)
               "
-              class="link-type"
             >
               <span style="color: #409eff; text-decoration: underline">{{
                 scope.row.name
@@ -169,23 +166,22 @@
             </router-link>
           </template>
         </el-table-column>
-        <el-table-column prop="namespace" label="命名空间"> </el-table-column>
-        <el-table-column prop="phase" label="状态"> </el-table-column>
-        <el-table-column align="center" prop="restartCount" label="重启次数">
-        </el-table-column>
+        <el-table-column prop="namespace" label="命名空间" />
+        <el-table-column prop="phase" label="状态" />
+        <el-table-column align="center" prop="restartCount" label="重启次数" />
         <el-table-column align="center" label="CPU 利用率" width="140">
           <template slot-scope="scope">
             <!-- {{ scope.row.cpuUsage }} -->
             <div v-if="scope.row.cpuUsage != -1">
-              <div class="usage-cpu-tag-zero" v-if="scope.row.cpuUsage == 0">
+              <div v-if="scope.row.cpuUsage == 0" class="usage-cpu-tag-zero">
                 0 m
               </div>
-              <div class="usage-cpu-tag-success" v-else>
+              <div v-else class="usage-cpu-tag-success">
                 {{ (scope.row.cpuUsage / 1000 / 1000).toFixed(2) }} m
               </div>
             </div>
 
-            <div class="usage-cpu-tag-failed" v-else>--</div>
+            <div v-else class="usage-cpu-tag-failed">--</div>
           </template>
         </el-table-column>
         <el-table-column align="center" label="内存利用率" width="140">
@@ -193,23 +189,21 @@
             <!-- {{scope.row.memoryUsage == -1}} -->
             <div v-if="scope.row.memoryUsage != -1">
               <div
-                class="usage-memory-tag-zero"
                 v-if="scope.row.memoryUsage == 0"
+                class="usage-memory-tag-zero"
               >
                 0 MiB
               </div>
-              <div class="usage-memory-tag-success" v-else>
+              <div v-else class="usage-memory-tag-success">
                 {{ (scope.row.memoryUsage / 1024).toFixed(2) }} MiB
               </div>
             </div>
 
-            <div class="usage-memory-tag-failed" v-else>--</div>
+            <div v-else class="usage-memory-tag-failed">--</div>
           </template>
         </el-table-column>
-        <el-table-column prop="nodeName" width="120" label="所属节点">
-        </el-table-column>
-        <el-table-column prop="podIP" width="120" label="主机ip地址">
-        </el-table-column>
+        <el-table-column prop="nodeName" width="120" label="所属节点" />
+        <el-table-column prop="podIP" width="120" label="主机ip地址" />
         <el-table-column label="操作">
           <template slot-scope="scope">
             <!-- 修改 -->
@@ -219,22 +213,20 @@
               style="margin-bottom: 5px"
               size="small"
               @click="showPodEditDialog(scope.row.name, scope.row.namespace)"
-              >编辑</el-button
-            >
-            <br />
+            >编辑</el-button>
+            <br>
             <!-- 删除 -->
             <el-button
               type="danger"
               icon="el-icon-delete"
               size="small"
               @click="delPod(scope.row.name, scope.row.namespace)"
-              >删除</el-button
-            >
+            >删除</el-button>
           </template>
         </el-table-column>
       </el-table>
     </el-card>
-    <br /><br />
+    <br><br>
 
     <!-- 事件 -->
     <el-card class="box-card">
@@ -242,38 +234,38 @@
         <span style="font-size: 16px">事件</span>
       </div>
       <el-table :data="events" style="width: 100%" stripe>
-        <el-table-column label="类型" prop="type" width="100"></el-table-column>
-        <el-table-column label="原因" prop="reason" width="170"></el-table-column>
+        <el-table-column label="类型" prop="type" width="100" />
+        <el-table-column label="原因" prop="reason" width="170" />
         <el-table-column label="时间" width="150">
           <template slot-scope="scope">
             <span>{{
-                scope.row.lastTimestamp ? scope.row.lastTimestamp.replaceAll(/[TZ]/g, " ")
-                  : scope.row.eventTime.time ? scope.row.eventTime.time.replaceAll(/[TZ]/g, " ") :
-                  "无"
-              }}</span>
+              scope.row.lastTimestamp ? scope.row.lastTimestamp.replaceAll(/[TZ]/g, " ")
+              : scope.row.eventTime.time ? scope.row.eventTime.time.replaceAll(/[TZ]/g, " ") :
+                "无"
+            }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="来自"  width="170">
+        <el-table-column label="来自" width="170">
           <template slot-scope="scope">
             <span>
-              {{scope.row.involvedObject.kind + '/' + scope.row.involvedObject.name}}
+              {{ scope.row.involvedObject.kind + '/' + scope.row.involvedObject.name }}
             </span>
           </template>
         </el-table-column>
-        <el-table-column label="信息" prop="message" width=""></el-table-column>
+        <el-table-column label="信息" prop="message" width="" />
       </el-table>
     </el-card>
-    <br /><br />
+    <br><br>
 
     <!-- Pod 编辑框 -->
     <el-dialog
       title="编辑 pod"
       :visible.sync="editDialogVisible"
       width="70%"
-      @closed="handleClose"
-      @close="editDialogVisible = false"
       :append-to-body="true"
       :lock-scroll="true"
+      @closed="handleClose"
+      @close="editDialogVisible = false"
     >
       <el-tabs value="first" type="card">
         <el-tab-pane label="YAML" name="first">
@@ -300,7 +292,7 @@
       </textarea> -->
       <span slot="footer" class="dialog-footer">
         <div class="foot-info">
-          <i class="el-icon-warning"></i> 此操作相当于 kubectl apply -f
+          <i class="el-icon-warning" /> 此操作相当于 kubectl apply -f
           &ltspec.yaml>
         </div>
         <el-button @click="editDialogVisible = false">取 消</el-button>
@@ -312,48 +304,103 @@
 
 <script>
 // import language js
-import "codemirror/mode/javascript/javascript.js";
-import "codemirror/mode/yaml/yaml.js";
+import 'codemirror/mode/javascript/javascript.js'
+import 'codemirror/mode/yaml/yaml.js'
 // import theme style
-import "codemirror/theme/panda-syntax.css";
+import 'codemirror/theme/panda-syntax.css'
 
 export default {
-  props: ["name", "namespace"],
+  props: ['name', 'namespace'],
   data() {
     return {
       pods: {},
       job: {},
-      jobName: "",
-      jobNamespace: "",
+      jobName: '',
+      jobNamespace: '',
       events: [],
       loading: true,
       editDialogVisible: false,
-      codeYaml: "",
-      addYaml: "", // 添加框的 yaml 数据
+      codeYaml: '',
+      addYaml: '', // 添加框的 yaml 数据
 
       cmOptions: {
         // json codemirror 配置项
         tabSize: 4,
         mode: {
-          name: "javascript",
-          json: true,
+          name: 'javascript',
+          json: true
         },
-        theme: "panda-syntax",
+        theme: 'panda-syntax',
         lineNumbers: true,
-        line: true,
+        line: true
       },
       cmOptionsYaml: {
         // yaml codemirror 配置项
         tabSize: 4,
-        mode: "yaml",
-        theme: "panda-syntax",
+        mode: 'yaml',
+        theme: 'panda-syntax',
         lineNumbers: true,
-        line: true,
-      },
-    };
+        line: true
+      }
+    }
+  },
+
+  computed: {
+    // 元数据下的标签
+    labels() {
+      const labelArr = []
+      for (const pro in this.job.metadata.labels) {
+        labelArr.push({
+          key: pro,
+          value: this.job.metadata.labels[pro]
+        })
+      }
+      return labelArr
+    },
+
+    // 元数据下的注释
+    annotations() {
+      const annoArr = []
+      for (const anno in this.job.metadata.annotations) {
+        annoArr.push({
+          key: anno,
+          value: this.job.metadata.annotations[anno]
+        })
+      }
+      return annoArr
+    },
+
+    // 正在运行的Pods数量
+    runningPods() {
+      let amount = 0
+      for (const i in this.pods) {
+        switch (this.pods[i].phase) {
+          case 'Running':
+            amount += 1
+            console.log(this.pods[i].phase, i, this.pods.length)
+            break
+        }
+      }
+      return amount
+    },
+
+    // 正在启动中的Pods数量
+    pendingPods() {
+      let amount = 0
+      console.log(this.pods)
+      for (let i = 0; i < this.pods.length; i++) {
+        switch (this.pods[i].phase) {
+          case 'Pending':
+            amount += 1
+            console.log(this.pods[i].phase, i, this.pods.length)
+            break
+        }
+      }
+      return amount
+    }
   },
   // 生命周期方法
-  mounted: function () {
+  mounted: function() {
     /* name */
     // // 为空，直接存储
     // if (sessionStorage.getItem("deploymentName") == null) {
@@ -385,219 +432,164 @@ export default {
     // }
 
     // 获取数据
-    let nameAndNamespace = {
+    const nameAndNamespace = {
       // name: sessionStorage.getItem("deploymentName"),
       // namespace: sessionStorage.getItem("deploymentNamespace"),
-      name: this.name.split(",")[0],
-      namespace: this.name.split(",")[1],
-    };
+      name: this.name.split(',')[0],
+      namespace: this.name.split(',')[1]
+    }
     this.$store
-      .dispatch("jobs/getJobResources", nameAndNamespace)
+      .dispatch('jobs/getJobResources', nameAndNamespace)
       .then((res) => {
-        console.log(res);
-        this.job = res.data.job;
-        this.pods = res.data.pods;
-        this.events = res.data.events;
-        this.loading = false;
+        console.log(res)
+        this.job = res.data.job
+        this.pods = res.data.pods
+        this.events = res.data.events
+        this.loading = false
       })
       .catch((error) => {
-        throw error;
-      });
+        throw error
+      })
   },
 
-  computed: {
-    // 元数据下的标签
-    labels() {
-      let labelArr = [];
-      for (let pro in this.job.metadata.labels) {
-        labelArr.push({
-          key: pro,
-          value: this.job.metadata.labels[pro],
-        });
-      }
-      return labelArr;
-    },
-
-    // 元数据下的注释
-    annotations() {
-      let annoArr = [];
-      for (let anno in this.job.metadata.annotations) {
-        annoArr.push({
-          key: anno,
-          value: this.job.metadata.annotations[anno],
-        });
-      }
-      return annoArr;
-    },
-
-    //正在运行的Pods数量
-    runningPods() {
-      let amount = 0;
-      for (let i in this.pods) {
-        switch (this.pods[i].phase) {
-          case "Running":
-            amount += 1;
-            console.log(this.pods[i].phase, i, this.pods.length);
-            break;
-        }
-      }
-      return amount;
-    },
-
-    //正在启动中的Pods数量
-    pendingPods() {
-      let amount = 0;
-      console.log(this.pods);
-      for (let i = 0; i < this.pods.length; i++) {
-        switch (this.pods[i].phase) {
-          case "Pending":
-            amount += 1;
-            console.log(this.pods[i].phase, i, this.pods.length);
-            break;
-        }
-      }
-      return amount;
-    },
-  },
-
-  methods :{
+  methods: {
     /* 编辑部分 */
     showPodEditDialog(name, namespace) {
-      let podDetails = {
+      const podDetails = {
         podName: name,
-        podNamespace: namespace,
-      };
+        podNamespace: namespace
+      }
 
       // 获取 yaml 格式
       this.$store
-        .dispatch("pods/getPodYamlByNameAndNamespace", podDetails)
+        .dispatch('pods/getPodYamlByNameAndNamespace', podDetails)
         .then((res) => {
           // let json = JSON.stringify(res.data);
           // this.codeJSON = this.beautify(json, {
-            //   indent_size: 4,
+          //   indent_size: 4,
           //   space_in_empty_paren: true,
           // });
-          console.log(res, "\n最初获取的Yaml\n");
-          this.codeYaml = res.data;
-          this.editDialogVisible = true; // 打开编辑对话框
+          console.log(res, '\n最初获取的Yaml\n')
+          this.codeYaml = res.data
+          this.editDialogVisible = true // 打开编辑对话框
         })
         .catch((error) => {
-          throw error;
-        });
+          throw error
+        })
 
       // json 格式
       this.$store
-        .dispatch("pods/getPodByNameAndNamespace", podDetails)
+        .dispatch('pods/getPodByNameAndNamespace', podDetails)
         .then((res) => {
           // console.log(res);
-          let json = JSON.stringify(res.data.pod);
+          const json = JSON.stringify(res.data.pod)
           this.codeJSON = this.beautify(json, {
             indent_size: 4,
-            space_in_empty_paren: true,
-          });
+            space_in_empty_paren: true
+          })
         })
         .catch((error) => {
-          throw error;
-        });
+          throw error
+        })
 
-      //this.editForm = res; // 查询结果写入表单
+      // this.editForm = res; // 查询结果写入表单
     },
 
     // 编辑器方法
     /* yaml */
     onYamlCmReady(cm) {
       setTimeout(() => {
-        cm.refresh();
-      }, 50);
+        cm.refresh()
+      }, 50)
     },
     onYamlCmCodeChange(newCode) {
-      this.codeYaml = newCode;
+      this.codeYaml = newCode
     },
 
-     // 提交修改
+    // 提交修改
     commitYamlChange() {
-      console.log("提交修改的 yaml", this.codeYaml);
-      this.$confirm("确认修改？", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "info",
+      console.log('提交修改的 yaml', this.codeYaml)
+      this.$confirm('确认修改？', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'info'
       })
         .then(() => {
           this.$store
-            .dispatch("common/changeResourceByYaml", this.codeYaml)
+            .dispatch('common/changeResourceByYaml', this.codeYaml)
             .then((res) => {
               switch (res.code) {
                 case 1200:
-                  this.$message.success("修改成功");
-                  break;
+                  this.$message.success('修改成功')
+                  break
                 case 1201:
-                  this.$message.error("修改失败，请查看 yaml 文件格式");
-                  break;
+                  this.$message.error('修改失败，请查看 yaml 文件格式')
+                  break
                 case 1202:
-                  this.$message.error("创建失败，请查看云平台相关错误信息");
-                  break;
+                  this.$message.error('创建失败，请查看云平台相关错误信息')
+                  break
                 default:
-                  this.$message.info("提交成功");
-                  break;
+                  this.$message.info('提交成功')
+                  break
               }
-              this.editDialogVisible = false;
+              this.editDialogVisible = false
             })
             .catch((error) => {
-              throw error;
-            });
+              throw error
+            })
         })
         .catch(() => {
-          console.log("cancel");
-        });
+          console.log('cancel')
+        })
     },
 
     // 关闭添加或者修改框
-    handleClose: function () {
-      this.addYaml = "";
+    handleClose: function() {
+      this.addYaml = ''
       setTimeout(() => {
-        this.codemorror.refresh();
-      }, 1);
+        this.codemorror.refresh()
+      }, 1)
     },
 
     /* 删除 Pod */
-    delPod: function (name, namespace) {
-      this.$confirm("确认删除 pod？", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning",
+    delPod: function(name, namespace) {
+      this.$confirm('确认删除 pod？', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
       }).then(() => {
-        let podDetails = {
+        const podDetails = {
           podName: name,
-          podNamespace: namespace,
-        };
+          podNamespace: namespace
+        }
         this.$store
-          .dispatch("pods/delPodByNameAndNamespace", podDetails)
+          .dispatch('pods/delPodByNameAndNamespace', podDetails)
           .then((res) => {
-            if(res.code == 1200) {
-              this.$message.success("删除成功");
-              this.getPods();
+            if (res.code === 1200) {
+              this.$message.success('删除成功')
+              this.getPods()
             } else {
-              this.$message.error("删除失败");
+              this.$message.error('删除失败')
             }
           })
           .catch((error) => {
-            throw error;
-          });
-      }).catch(()=>{
+            throw error
+          })
+      }).catch(() => {
 
-      });
+      })
     },
 
-    //Pod 跳转
-    goToPodsDetails(name, namespace){
-      let nameAndNamespace = {
+    // Pod 跳转
+    goToPodsDetails(name, namespace) {
+      const nameAndNamespace = {
         podName: name,
-        podNamespace: namespace,
-      };
-      this.$store.dispatch("pods/toDetails", nameAndNamespace);
+        podNamespace: namespace
+      }
+      this.$store.dispatch('pods/toDetails', nameAndNamespace)
     }
   }
-};
+}
 </script>
 <style lang="scss" scoped>
 #cpu-usage,

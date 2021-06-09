@@ -6,8 +6,8 @@
  * @LastEditors: zqy
  * @LastEditTime: 2021-04-15 20:47:27
  */
-import request from "@/utils/request";
-let baseUrl = require("../api").baseurl;
+import request from '@/utils/request'
+const baseUrl = require('../api').baseurl
 
 export function getAllReplicaSets(data) {
   return request({
@@ -18,7 +18,6 @@ export function getAllReplicaSets(data) {
     }
   })
 }
-
 export function getReplicaSetByNameAndNamespace(data) {
   return request({
     url: baseUrl + '/replicaSets/getReplicaSetByNameAndNamespace',
@@ -29,7 +28,6 @@ export function getReplicaSetByNameAndNamespace(data) {
     }
   })
 }
-
 export function deleteReplicaSetByNameAndNamespace(data) {
   return request({
     url: baseUrl + '/replicaSets/deleteReplicaSetByNameAndNamespace',
@@ -40,10 +38,9 @@ export function deleteReplicaSetByNameAndNamespace(data) {
     }
   })
 }
-
 export function getReplicaSetYamlByNameAndNamespace(data) {
   return request({
-    url :baseUrl + '/replicaSets/getReplicaSetYamlByNameAndNamespace',
+    url: baseUrl + '/replicaSets/getReplicaSetYamlByNameAndNamespace',
     method: 'get',
     params: {
       name: data.name,
@@ -51,10 +48,9 @@ export function getReplicaSetYamlByNameAndNamespace(data) {
     }
   })
 }
-
 export function getReplicaSetResources(data) {
   return request({
-    url :baseUrl + '/replicaSets/getReplicaSetResources',
+    url: baseUrl + '/replicaSets/getReplicaSetResources',
     method: 'get',
     params: {
       name: data.name,
@@ -65,11 +61,20 @@ export function getReplicaSetResources(data) {
 export function getReplicaSetLogs(data) {
   console.log(data)
   return request({
-    url :baseUrl + '/replicaSets/getReplicaSetLogs',
+    url: baseUrl + '/replicaSets/getReplicaSetLogs',
     method: 'get',
     params: {
       name: data.name,
       namespace: data.namespace
+    }
+  })
+}
+export function changeReplicaSetByYamlString(data) {
+  return request({
+    url: baseUrl + '/replicaSets/changeReplicaSetByYamlString',
+    method: 'post',
+    data: {
+      yaml: data
     }
   })
 }

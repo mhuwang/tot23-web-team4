@@ -18,7 +18,6 @@ export function getAllDaemonSets(data) {
     }
   })
 }
-
 export function getDaemonSetByNameAndNamespace(nameAndNamespace) {
   return request({
     url: baseUrl + '/daemonSets/getDaemonSetByNameAndNamespace',
@@ -29,7 +28,6 @@ export function getDaemonSetByNameAndNamespace(nameAndNamespace) {
     }
   })
 }
-
 export function deleteDaemonSetByNameAndNamespace(data) {
   return request({
     url: baseUrl + '/daemonSets/deleteDaemonSetByNameAndNamespace',
@@ -40,7 +38,6 @@ export function deleteDaemonSetByNameAndNamespace(data) {
     }
   })
 }
-
 export function getDaemonSetYamlByNameAndNamespace(data) {
   return request({
     url: baseUrl + '/daemonSets/getDaemonSetYamlByNameAndNamespace',
@@ -51,7 +48,6 @@ export function getDaemonSetYamlByNameAndNamespace(data) {
     }
   })
 }
-
 export function getDaemonSetResources(data) {
   // console.log(data, "in api")
   return request({
@@ -78,6 +74,16 @@ export function getDaemonSetLogs(data) {
     params: {
       name: data.name,
       namespace: data.namespace
+    }
+  })
+}
+export function changeDaemonSetByYamlString(data) {
+  console.log(123123123);
+  return request({
+    url: baseUrl + '/daemonSets/changeDaemonSetByYamlString',
+    method: 'post',
+    data: {
+      yaml: data
     }
   })
 }

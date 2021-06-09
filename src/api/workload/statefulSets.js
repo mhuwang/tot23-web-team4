@@ -7,7 +7,7 @@
  * @LastEditTime: 2021-05-10 18:43:59
  */
 import request from '@/utils/request'
-let baseUrl = require("../api").baseurl;
+const baseUrl = require('../api').baseurl
 
 export function getAllStatefulSets(data) {
   return request({
@@ -18,7 +18,6 @@ export function getAllStatefulSets(data) {
     }
   })
 }
-
 export function getStatefulSetByNameAndNamespace(nameAndNamespace) {
   return request({
     url: baseUrl + '/statefulSets/getStatefulSetByNameAndNamespace',
@@ -29,7 +28,6 @@ export function getStatefulSetByNameAndNamespace(nameAndNamespace) {
     }
   })
 }
-deleteStatefulSetByNameAndNamespace, getStatefulSetYamlByNameAndNamespace
 export function deleteStatefulSetByNameAndNamespace(data) {
   return request({
     url: baseUrl + '/statefulSets/deleteStatefulSetByNameAndNamespace',
@@ -40,10 +38,9 @@ export function deleteStatefulSetByNameAndNamespace(data) {
     }
   })
 }
-
 export function getStatefulSetYamlByNameAndNamespace(data) {
   return request({
-    url :baseUrl + '/statefulSets/getStatefulSetYamlByNameAndNamespace',
+    url: baseUrl + '/statefulSets/getStatefulSetYamlByNameAndNamespace',
     method: 'get',
     params: {
       name: data.name,
@@ -51,26 +48,32 @@ export function getStatefulSetYamlByNameAndNamespace(data) {
     }
   })
 }
-
 export function getStatefulSetResources(data) {
-  console.log(data, "in api")
   return request({
-    url :baseUrl + '/statefulSets/getStatefulSetResources',
+    url: baseUrl + '/statefulSets/getStatefulSetResources',
     method: 'get',
     params: {
       name: data.name,
       namespace: data.namespace
     }
   })
-}getStatefulSetLogs
+}
 export function getStatefulSetLogs(data) {
-  console.log(data, "in api")
   return request({
-    url :baseUrl + '/statefulSets/getStatefulSetLogs',
+    url: baseUrl + '/statefulSets/getStatefulSetLogs',
     method: 'get',
     params: {
       name: data.name,
       namespace: data.namespace
+    }
+  })
+}
+export function changeStatefulSetByYamlString(data) {
+  return request({
+    url: baseUrl + '/statefulSets/changeStatefulSetByYamlString',
+    method: 'post',
+    data: {
+      yaml: data
     }
   })
 }

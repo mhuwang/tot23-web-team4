@@ -11,8 +11,7 @@
     <el-divider content-position="left">
       <span style="font-weight: bold; font-size: 20px">
         {{ cronJob.metadata.name }}
-      </span></el-divider
-    >
+      </span></el-divider>
     <!-- 元数据 -->
     <el-card class="box-card">
       <div slot="header" class="clearfix">
@@ -42,8 +41,8 @@
       <!-- 元数据 标签 注释部分 -->
       <List item-layout="horizontal" :split="false">
         <div
-          :labels="this.labels"
           v-if="labels.length > 0"
+          :labels="this.labels"
           class="metadata-item"
         >
           <p>标签</p>
@@ -53,11 +52,10 @@
               effect="dark"
               size="medium"
               color="#bedcfa"
-              >{{ label.key }}: {{ label.value }}</el-tag
-            >
+            >{{ label.key }}: {{ label.value }}</el-tag>
           </li>
         </div>
-        <br />
+        <br>
         <div
           v-if="annotations.length > 0"
           class="metadata-item"
@@ -65,30 +63,29 @@
           <p>注释</p>
           <li v-for="(anno, index) in annotations" :key="index">
             <el-tag
-              class="lebel-tag"
+              v-if="anno.value.length > 50"
               id="anno_hover"
+              class="lebel-tag"
               effect="dark"
               size="medium"
               color="#bedcfa"
               style="color: #409eff"
-              v-if="anno.value.length > 50"
               @click="showAnnoDetails(anno.key)"
             >
               {{ anno.key }}
             </el-tag>
             <el-tag
+              v-else
               class="lebel-tag"
               effect="dark"
               size="medium"
               color="#bedcfa"
-              v-else
-              >{{ anno.key }}: {{ anno.value }}</el-tag
-            >
+            >{{ anno.key }}: {{ anno.value }}</el-tag>
           </li>
         </div>
       </List>
     </el-card>
-    <br /><br />
+    <br><br>
 
     <!-- 资源信息 -->
     <el-card class="box-card">
@@ -106,7 +103,7 @@
         </div>
         <div class="metadata-item">
           <p>暂停</p>
-          <span>{{ cronJob.spec.suspend === false ? "否" : "是"}}</span>
+          <span>{{ cronJob.spec.suspend === false ? "否" : "是" }}</span>
         </div>
         <div class="metadata-item">
           <p>上次调度</p>
@@ -120,7 +117,7 @@
         </div>
       </List>
     </el-card>
-    <br /><br />
+    <br><br>
 
     <!-- 运行中的Jobs -->
     <el-card class="box-card">
@@ -146,8 +143,8 @@
                   name: scope.row.name + ',' + scope.row.namespace,
                 },
               }"
-              @click.native="goToJobsDetails(scope.row)"
               class="link-type"
+              @click.native="goToJobsDetails(scope.row)"
             >
               <span style="color: #409eff; text-decoration: underline">{{
                 scope.row.name
@@ -155,7 +152,7 @@
             </router-link>
           </template>
         </el-table-column>
-        <el-table-column prop="namespace" label="命名空间"> </el-table-column>
+        <el-table-column prop="namespace" label="命名空间" />
         <!-- <el-table-column label="标签">
           <template slot-scope="scope">
             <span>k8s-app: {{scope.row.metadata.labels['k8s-app']}}</span>
@@ -208,9 +205,8 @@
               icon="el-icon-edit"
               size="small"
               @click="showJobEditDialog(scope.row.name, scope.row.namespace)"
-              >编辑</el-button
-            >
-            <br />
+            >编辑</el-button>
+            <br>
             <!-- 删除 -->
             <el-button
               style="margin-bottom: 5px"
@@ -218,13 +214,12 @@
               icon="el-icon-delete"
               size="small"
               @click="delJob(scope.row.name, scope.row.namespace)"
-              >删除</el-button
-            >
+            >删除</el-button>
           </template>
         </el-table-column>
       </el-table>
     </el-card>
-    <br /><br />
+    <br><br>
 
     <!-- 非工作的Jobs -->
     <el-card class="box-card">
@@ -250,8 +245,8 @@
                   name: scope.row.name + ',' + scope.row.namespace,
                 },
               }"
-              @click.native="goToJobsDetails(scope.row)"
               class="link-type"
+              @click.native="goToJobsDetails(scope.row)"
             >
               <span style="color: #409eff; text-decoration: underline">{{
                 scope.row.name
@@ -259,7 +254,7 @@
             </router-link>
           </template>
         </el-table-column>
-        <el-table-column prop="namespace" label="命名空间"> </el-table-column>
+        <el-table-column prop="namespace" label="命名空间" />
         <el-table-column label="容器组" width="200">
           <template slot-scope="scope">
             <span>
@@ -285,9 +280,8 @@
               icon="el-icon-edit"
               size="small"
               @click="showJobEditDialog(scope.row.name, scope.row.namespace)"
-              >编辑</el-button
-            >
-            <br />
+            >编辑</el-button>
+            <br>
             <!-- 删除 -->
             <el-button
               style="margin-bottom: 5px"
@@ -295,13 +289,12 @@
               icon="el-icon-delete"
               size="small"
               @click="delJob(scope.row.name, scope.row.namespace)"
-              >删除</el-button
-            >
+            >删除</el-button>
           </template>
         </el-table-column>
       </el-table>
     </el-card>
-    <br /><br />
+    <br><br>
 
     <!-- 事件 -->
     <el-card class="box-card">
@@ -309,37 +302,37 @@
         <span style="font-size: 16px">事件</span>
       </div>
       <el-table :data="events" style="width: 100%" stripe>
-        <el-table-column label="类型" prop="type" width="100"></el-table-column>
-        <el-table-column label="原因" prop="reason" width="170"></el-table-column>
+        <el-table-column label="类型" prop="type" width="100" />
+        <el-table-column label="原因" prop="reason" width="170" />
         <el-table-column label="时间" width="150">
           <template slot-scope="scope">
             <span>{{
-                scope.row.lastTimestamp ? scope.row.lastTimestamp.replaceAll(/[TZ]/g, " ")
-                  : scope.row.eventTime.time ? scope.row.eventTime.time.replaceAll(/[TZ]/g, " ") :
-                  "无"
-              }}</span>
+              scope.row.lastTimestamp ? scope.row.lastTimestamp.replaceAll(/[TZ]/g, " ")
+              : scope.row.eventTime.time ? scope.row.eventTime.time.replaceAll(/[TZ]/g, " ") :
+                "无"
+            }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="来自"  width="170">
+        <el-table-column label="来自" width="170">
           <template slot-scope="scope">
             <span>
-              {{scope.row.involvedObject.kind + '/' + scope.row.involvedObject.name}}
+              {{ scope.row.involvedObject.kind + '/' + scope.row.involvedObject.name }}
             </span>
           </template>
         </el-table-column>
-        <el-table-column label="信息" prop="message" width=""></el-table-column>
+        <el-table-column label="信息" prop="message" width="" />
       </el-table>
     </el-card>
-    <br /><br />
+    <br><br>
 
     <!-- anno 详情 -->
     <el-dialog
       :title="annoKey"
       :visible.sync="annoDialogVisible"
       width="50%"
-      @close="annoHandleClose"
       :modal="false"
       :show-close="true"
+      @close="annoHandleClose"
     >
       <highlightjs javascript :code="annoDetails" />
       <span slot="footer" class="dialog-footer">
@@ -352,10 +345,10 @@
       title="编辑 Job"
       :visible.sync="jobEditDialogVisible"
       width="70%"
-      @closed="jobHandleClose"
-      @close="jobEditDialogVisible = false"
       :append-to-body="true"
       :lock-scroll="true"
+      @closed="jobHandleClose"
+      @close="jobEditDialogVisible = false"
     >
       <el-tabs value="first" type="card">
         <el-tab-pane label="YAML" name="first">
@@ -382,7 +375,7 @@
       </textarea> -->
       <span slot="footer" class="dialog-footer">
         <div class="foot-info">
-          <i class="el-icon-warning"></i> 此操作相当于 kubectl apply -f
+          <i class="el-icon-warning" /> 此操作相当于 kubectl apply -f
           &ltspec.yaml>
         </div>
         <el-button @click="jobEditDialogVisible = false">取 消</el-button>
@@ -393,28 +386,28 @@
 </template>
 
 <script>
-import "codemirror/mode/javascript/javascript.js";
-import "codemirror/mode/yaml/yaml.js";
+import 'codemirror/mode/javascript/javascript.js'
+import 'codemirror/mode/yaml/yaml.js'
 // import theme style
-import "codemirror/theme/panda-syntax.css";
+import 'codemirror/theme/panda-syntax.css'
 
 export default {
-  props: ["name"],
+  props: ['name'],
   data() {
     return {
       jobs: [],
       runningJobs: [],
       cronJob: {},
-      cronJobName: "",
-      cronJobNamespace: "",
+      cronJobName: '',
+      cronJobNamespace: '',
       events: [],
-      annoKey: "",
+      annoKey: '',
       annoDialogVisible: false,
-      annoDetails: "",
+      annoDetails: '',
       jobEditDialogVisible: false, // 编辑详情框
       // codeJSON: "", // 编辑框的 json 数据
-      jobCodeYaml: "", // 编辑框的 yaml 数据
-      addYaml: "", // 添加框的 yaml 数据
+      jobCodeYaml: '', // 编辑框的 yaml 数据
+      addYaml: '', // 添加框的 yaml 数据
 
       // cmOptions: {
       //   // json codemirror 配置项
@@ -430,15 +423,44 @@ export default {
       cmOptionsYaml: {
         // yaml codemirror 配置项
         tabSize: 4,
-        mode: "yaml",
-        theme: "panda-syntax",
+        mode: 'yaml',
+        theme: 'panda-syntax',
         lineNumbers: true,
-        line: true,
-      },
-    };
+        line: true
+      }
+    }
+  },
+
+  computed: {
+    // 元数据中持续的时间
+    // duration() {},
+
+    // 元数据下的标签
+    labels() {
+      const labelArr = []
+      for (const pro in this.cronJob.metadata.labels) {
+        labelArr.push({
+          key: pro,
+          value: this.cronJob.metadata.labels[pro]
+        })
+      }
+      return labelArr
+    },
+
+    // 元数据下的注释
+    annotations() {
+      const annoArr = []
+      for (const anno in this.cronJob.metadata.annotations) {
+        annoArr.push({
+          key: anno,
+          value: this.cronJob.metadata.annotations[anno]
+        })
+      }
+      return annoArr
+    }
   },
   // 生命周期方法
-  mounted: function () {
+  mounted: function() {
     /* name */
     // // 为空，直接存储
     // if (sessionStorage.getItem("deploymentName") == null) {
@@ -470,195 +492,166 @@ export default {
     // }
 
     // 获取数据
-    let nameAndNamespace = {
+    const nameAndNamespace = {
       // name: sessionStorage.getItem("deploymentName"),
       // namespace: sessionStorage.getItem("deploymentNamespace"),
-      name: this.name.split(",")[0],
-      namespace: this.name.split(",")[1],
-    };
+      name: this.name.split(',')[0],
+      namespace: this.name.split(',')[1]
+    }
     // console.log("CronJobDetailes.name and namespace =", nameAndNamespace, "="),
-      this.$store
-        .dispatch("cronJobs/getCronJobResources", nameAndNamespace)
-        .then((res) => {
-           console.log(res);
-          this.cronJob = res.data.cronJob;
-          this.runningJobs = res.data.runningJobs;
-          this.jobs = res.data.jods;
-          this.events = res.data.events;
-        })
-        .catch((error) => {
-          throw error;
-        });
-  },
-
-  computed: {
-    // 元数据中持续的时间
-    duration() {},
-
-    // 元数据下的标签
-    labels() {
-      let labelArr = [];
-      for (let pro in this.cronJob.metadata.labels) {
-        labelArr.push({
-          key: pro,
-          value: this.cronJob.metadata.labels[pro],
-        });
-      }
-      return labelArr;
-    },
-
-    // 元数据下的注释
-    annotations() {
-      let annoArr = [];
-      for (let anno in this.cronJob.metadata.annotations) {
-        annoArr.push({
-          key: anno,
-          value: this.cronJob.metadata.annotations[anno],
-        });
-      }
-      return annoArr;
-    },
+    this.$store
+      .dispatch('cronJobs/getCronJobResources', nameAndNamespace)
+      .then((res) => {
+        console.log(res)
+        this.cronJob = res.data.cronJob
+        this.runningJobs = res.data.runningJobs
+        this.jobs = res.data.jobs
+        this.events = res.data.events
+      })
+      .catch((error) => {
+        throw error
+      })
   },
 
   methods: {
     showAnnoDetails(key) {
-      this.annoDialogVisible = true;
+      this.annoDialogVisible = true
       // console.log(this.cronJob.metadata);
-      this.annoKey = key;
+      this.annoKey = key
       this.annoDetails = this.beautify(this.cronJob.metadata.annotations[key], {
         indent_size: 2,
-        space_in_empty_paren: true,
-      });
+        space_in_empty_paren: true
+      })
     },
     annoHandleClose() {
       // console.log(this.annoKey, "inhandleClose");
-      this.annoKey = "";
-      this.annoDialogVisible = false;
+      this.annoKey = ''
+      this.annoDialogVisible = false
     },
 
-    //编辑 Job
+    // 编辑 Job
     showJobEditDialog(name, namespace) {
-      let jobDetails = {
+      const jobDetails = {
         name: name,
-        namespace: namespace,
-      };
+        namespace: namespace
+      }
       // 获取 yaml 格式
       this.$store
-        .dispatch("jobs/getJobYamlByNameAndNamespace", jobDetails)
+        .dispatch('jobs/getJobYamlByNameAndNamespace', jobDetails)
         .then((res) => {
-          this.jobCodeYaml = res.data;
-          this.jobEditDialogVisible = true; // 打开编辑对话框
+          this.jobCodeYaml = res.data
+          this.jobEditDialogVisible = true // 打开编辑对话框
         })
         .catch((error) => {
-          throw error;
-        });
+          throw error
+        })
 
       // json 格式
       this.$store
-        .dispatch("jobs/getJobByNameAndNamespace", jobDetails)
+        .dispatch('jobs/getJobByNameAndNamespace', jobDetails)
         .then((res) => {
           // console.log(res);
-          let json = JSON.stringify(res.data.job);
+          const json = JSON.stringify(res.data.job)
           this.codeJSON = this.beautify(json, {
             indent_size: 4,
-            space_in_empty_paren: true,
-          });
+            space_in_empty_paren: true
+          })
         })
         .catch((error) => {
-          throw error;
-        });
+          throw error
+        })
 
-      //this.editForm = res; // 查询结果写入表单
+      // this.editForm = res; // 查询结果写入表单
     },
 
     // 编辑器方法
     /* yaml */
     onJobYamlCmReady(cm) {
       setTimeout(() => {
-        cm.refresh();
-      }, 50);
+        cm.refresh()
+      }, 50)
     },
     onJobYamlCmCodeChange(newCode) {
       // console.log("onYamlCmCodeChange\n")
-      this.jobCodeYaml = newCode;
+      this.jobCodeYaml = newCode
     },
 
-    //点击确认按钮触发此修改 Job 事件
+    // 点击确认按钮触发此修改 Job 事件
     commitYamlChange() {
-      this.$confirm("确认修改？", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "info",
+      this.$confirm('确认修改？', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'info'
       })
         .then(() => {
           this.$store
-            .dispatch("common/changeResourceByYaml", this.codeYaml)
+            .dispatch('common/changeResourceByYaml', this.codeYaml)
             .then((res) => {
               switch (res.code) {
                 case 1200:
-                  this.$message.success("修改成功");
-                  break;
+                  this.$message.success('修改成功')
+                  break
                 case 1201:
-                  this.$message.error("修改失败，请查看 yaml 文件格式");
-                  break;
+                  this.$message.error('修改失败，请查看 yaml 文件格式')
+                  break
                 case 1202:
-                  this.$message.error("创建失败，请查看云平台相关错误信息");
-                  break;
+                  this.$message.error('创建失败，请查看云平台相关错误信息')
+                  break
                 default:
-                  this.$message.info("提交成功");
-                  break;
+                  this.$message.info('提交成功')
+                  break
               }
-              this.editDialogVisible = false;
+              this.editDialogVisible = false
             })
             .catch((error) => {
-              throw error;
-            });
+              throw error
+            })
         })
         .catch(() => {
-          console.log("cancel");
-        });
+          console.log('cancel')
+        })
     },
 
     // 关闭修改框
-    jobHandleClose: function () {
+    jobHandleClose: function() {
       // console.log("jobHandleClose\n");
-      this.addYaml = "";
+      this.addYaml = ''
       setTimeout(() => {
-        this.codemorror.refresh();
-      }, 1);
+        this.codemorror.refresh()
+      }, 1)
     },
 
-    //删除 Job
+    // 删除 Job
     delJob(name, namespace) {
-      this.$confirm("确认删除 Job？", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning",
+      this.$confirm('确认删除 Job？', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
       })
         .then(() => {
-          let nameAndNamespace = {
+          const nameAndNamespace = {
             name: name,
-            namespace: namespace,
-          };
+            namespace: namespace
+          }
           this.$store
-            .dispatch("jobs/deleteJobByNameAndNamespace", nameAndNamespace)
+            .dispatch('jobs/deleteJobByNameAndNamespace', nameAndNamespace)
             .then((res) => {
               if (res.data) {
-                this.$message.success("删除成功");
-                this.getJobs();
+                this.$message.success('删除成功')
+                this.getJobs()
               } else {
-                this.$message.error("删除失败");
+                this.$message.error('删除失败')
               }
               // console.log(res.data);
             })
             .catch((error) => {
-              console.log(error);
-            });
+              console.log(error)
+            })
         })
-        .catch(() => {});
-    },
-  },
-};
+        .catch(() => {})
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>

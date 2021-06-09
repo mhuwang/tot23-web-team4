@@ -6,7 +6,14 @@
  * @LastEditors: zqy
  * @LastEditTime: 2021-04-15 21:39:17
  */
-import { getReplicationControllerLogs, getAllReplicationControllers, getReplicationControllerYamlByNameAndNamespace, deleteReplicationControllerByNameAndNamespace, getReplicationControllerResources } from '@/api/workload/replicationControllers'
+import {
+  getReplicationControllerLogs,
+  getAllReplicationControllers,
+  getReplicationControllerYamlByNameAndNamespace,
+  deleteReplicationControllerByNameAndNamespace,
+  getReplicationControllerResources,
+  changeReplicationControllerByYamlString
+} from '@/api/workload/replicationControllers'
 import { getToken } from '@/utils/auth'
 
 const getDefaultState = () => {
@@ -24,6 +31,7 @@ const mutations = {
 }
 
 const actions = {
+
   // getAllReplicationControllers
   getAllReplicationControllers({ commit }, namespace) {
     return new Promise((resolve, reject) => {
@@ -54,7 +62,7 @@ const actions = {
     })
   },
 
-  //通过名字和命名空间删除 ReplicationController
+  // 通过名字和命名空间删除 ReplicationController
   deleteReplicationControllerByNameAndNamespace({ commit }, nameAndNamespace) {
     return new Promise((resolve, reject) => {
       deleteReplicationControllerByNameAndNamespace(nameAndNamespace).then((response) => {
@@ -69,7 +77,7 @@ const actions = {
     })
   },
 
-  //通过名字和命名空间查找 ReplicationController 相应资源
+  // 通过名字和命名空间查找 ReplicationController 相应资源
   getReplicationControllerResources({ commit }, nameAndNamespace) {
     return new Promise((resolve, reject) => {
       getReplicationControllerResources(nameAndNamespace).then((response) => {
@@ -99,6 +107,19 @@ const actions = {
     })
   },
 
+  changeReplicationControllerByYamlString({ commit }, yamlData) {
+    return new Promise((resolve, reject) => {
+      changeReplicationControllerByYamlString(yamlData).then((response) => {
+        const { data } = response
+        if (!data) {
+          return reject('修改失败')
+        }
+        resolve(data)
+      }).catch((error) => {
+        reject(error)
+      })
+    })
+  }
 }
 
 export default {

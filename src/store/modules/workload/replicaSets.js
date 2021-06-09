@@ -6,7 +6,15 @@
  * @LastEditors: zqy
  * @LastEditTime: 2021-04-15 20:36:01
  */
-import { getReplicaSetLogs, getAllReplicaSets, getReplicaSetByNameAndNamespace, getReplicaSetYamlByNameAndNamespace, deleteReplicaSetByNameAndNamespace, getReplicaSetResources } from '@/api/workload/replicaSets'
+import {
+  getReplicaSetLogs,
+  getAllReplicaSets,
+  getReplicaSetByNameAndNamespace,
+  getReplicaSetYamlByNameAndNamespace,
+  deleteReplicaSetByNameAndNamespace,
+  getReplicaSetResources,
+  changeReplicaSetByYamlString
+} from '@/api/workload/replicaSets'
 import { getToken } from '@/utils/auth'
 
 const getDefaultState = () => {
@@ -24,6 +32,7 @@ const mutations = {
 }
 
 const actions = {
+
   // getAllReplicaSets
   getAllReplicaSets({ commit }, namespace) {
     return new Promise((resolve, reject) => {
@@ -69,7 +78,7 @@ const actions = {
     })
   },
 
-  //通过名字和命名空间删除 ReplicaSet
+  // 通过名字和命名空间删除 ReplicaSet
   deleteReplicaSetByNameAndNamespace({ commit }, nameAndNamespace) {
     return new Promise((resolve, reject) => {
       deleteReplicaSetByNameAndNamespace(nameAndNamespace).then((response) => {
@@ -84,7 +93,7 @@ const actions = {
     })
   },
 
-  //通过名字和命名空间查找 ReplicaSet 相应资源
+  // 通过名字和命名空间查找 ReplicaSet 相应资源
   getReplicaSetResources({ commit }, nameAndNamespace) {
     return new Promise((resolve, reject) => {
       getReplicaSetResources(nameAndNamespace).then((response) => {
@@ -113,6 +122,20 @@ const actions = {
       })
     })
   },
+
+  changeReplicaSetByYamlString({ commit }, yamlData) {
+    return new Promise((resolve, reject) => {
+      changeReplicaSetByYamlString(yamlData).then((response) => {
+        const { data } = response
+        if (!data) {
+          return reject('修改失败')
+        }
+        resolve(data)
+      }).catch((error) => {
+        reject(error)
+      })
+    })
+  }
 }
 
 export default {

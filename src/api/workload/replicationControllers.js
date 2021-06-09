@@ -6,8 +6,8 @@
  * @LastEditors: zqy
  * @LastEditTime: 2021-04-15 21:39:33
  */
-import request from "@/utils/request";
-let baseUrl = require("../api").baseurl;
+import request from '@/utils/request'
+const baseUrl = require('../api').baseurl
 
 export function getAllReplicationControllers(data) {
   return request({
@@ -28,7 +28,6 @@ export function getReplicationControllerByNameAndNamespace(nameAndNamespace) {
     }
   })
 }
-
 export function deleteReplicationControllerByNameAndNamespace(data) {
   return request({
     url: baseUrl + '/replicationControllers/deleteReplicationControllerByNameAndNamespace',
@@ -39,10 +38,9 @@ export function deleteReplicationControllerByNameAndNamespace(data) {
     }
   })
 }
-
 export function getReplicationControllerYamlByNameAndNamespace(data) {
   return request({
-    url :baseUrl + '/replicationControllers/getReplicationControllerYamlByNameAndNamespace',
+    url: baseUrl + '/replicationControllers/getReplicationControllerYamlByNameAndNamespace',
     method: 'get',
     params: {
       name: data.name,
@@ -50,10 +48,9 @@ export function getReplicationControllerYamlByNameAndNamespace(data) {
     }
   })
 }
-
 export function getReplicationControllerResources(data) {
   return request({
-    url :baseUrl + '/replicationControllers/getReplicationControllerResources',
+    url: baseUrl + '/replicationControllers/getReplicationControllerResources',
     method: 'get',
     params: {
       name: data.name,
@@ -63,11 +60,20 @@ export function getReplicationControllerResources(data) {
 }
 export function getReplicationControllerLogs(data) {
   return request({
-    url :baseUrl + '/replicationControllers/getReplicationControllerLogs',
+    url: baseUrl + '/replicationControllers/getReplicationControllerLogs',
     method: 'get',
     params: {
       name: data.name,
       namespace: data.namespace
+    }
+  })
+}
+export function changeReplicationControllerByYamlString(data) {
+  return request({
+    url: baseUrl + '/replicationControllers/changeReplicationControllerByYamlString',
+    method: 'post',
+    data: {
+      yaml: data
     }
   })
 }

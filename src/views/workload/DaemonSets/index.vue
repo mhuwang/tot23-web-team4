@@ -155,7 +155,7 @@
       title="日志"
       :visible.sync="logDialogVisible"
       width="70%"
-      @close="logDialogVisible = false"
+      @close="logDialogClose"
       :append-to-body="true"
       :lock-scroll="true"
     >
@@ -186,7 +186,7 @@
         <div class="foot-info">
           <i class="el-icon-warning"></i> 请选择要查看日志的 容器组 和 容器组中的容器
         </div>
-        <el-button type="primary" @click="logDialogVisible = false">确 定</el-button>
+        <el-button type="primary" @click="logDialogClose">确 定</el-button>
       </span>
     </el-dialog>
 
@@ -258,7 +258,7 @@ export default {
       namespaces: [], // 命名空间
       daemonSets: [], // 所有 DaemonSets
       /* 日志部分*/
-      logs: [],
+      logs: {},
       log: '',
       podName: '',
       containerName: '',
@@ -356,9 +356,11 @@ export default {
       this.$store.dispatch('daemonSets/getDaemonSetLogs', data).then(res => {
         console.log(res)
         this.logs = res.data
-        this.podName = Object.keys(this.logs)[0]
-        this.containerName = Object.keys(this.logs[this.podName])[0]
-        this.log = this.logs[this.podName][this.containerName]
+        if (Object.keys(this.logs).length !== 0) {
+          this.podName = Object.keys(this.logs)[0]
+          this.containerName = Object.keys(this.logs[this.podName])[0]
+          this.log = this.logs[this.podName][this.containerName]
+        }
         this.logDialogVisible = true
       }).catch(error => {
         throw error
@@ -366,6 +368,13 @@ export default {
     },
     logSelectChange() {
       this.log = this.logs[this.podName][this.containerName]
+    },
+    logDialogClose() {
+      this.logDialogVisible = false
+      this.logs = {}
+      this.podName = ''
+      this.containerName = ''
+      this.log = ''
     },
 
     /* 编辑部分*/
@@ -408,17 +417,14 @@ export default {
       })
         .then(() => {
           this.$store
-            .dispatch('daemonSets/createOrReplaceDaemonSetByYaml', this.codeYaml)
+            .dispatch('daemonSets/changeDaemonSetByYamlString', this.codeYaml)
             .then((res) => {
               switch (res.code) {
                 case 1200:
                   this.$message.success('修改成功')
                   break
                 case 1201:
-                  this.$message.error('修改失败，请查看 yaml 文件格式')
-                  break
-                case 1202:
-                  this.$message.error('创建失败，请查看云平台相关错误信息')
+                  this.$message.error('修改失败，请查看 yaml 文件格式或是否重名')
                   break
                 default:
                   this.$message.info('提交成功')

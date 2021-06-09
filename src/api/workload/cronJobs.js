@@ -7,7 +7,7 @@
  * @LastEditTime: 2021-05-10 18:44:22
  */
 import request from '@/utils/request'
-let baseUrl = require("../api").baseurl;
+const baseUrl = require('../api').baseurl
 
 export function getAllCronJobs(data) {
   return request({
@@ -18,7 +18,6 @@ export function getAllCronJobs(data) {
     }
   })
 }
-
 export function getCronJobByNameAndNamespace(data) {
   return request({
     url: baseUrl + '/cronJobs/getCronJobByNameAndNamespace',
@@ -29,7 +28,6 @@ export function getCronJobByNameAndNamespace(data) {
     }
   })
 }
-
 export function deleteCronJobByNameAndNamespace(data) {
   return request({
     url: baseUrl + '/cronJobs/deleteCronJobByNameAndNamespace',
@@ -40,10 +38,9 @@ export function deleteCronJobByNameAndNamespace(data) {
     }
   })
 }
-
 export function getCronJobYamlByNameAndNamespace(data) {
   return request({
-    url :baseUrl + '/cronJobs/getCronJobYamlByNameAndNamespace',
+    url: baseUrl + '/cronJobs/getCronJobYamlByNameAndNamespace',
     method: 'get',
     params: {
       name: data.name,
@@ -51,15 +48,23 @@ export function getCronJobYamlByNameAndNamespace(data) {
     }
   })
 }
-
 export function getCronJobResources(data) {
   // console.log(data, "in api");
   return request({
-    url :baseUrl + '/cronJobs/getCronJobResources',
+    url: baseUrl + '/cronJobs/getCronJobResources',
     method: 'get',
     params: {
       name: data.name,
       namespace: data.namespace
+    }
+  })
+}
+export function changeCronJobByYamlString(data) {
+  return request({
+    url: baseUrl + '/cronJobs/changeCronJobByYamlString',
+    method: 'post',
+    data: {
+      yaml: data
     }
   })
 }

@@ -7,7 +7,7 @@
  * @LastEditTime: 2021-05-10 18:44:32
  */
 import request from '@/utils/request'
-let baseUrl = require("../api").baseurl;
+const baseUrl = require('../api').baseurl
 
 export function getAllPods(data) {
   return request({
@@ -23,7 +23,7 @@ export function getPodsByNode(data) {
     url: baseUrl + '/pods/getPodsByNode',
     method: 'get',
     params: {
-      nodeName: data,
+      nodeName: data
     }
   })
 }
@@ -33,7 +33,7 @@ export function getPodByNameAndNamespace(data) {
     method: 'get',
     params: {
       name: data.podName,
-      namespace: data.podNamespace,
+      namespace: data.podNamespace
     }
   })
 }
@@ -44,7 +44,7 @@ export function getPodYamlByNameAndNamespace(data) {
     method: 'get',
     params: {
       name: data.podName,
-      namespace: data.podNamespace,
+      namespace: data.podNamespace
     }
   })
 }
@@ -54,7 +54,7 @@ export function delPodByNameAndNamespace(data) {
     method: 'get',
     params: {
       name: data.podName,
-      namespace: data.podNamespace,
+      namespace: data.podNamespace
     }
   })
 }
@@ -64,7 +64,7 @@ export function getPodResources(data) {
     method: 'get',
     params: {
       name: data.podName,
-      namespace: data.podNamespace,
+      namespace: data.podNamespace
     }
   })
 }
@@ -81,7 +81,7 @@ export function getPodLogFromContainer(data) {
     params: {
       name: data.name,
       namespace: data.namespace,
-      containerName: data.containerName,
+      containerName: data.containerName
     }
   })
 }
@@ -91,38 +91,24 @@ export function getPodAllLogs(data) {
     method: 'get',
     params: {
       name: data.podName,
-      namespace: data.podNamespace,
+      namespace: data.podNamespace
     }
   })
 }
 export function createPodFromForm(data) {
-  console.log(data)
   return request({
     url: baseUrl + '/pods/createPodFromForm',
     method: 'post',
-    data: data,
-    // params: {
-    //   pod:
-      // name: data.baseImformation.name,
-      // namespace: data.baseImformation.namespace,
-      // image: data.baseImformation.image,
-
-      // labels: data.seniorInformation.labels,
-      // annotations: data.seniorInformation.annotations,
-      // secretName
-      // image
-      // imagePullPolicy
-      // command: JSON.stringify(data.seniorInformation.command),
-      // args: data.seniorInformation.args,
-      // cpuLimit: data.seniorInformation.cpuLimit,
-      // cpuRequest: data.seniorInformation.cpuRequire,
-      // memoryLimit: data.seniorInformation.memoryLimit,
-      // memoryRequest: data.seniorInformation.memoryRequire,
-      // envVar: data.seniorInformation.env,
-      // amount: data.baseInformation.number,/
-
-
-    // }
+    data: data
+  })
+}
+export function changePodByYamlString(data) {
+  return request({
+    url: baseUrl + '/pods/changePodByYamlString',
+    method: 'post',
+    data: {
+      yaml: data
+    }
   })
 }
 

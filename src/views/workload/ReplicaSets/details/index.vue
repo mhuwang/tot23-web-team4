@@ -10,11 +10,11 @@
 <template>
   <div>
     <!-- 标题 -->
-    <el-divider content-position="left"
-      ><span style="font-weight: bold; font-size: 20px">
-        {{ replicaSet.metadata.name }}
-      </span></el-divider
-    >
+    <el-divider
+      content-position="left"
+    ><span style="font-weight: bold; font-size: 20px">
+      {{ replicaSet.metadata.name }}
+    </span></el-divider>
 
     <!-- 元数据 -->
     <el-card class="box-card">
@@ -44,8 +44,8 @@
       <!-- 元数据 标签 注释部分 -->
       <List item-layout="horizontal" :split="false">
         <div
-          :labels="this.labels"
           v-if="labels.length > 0"
+          :labels="this.labels"
           class="metadata-item"
         >
           <p>标签</p>
@@ -55,42 +55,40 @@
               effect="dark"
               size="medium"
               color="#bedcfa"
-              >{{ label.key }}: {{ label.value }}</el-tag
-            >
+            >{{ label.key }}: {{ label.value }}</el-tag>
           </li>
         </div>
         <div
-          :annotations="this.annotations"
           v-if="annotations.length > 0"
+          :annotations="this.annotations"
           class="metadata-item"
         >
           <p>注释</p>
           <li v-for="(anno, index) in annotations" :key="index">
             <el-tag
-              class="lebel-tag"
+              v-if="anno.value.length > 50"
               id="anno_hover"
+              class="lebel-tag"
               effect="dark"
               size="medium"
               color="#bedcfa"
               style="color: #409eff"
-              v-if="anno.value.length > 50"
               @click="showAnnoDetails(anno.key)"
             >
               {{ anno.key }}
             </el-tag>
             <el-tag
+              v-else
               class="lebel-tag"
               effect="dark"
               size="medium"
               color="#bedcfa"
-              v-else
-              >{{ anno.key }}: {{ anno.value }}</el-tag
-            >
+            >{{ anno.key }}: {{ anno.value }}</el-tag>
           </li>
         </div>
       </List>
     </el-card>
-    <br /><br />
+    <br><br>
 
     <!-- 资源信息 -->
     <el-card class="box-card">
@@ -100,12 +98,15 @@
       <div class="metadata-item">
         <p>标签选择</p>
         <li v-for="matchLabel in this.matchLabels" :key="matchLabel">
-          <el-tag class="lebel-tag" effect="dark" size="medium" color="#bedcfa"
-            >{{ matchLabel.key }}:{{ matchLabel.value }}</el-tag
-          >
+          <el-tag
+            class="lebel-tag"
+            effect="dark"
+            size="medium"
+            color="#bedcfa"
+          >{{ matchLabel.key }}:{{ matchLabel.value }}</el-tag>
         </li>
       </div>
-      <br />
+      <br>
       <div class="metadata-item">
         <p>镜像</p>
         <li v-for="image in this.images" :key="image">
@@ -114,12 +115,11 @@
             effect="dark"
             size="medium"
             color="#bedcfa"
-            >{{ image }}</el-tag
-          >
+          >{{ image }}</el-tag>
         </li>
       </div>
     </el-card>
-    <br/><br/>
+    <br><br>
 
     <!-- Pods 状态 -->
     <el-card class="box-card">
@@ -127,21 +127,21 @@
         <span style="font-size: 16px">Pods 状态</span>
       </div>
       <List item-layout="horizontal" :split="false">
-        <div class="metadata-item" >
+        <div class="metadata-item">
           <p>启动中</p>
           <span>{{ this.pendingPods }}</span>
         </div>
-        <div class="metadata-item" >
+        <div class="metadata-item">
           <p>运行中</p>
-          <span>{{this.runningPods}}</span>
+          <span>{{ this.runningPods }}</span>
         </div>
-        <div class="metadata-item" v-if="replicaSet.spec.replicas">
+        <div v-if="replicaSet.spec.replicas" class="metadata-item">
           <p>期望</p>
           <span>{{ replicaSet.spec.replicas }}</span>
         </div>
       </List>
     </el-card>
-    <br /><br />
+    <br><br>
 
     <!-- Pods 列表 -->
     <el-card class="box-card">
@@ -149,10 +149,10 @@
         <span style="font-size: 16px">Pods 列表</span>
       </div>
       <el-table
+        v-loading="loading"
         :data="pods"
         style="width: 100%"
         stripe
-        v-loading="loading"
         element-loading-text="获取数据中..."
       >
         <el-table-column width="40">
@@ -163,16 +163,16 @@
                   ? 'load-success'
                   : 'load-failed'
               "
-          /></template>
+            /></template>
         </el-table-column>
         <el-table-column prop="name" label="名字">
           <template slot-scope="scope">
             <router-link
               :to="'/workload/pods/' + scope.row.name"
+              class="link-type"
               @click.native="
                 goToPodsDetails(scope.row.name, scope.row.namespace)
               "
-              class="link-type"
             >
               <span style="color: #409eff; text-decoration: underline">{{
                 scope.row.name
@@ -180,23 +180,22 @@
             </router-link>
           </template>
         </el-table-column>
-        <el-table-column prop="namespace" label="命名空间"> </el-table-column>
-        <el-table-column prop="phase" label="状态"> </el-table-column>
-        <el-table-column align="center" prop="restartCount" label="重启次数">
-        </el-table-column>
+        <el-table-column prop="namespace" label="命名空间" />
+        <el-table-column prop="phase" label="状态" />
+        <el-table-column align="center" prop="restartCount" label="重启次数" />
         <el-table-column align="center" label="CPU 利用率" width="140">
           <template slot-scope="scope">
             <!-- {{ scope.row.cpuUsage }} -->
             <div v-if="scope.row.cpuUsage != -1">
-              <div class="usage-cpu-tag-zero" v-if="scope.row.cpuUsage == 0">
+              <div v-if="scope.row.cpuUsage == 0" class="usage-cpu-tag-zero">
                 0 m
               </div>
-              <div class="usage-cpu-tag-success" v-else>
+              <div v-else class="usage-cpu-tag-success">
                 {{ (scope.row.cpuUsage / 1000 / 1000).toFixed(2) }} m
               </div>
             </div>
 
-            <div class="usage-cpu-tag-failed" v-else>--</div>
+            <div v-else class="usage-cpu-tag-failed">--</div>
           </template>
         </el-table-column>
         <el-table-column align="center" label="内存利用率" width="140">
@@ -204,23 +203,21 @@
             <!-- {{scope.row.memoryUsage == -1}} -->
             <div v-if="scope.row.memoryUsage != -1">
               <div
-                class="usage-memory-tag-zero"
                 v-if="scope.row.memoryUsage == 0"
+                class="usage-memory-tag-zero"
               >
                 0 MiB
               </div>
-              <div class="usage-memory-tag-success" v-else>
+              <div v-else class="usage-memory-tag-success">
                 {{ (scope.row.memoryUsage / 1024).toFixed(2) }} MiB
               </div>
             </div>
 
-            <div class="usage-memory-tag-failed" v-else>--</div>
+            <div v-else class="usage-memory-tag-failed">--</div>
           </template>
         </el-table-column>
-        <el-table-column prop="nodeName" width="120" label="所属节点">
-        </el-table-column>
-        <el-table-column prop="podIP" width="120" label="主机ip地址">
-        </el-table-column>
+        <el-table-column prop="nodeName" width="120" label="所属节点" />
+        <el-table-column prop="podIP" width="120" label="主机ip地址" />
         <el-table-column label="操作">
           <template slot-scope="scope">
             <!-- 修改 -->
@@ -230,22 +227,20 @@
               style="margin-bottom: 5px"
               size="small"
               @click="showPodEditDialog(scope.row.name, scope.row.namespace)"
-              >编辑</el-button
-            >
-            <br />
+            >编辑</el-button>
+            <br>
             <!-- 删除 -->
             <el-button
               type="danger"
               icon="el-icon-delete"
               size="small"
               @click="delPod(scope.row.name, scope.row.namespace)"
-              >删除</el-button
-            >
+            >删除</el-button>
           </template>
         </el-table-column>
       </el-table>
     </el-card>
-    <br /><br />
+    <br><br>
 
     <!-- Services 列表 -->
     <el-card class="box-card">
@@ -253,23 +248,23 @@
         <span style="font-size: 16px">Services 列表</span>
       </div>
       <el-table
+        v-loading="loading"
         :data="services"
         style="width: 100%"
         stripe
-        v-loading="loading"
         element-loading-text="获取数据中..."
       >
         <el-table-column prop="metadata.name" label="名字">
           <template slot-scope="scope">
             <router-link
               :to="'/ExploreBalancing/services/' + scope.row.metadata.name"
+              class="link-type"
               @click.native="
                 goToServicesDetails(
                   scope.row.metadata.name,
                   scope.row.metadata.namespace
                 )
               "
-              class="link-type"
             >
               <span style="color: #409eff; text-decoration: underline">{{
                 scope.row.metadata.name
@@ -277,9 +272,8 @@
             </router-link>
           </template>
         </el-table-column>
-        <el-table-column prop="metadata.namespace" label="命名空间">
-        </el-table-column>
-        <el-table-column prop="spec.type" label="类型"> </el-table-column>
+        <el-table-column prop="metadata.namespace" label="命名空间" />
+        <el-table-column prop="spec.type" label="类型" />
         <el-table-column label="创建时间" width="300">
           <template slot-scope="scope">
             <span>{{
@@ -301,9 +295,8 @@
                   scope.row.metadata.namespace
                 )
               "
-              >编辑</el-button
-            >
-            <br />
+            >编辑</el-button>
+            <br>
             <!-- 删除 -->
             <el-button
               type="danger"
@@ -315,13 +308,12 @@
                   scope.row.metadata.namespace
                 )
               "
-              >删除</el-button
-            >
+            >删除</el-button>
           </template>
         </el-table-column>
       </el-table>
     </el-card>
-    <br /><br />
+    <br><br>
 
     <!-- 事件 -->
     <el-card class="box-card">
@@ -329,37 +321,37 @@
         <span style="font-size: 16px">事件</span>
       </div>
       <el-table :data="events" style="width: 100%" stripe>
-        <el-table-column label="类型" prop="type" width="100"></el-table-column>
-        <el-table-column label="原因" prop="reason" width="170"></el-table-column>
+        <el-table-column label="类型" prop="type" width="100" />
+        <el-table-column label="原因" prop="reason" width="170" />
         <el-table-column label="时间" width="150">
           <template slot-scope="scope">
             <span>{{
-                scope.row.lastTimestamp ? scope.row.lastTimestamp.replaceAll(/[TZ]/g, " ")
-                  : scope.row.eventTime.time ? scope.row.eventTime.time.replaceAll(/[TZ]/g, " ") :
-                  "无"
-              }}</span>
+              scope.row.lastTimestamp ? scope.row.lastTimestamp.replaceAll(/[TZ]/g, " ")
+              : scope.row.eventTime.time ? scope.row.eventTime.time.replaceAll(/[TZ]/g, " ") :
+                "无"
+            }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="来自"  width="170">
+        <el-table-column label="来自" width="170">
           <template slot-scope="scope">
             <span>
-              {{scope.row.involvedObject.kind + '/' + scope.row.involvedObject.name}}
+              {{ scope.row.involvedObject.kind + '/' + scope.row.involvedObject.name }}
             </span>
           </template>
         </el-table-column>
-        <el-table-column label="信息" prop="message" width=""></el-table-column>
+        <el-table-column label="信息" prop="message" width="" />
       </el-table>
     </el-card>
-    <br /><br />
+    <br><br>
 
     <!-- anno 详情 -->
     <el-dialog
       :title="annoKey"
       :visible.sync="annoDialogVisible"
       width="50%"
-      @close="annoHandleClose"
       :modal="false"
       :show-close="true"
+      @close="annoHandleClose"
     >
       <highlightjs javascript :code="annoDetails" />
       <span slot="footer" class="dialog-footer">
@@ -372,10 +364,10 @@
       title="编辑 pod"
       :visible.sync="podEditDialogVisible"
       width="70%"
-      @closed="podHandleClose"
-      @close="podEditDialogVisible = false"
       :append-to-body="true"
       :lock-scroll="true"
+      @closed="podHandleClose"
+      @close="podEditDialogVisible = false"
     >
       <el-tabs value="first" type="card">
         <el-tab-pane label="YAML" name="first">
@@ -402,7 +394,7 @@
       </textarea> -->
       <span slot="footer" class="dialog-footer">
         <div class="foot-info">
-          <i class="el-icon-warning"></i> 此操作相当于 kubectl apply -f
+          <i class="el-icon-warning" /> 此操作相当于 kubectl apply -f
           &ltspec.yaml>
         </div>
         <el-button @click="podEditDialogVisible = false">取 消</el-button>
@@ -415,10 +407,10 @@
       title="编辑 service"
       :visible.sync="serviceEditDialogVisible"
       width="70%"
-      @closed="serviceHandleClose"
-      @close="serviceEditDialogVisible = false"
       :append-to-body="true"
       :lock-scroll="true"
+      @closed="serviceHandleClose"
+      @close="serviceEditDialogVisible = false"
     >
       <el-tabs value="first" type="card">
         <el-tab-pane label="YAML" name="first">
@@ -436,7 +428,7 @@
       </textarea> -->
       <span slot="footer" class="dialog-footer">
         <div class="foot-info">
-          <i class="el-icon-warning"></i> 此操作相当于 kubectl apply -f
+          <i class="el-icon-warning" /> 此操作相当于 kubectl apply -f
           &ltspec.yaml>
         </div>
         <el-button @click="serviceEditDialogVisible = false">取 消</el-button>
@@ -448,55 +440,132 @@
 
 <script>
 // import language js
-import "codemirror/mode/javascript/javascript.js";
-import "codemirror/mode/yaml/yaml.js";
+import 'codemirror/mode/javascript/javascript.js'
+import 'codemirror/mode/yaml/yaml.js'
 // import theme style
-import "codemirror/theme/panda-syntax.css";
+import 'codemirror/theme/panda-syntax.css'
 
 export default {
-  props: ["name", "namespace"],
+  props: ['name', 'namespace'],
   data() {
     return {
       replicaSet: {},
       pods: {},
       services: {},
       replicaSetStatus: {},
-      replicaSetName: "",
-      replicaSetNamespace: "",
+      replicaSetName: '',
+      replicaSetNamespace: '',
       events: [],
-      annoKey: "",
+      annoKey: '',
       annoDialogVisible: false,
-      annoDetails: "",
+      annoDetails: '',
       loading: true,
       podEditDialogVisible: false,
       serviceEditDialogVisible: false,
-      codeYaml: "",
-      addYaml: "", // 添加框的 yaml 数据
+      codeYaml: '',
+      addYaml: '', // 添加框的 yaml 数据
 
       cmOptions: {
         // json codemirror 配置项
         tabSize: 4,
         mode: {
-          name: "javascript",
-          json: true,
+          name: 'javascript',
+          json: true
         },
-        theme: "panda-syntax",
+        theme: 'panda-syntax',
         lineNumbers: true,
-        line: true,
+        line: true
       },
       cmOptionsYaml: {
         // yaml codemirror 配置项
         tabSize: 4,
-        mode: "yaml",
-        theme: "panda-syntax",
+        mode: 'yaml',
+        theme: 'panda-syntax',
         lineNumbers: true,
-        line: true,
-      },
-    };
+        line: true
+      }
+    }
+  },
+
+  computed: {
+    // 元数据下的标签
+    labels() {
+      const labelArr = []
+      for (const pro in this.replicaSet.metadata.labels) {
+        labelArr.push({
+          key: pro,
+          value: this.replicaSet.metadata.labels[pro]
+        })
+      }
+      return labelArr
+    },
+
+    // 元数据下的注释
+    annotations() {
+      const annoArr = []
+      for (const anno in this.replicaSet.metadata.annotations) {
+        annoArr.push({
+          key: anno,
+          value: this.replicaSet.metadata.annotations[anno]
+        })
+      }
+      return annoArr
+    },
+
+    // ReplicaSet 的选择标签
+    matchLabels() {
+      const matchLabelsList = []
+      for (const i in this.replicaSet.spec.selector.matchLabels) {
+        matchLabelsList.push({
+          key: i,
+          value: this.replicaSet.spec.selector.matchLabels[i]
+        })
+      }
+      return matchLabelsList
+    },
+
+    // ReplicaSet 的镜像
+    images() {
+      const imagesList = []
+      for (
+        let i = 0;
+        i < this.replicaSet.spec.template.spec.containers.length;
+        i++
+      ) {
+        imagesList.push(this.replicaSet.spec.template.spec.containers[i].image)
+      }
+      return imagesList
+    },
+
+    // 运行中 Pods
+    runningPods() {
+      let amount = 0
+      for (const i in this.pods) {
+        switch (this.pods[i].phase) {
+          case 'Running' :
+            amount += 1
+            break
+        }
+      }
+      return amount
+    },
+
+    // 启动中 Pods
+    pendingPods() {
+      let amount = 0
+      for (const i in this.pods) {
+        switch (this.pods[i].phase) {
+          case 'Pending' :
+            amount += 1
+            break
+        }
+      }
+      return amount
+    }
   },
 
   // 生命周期方法
-  mounted: function () {
+  mounted: function() {
     /* name */
     // // 为空，直接存储
     // if (sessionStorage.getItem("deploymentName") == null) {
@@ -528,326 +597,248 @@ export default {
     // }
 
     // 获取数据
-    let nameAndNamespace = {
+    const nameAndNamespace = {
       // name: sessionStorage.getItem("replicaSetName"),
       // namespace: sessionStorage.getItem("replicaSetNamespace"),
-      name: this.name.split(",")[0],
-      namespace: this.name.split(",")[1],
-    };
+      name: this.name.split(',')[0],
+      namespace: this.name.split(',')[1]
+    }
     this.$store
-      .dispatch("replicaSets/getReplicaSetResources", nameAndNamespace)
+      .dispatch('replicaSets/getReplicaSetResources', nameAndNamespace)
       .then((res) => {
-        console.log(res);
-        this.replicaSet = res.data.replicaSet;
-        this.pods = res.data.pods;
-        this.services = res.data.services;
-        this.events = res.data.events;
-        this.loading = false;
+        console.log(res)
+        this.replicaSet = res.data.replicaSet
+        this.pods = res.data.pods
+        this.services = res.data.services
+        this.events = res.data.events
+        this.loading = false
         // console.log(this.replicaSetStatus)
       })
       .catch((error) => {
-        throw error;
-      });
-  },
-
-  computed: {
-    // 元数据下的标签
-    labels() {
-      let labelArr = [];
-      for (let pro in this.replicaSet.metadata.labels) {
-        labelArr.push({
-          key: pro,
-          value: this.replicaSet.metadata.labels[pro],
-        });
-      }
-      return labelArr;
-    },
-
-    // 元数据下的注释
-    annotations() {
-      let annoArr = [];
-      for (let anno in this.replicaSet.metadata.annotations) {
-        annoArr.push({
-          key: anno,
-          value: this.replicaSet.metadata.annotations[anno],
-        });
-      }
-      return annoArr;
-    },
-
-    // ReplicaSet 的选择标签
-    matchLabels() {
-      let matchLabelsList = [];
-      for (let i in this.replicaSet.spec.selector.matchLabels) {
-        matchLabelsList.push({
-          key: i,
-          value: this.replicaSet.spec.selector.matchLabels[i],
-        });
-      }
-      return matchLabelsList;
-    },
-
-    // ReplicaSet 的镜像
-    images() {
-      let imagesList = [];
-      for (
-        let i = 0;
-        i < this.replicaSet.spec.template.spec.containers.length;
-        i++
-      ) {
-        imagesList.push(this.replicaSet.spec.template.spec.containers[i].image);
-      }
-      return imagesList;
-    },
-
-    //运行中 Pods
-    runningPods() {
-      let amount = 0;
-      for(let i in this.pods){
-        switch (this.pods[i].phase){
-          case "Running" :
-            amount += 1;
-            break;
-        }
-      }
-      return amount;
-    },
-
-    //启动中 Pods
-    pendingPods() {
-      let amount = 0;
-      for(let i in this.pods){
-        switch (this.pods[i].phase){
-          case "Pending" :
-            amount += 1;
-            break;
-        }
-      }
-      return amount;
-    }
+        throw error
+      })
   },
 
   methods: {
     // 注释长度大于50时显示注释细节
-    showAnnoDetails: function (key) {
-      this.annoDialogVisible = true;
-      this.annoKey = key;
+    showAnnoDetails: function(key) {
+      this.annoDialogVisible = true
+      this.annoKey = key
       this.annoDetails = this.beautify(
         this.replicaSet.metadata.annotations[key],
         {
           indent_size: 2,
-          space_in_empty_paren: true,
+          space_in_empty_paren: true
         }
-      );
+      )
       // console.log(this.deployment.metadata.annotations[key]);
     },
     // 注释框关闭时执行
     annoHandleClose() {
       // console.log(this.annoKey, "inhandleClose");
-      this.annoKey = "";
-      this.annoDialogVisible = false;
+      this.annoKey = ''
+      this.annoDialogVisible = false
     },
 
     /* 编辑部分 Pod 和 Service*/
     showPodEditDialog(name, namespace) {
-      let podDetails = {
+      const podDetails = {
         podName: name,
-        podNamespace: namespace,
-      };
+        podNamespace: namespace
+      }
 
       // 获取 yaml 格式
       this.$store
-        .dispatch("pods/getPodYamlByNameAndNamespace", podDetails)
+        .dispatch('pods/getPodYamlByNameAndNamespace', podDetails)
         .then((res) => {
           // let json = JSON.stringify(res.data);
           // this.codeJSON = this.beautify(json, {
-            //   indent_size: 4,
+          //   indent_size: 4,
           //   space_in_empty_paren: true,
           // });
-          console.log(res, "\n最初获取的Yaml\n");
-          this.codeYaml = res.data;
-          this.podEditDialogVisible = true; // 打开编辑对话框
+          console.log(res, '\n最初获取的Yaml\n')
+          this.codeYaml = res.data
+          this.podEditDialogVisible = true // 打开编辑对话框
         })
         .catch((error) => {
-          throw error;
-        });
+          throw error
+        })
 
       // json 格式
       this.$store
-        .dispatch("pods/getPodByNameAndNamespace", podDetails)
+        .dispatch('pods/getPodByNameAndNamespace', podDetails)
         .then((res) => {
           // console.log(res);
-          let json = JSON.stringify(res.data.pod);
+          const json = JSON.stringify(res.data.pod)
           this.codeJSON = this.beautify(json, {
             indent_size: 4,
-            space_in_empty_paren: true,
-          });
+            space_in_empty_paren: true
+          })
         })
         .catch((error) => {
-          throw error;
-        });
+          throw error
+        })
 
-      //this.editForm = res; // 查询结果写入表单
+      // this.editForm = res; // 查询结果写入表单
     },
     showServiceEditDialog(name, namespace) {
-      let serviceDetails = {
+      const serviceDetails = {
         serviceName: name,
-        serviceNamespace: namespace,
-      };
+        serviceNamespace: namespace
+      }
 
       // 获取 yaml 格式
       this.$store
-        .dispatch("services/getServiceYamlByNameAndNamespace", serviceDetails)
+        .dispatch('services/getServiceYamlByNameAndNamespace', serviceDetails)
         .then((res) => {
-          this.codeYaml = res.data;
-          this.serviceEditDialogVisible = true; // 打开编辑对话框
+          this.codeYaml = res.data
+          this.serviceEditDialogVisible = true // 打开编辑对话框
         })
         .catch((error) => {
-          throw error;
-        });
+          throw error
+        })
 
       // json 格式
       this.$store
-        .dispatch("services/getServiceByNameAndNamespace", serviceDetails)
+        .dispatch('services/getServiceByNameAndNamespace', serviceDetails)
         .then((res) => {
           // console.log(res);
-          let json = JSON.stringify(res.data.service);
+          const json = JSON.stringify(res.data.service)
           this.codeJSON = this.beautify(json, {
             indent_size: 4,
-            space_in_empty_paren: true,
-          });
+            space_in_empty_paren: true
+          })
         })
         .catch((error) => {
-          throw error;
-        });
+          throw error
+        })
 
-      //this.editForm = res; // 查询结果写入表单
+      // this.editForm = res; // 查询结果写入表单
     },
 
     // 编辑器方法
     /* yaml */
     onYamlCmReady(cm) {
       setTimeout(() => {
-        cm.refresh();
-      }, 50);
+        cm.refresh()
+      }, 50)
     },
     onYamlCmCodeChange(newCode) {
-      this.codeYaml = newCode;
+      this.codeYaml = newCode
     },
 
-     // 提交修改
+    // 提交修改
     commitYamlChange() {
-      console.log("提交修改的 yaml", this.codeYaml);
-      this.$confirm("确认修改？", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "info",
+      console.log('提交修改的 yaml', this.codeYaml)
+      this.$confirm('确认修改？', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'info'
       })
         .then(() => {
           this.$store
-            .dispatch("common/changeResourceByYaml", this.codeYaml)
+            .dispatch('common/changeResourceByYaml', this.codeYaml)
             .then((res) => {
               switch (res.code) {
                 case 1200:
-                  this.$message.success("修改成功");
-                  break;
+                  this.$message.success('修改成功')
+                  break
                 case 1201:
-                  this.$message.error("修改失败，请查看 yaml 文件格式");
-                  break;
+                  this.$message.error('修改失败，请查看 yaml 文件格式')
+                  break
                 case 1202:
-                  this.$message.error("创建失败，请查看云平台相关错误信息");
-                  break;
+                  this.$message.error('创建失败，请查看云平台相关错误信息')
+                  break
                 default:
-                  this.$message.info("提交成功");
-                  break;
+                  this.$message.info('提交成功')
+                  break
               }
-              this.podEditDialogVisible = false;
-              this.serviceEditDialogVisible = false;
-
+              this.podEditDialogVisible = false
+              this.serviceEditDialogVisible = false
             })
             .catch((error) => {
-              throw error;
-            });
+              throw error
+            })
         })
         .catch(() => {
-          console.log("cancel");
-        });
+          console.log('cancel')
+        })
     },
 
     // 关闭添加或者修改框
-    podHandleClose: function () {
-      this.addYaml = "";
+    podHandleClose: function() {
+      this.addYaml = ''
       setTimeout(() => {
-        this.codemorror.refresh();
-      }, 1);
+        this.codemorror.refresh()
+      }, 1)
     },
 
     /* 删除 Pod 和 Service*/
-    delPod: function (name, namespace) {
-      this.$confirm("确认删除 pod？", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning",
+    delPod: function(name, namespace) {
+      this.$confirm('确认删除 pod？', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
       }).then(() => {
-        let podDetails = {
+        const podDetails = {
           podName: name,
-          podNamespace: namespace,
-        };
+          podNamespace: namespace
+        }
         this.$store
-          .dispatch("pods/delPodByNameAndNamespace", podDetails)
+          .dispatch('pods/delPodByNameAndNamespace', podDetails)
           .then((res) => {
-            if(res.code == 1200) {
-              this.$message.success("删除成功");
-              this.getPods();
+            if (res.code === 1200) {
+              this.$message.success('删除成功')
+              this.getPods()
             } else {
-              this.$message.error("删除失败");
+              this.$message.error('删除失败')
             }
           })
           .catch((error) => {
-            throw error;
-          });
-      }).catch(()=>{
+            throw error
+          })
+      }).catch(() => {
 
-      });
+      })
     },
-    delService: function (name, namespace) {
-      this.$confirm("确认删除 service？", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning",
+    delService: function(name, namespace) {
+      this.$confirm('确认删除 service？', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
       })
         .then(() => {
-          let serviceDetails = {
+          const serviceDetails = {
             serviceName: name,
-            serviceNamespace: namespace,
-          };
+            serviceNamespace: namespace
+          }
           this.$store
-            .dispatch("services/delServiceByNameAndNamespace", serviceDetails)
+            .dispatch('services/delServiceByNameAndNamespace', serviceDetails)
             .then((res) => {
-              if (res.code == 1200) {
-                this.$message.success("删除成功");
-                this.getServices();
+              if (res.code === 1200) {
+                this.$message.success('删除成功')
+                this.getServices()
               } else {
-                this.$message.error("删除失败");
+                this.$message.error('删除失败')
               }
             })
             .catch((error) => {
-              throw error;
-            });
+              throw error
+            })
         })
-        .catch(() => {});
+        .catch(() => {})
     },
 
-    //Pod 跳转
-    goToPodsDetails(name, namespace){
-      let nameAndNamespace = {
+    // Pod 跳转
+    goToPodsDetails(name, namespace) {
+      const nameAndNamespace = {
         podName: name,
-        podNamespace: namespace,
-      };
-      this.$store.dispatch("pods/toDetails", nameAndNamespace);
+        podNamespace: namespace
+      }
+      this.$store.dispatch('pods/toDetails', nameAndNamespace)
     }
-  },
-};
+  }
+}
 </script>
 
 <style lang="scss" scoped>

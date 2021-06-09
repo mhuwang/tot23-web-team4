@@ -6,7 +6,16 @@
  * @LastEditors: zqy
  * @LastEditTime: 2021-04-16 20:30:06
  */
-import { getAllDaemonSets, getDaemonSetByNameAndNamespace, deleteDaemonSetByNameAndNamespace, getDaemonSetYamlByNameAndNamespace, getDaemonSetResources, createOrReplaceDaemonSetByYaml, getDaemonSetLogs } from '@/api/workload/daemonSets'
+import {
+  getAllDaemonSets,
+  getDaemonSetByNameAndNamespace,
+  deleteDaemonSetByNameAndNamespace,
+  getDaemonSetYamlByNameAndNamespace,
+  getDaemonSetResources,
+  createOrReplaceDaemonSetByYaml,
+  getDaemonSetLogs,
+  changeDaemonSetByYamlString
+} from '@/api/workload/daemonSets'
 import { getToken } from '@/utils/auth'
 
 const getDefaultState = () => {
@@ -24,6 +33,7 @@ const mutations = {
 }
 
 const actions = {
+
   // getAllDaemonSets
   getAllDaemonSets({ commit }, namespace) {
     return new Promise((resolve, reject) => {
@@ -38,6 +48,7 @@ const actions = {
       })
     })
   },
+
   // 通过名字和命名空间获取 DaemonSet
   getDaemonSetByNameAndNamespace({ commit }, nameAndNamespace) {
     return new Promise((resolve, reject) => {
@@ -118,6 +129,20 @@ const actions = {
         const { data } = response
         if (!data) {
           return reject('创建失败')
+        }
+        resolve(data)
+      }).catch((error) => {
+        reject(error)
+      })
+    })
+  },
+
+  changeDaemonSetByYamlString({ commit }, yamlData) {
+    return new Promise((resolve, reject) => {
+      changeDaemonSetByYamlString(yamlData).then((response) => {
+        const { data } = response
+        if (!data) {
+          return reject('修改失败')
         }
         resolve(data)
       }).catch((error) => {

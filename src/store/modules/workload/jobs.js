@@ -7,8 +7,17 @@
  * @LastEditors: zqy
  * @LastEditTime: 2021-04-14 21:24:41
  */
-import { getAllJobs, getJobByNameAndNamespace, deleteJobByNameAndNamespace, getJobResources, getJobYamlByNameAndNamespace, getJobLogs } from '@/api/workload/jobs'
+import {
+  getAllJobs,
+  getJobByNameAndNamespace,
+  deleteJobByNameAndNamespace,
+  getJobResources,
+  getJobYamlByNameAndNamespace,
+  getJobLogs,
+  changeJobByYamlString
+} from '@/api/workload/jobs'
 import { getToken } from '@/utils/auth'
+import { changeDeploymentByYamlString } from '@/api/workload/deployments'
 
 const getDefaultState = () => {
   return {
@@ -25,6 +34,7 @@ const mutations = {
 }
 
 const actions = {
+
   // getAllJobs
   getAllJobs({ commit }, namesapce) {
     return new Promise((resolve, reject) => {
@@ -55,12 +65,12 @@ const actions = {
     })
   },
 
-  //通过名字和命名空间删除 Job
-  deleteJobByNameAndNamespace({commit}, nameAndNamespace) {
+  // 通过名字和命名空间删除 Job
+  deleteJobByNameAndNamespace({ commit }, nameAndNamespace) {
     return new Promise((resolve, reject) => {
       deleteJobByNameAndNamespace(nameAndNamespace).then((response) => {
         const { data } = response
-        if (!data){
+        if (!data) {
           return reject('删除失败')
         }
         resolve(data)
@@ -71,11 +81,11 @@ const actions = {
   },
 
   // 通过名字和命名空间获取 Yaml 格式的 Job
-  getJobYamlByNameAndNamespace({commit}, nameAndNamespace) {
+  getJobYamlByNameAndNamespace({ commit }, nameAndNamespace) {
     return new Promise((resolve, reject) => {
       getJobYamlByNameAndNamespace(nameAndNamespace).then(response => {
-        const {data} =response
-        if(!data){
+        const { data } = response
+        if (!data) {
           return reject('获取失败')
         }
         resolve(data)
@@ -86,11 +96,11 @@ const actions = {
   },
 
   // 获取 Job 的所有日志
-  getJobLogs({commit}, nameAndNamespace) {
+  getJobLogs({ commit }, nameAndNamespace) {
     return new Promise((resolve, reject) => {
       getJobLogs(nameAndNamespace).then(response => {
-        const {data} =response
-        if(!data){
+        const { data } = response
+        if (!data) {
           return reject('获取失败')
         }
         resolve(data)
@@ -101,12 +111,26 @@ const actions = {
   },
 
   // 通过名字和命名空间获取 Job 和 Job 管理的 Pods
-  getJobResources({commit}, nameAndNamespace) {
+  getJobResources({ commit }, nameAndNamespace) {
     return new Promise((resolve, reject) => {
       getJobResources(nameAndNamespace).then(response => {
-        const {data} =response
-        if(!data){
+        const { data } = response
+        if (!data) {
           return reject('获取失败')
+        }
+        resolve(data)
+      }).catch((error) => {
+        reject(error)
+      })
+    })
+  },
+
+  changeJobByYamlString({ commit }, yamlData) {
+    return new Promise((resolve, reject) => {
+      changeJobByYamlString(yamlData).then((response) => {
+        const { data } = response
+        if (!data) {
+          return reject('修改失败')
         }
         resolve(data)
       }).catch((error) => {

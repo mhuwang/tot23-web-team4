@@ -23,18 +23,17 @@
             clearable
             size="large"
             style="width: 100%"
+            placeholder="请选择命名空间"
             @change="selectChange"
             @clear="clearSelect"
             @focus="initNamespace"
-            placeholder="请选择命名空间"
           >
             <el-option
               v-for="item in namespaces"
               :key="item.value"
               :label="item.label"
               :value="item.value"
-            >
-            </el-option>
+            />
           </el-select>
           <!-- 搜索按钮
             <el-button
@@ -71,10 +70,10 @@
                   name: scope.row.name + ',' + scope.row.namespace,
                 },
               }"
+              class="link-type"
               @click.native="
                 goToCronJobDetails(scope.row.name, scope.row.namespace)
               "
-              class="link-type"
             >
               <span style="color: #409eff; text-decoration: underline">{{
                 scope.row.name
@@ -83,8 +82,8 @@
           </template>
         </el-table-column>
         <!-- <el-table-column prop="apiVersion" label="版本"> </el-table-column> -->
-        <el-table-column prop="namespace" label="命名空间"> </el-table-column>
-        <el-table-column prop="schedule" label="调度"> </el-table-column>
+        <el-table-column prop="namespace" label="命名空间" />
+        <el-table-column prop="schedule" label="调度" />
         <!-- <el-table-column label="暂停">
           <template slot-scope="scope">
             <el-switch
@@ -140,28 +139,25 @@
               @click="
                 showCronJobEditDialog(scope.row.name, scope.row.namespace)
               "
-              >编辑</el-button
-            >
-            <br />
+            >编辑</el-button>
+            <br>
             <!-- 删除 -->
             <el-button
               type="danger"
               icon="el-icon-delete"
               size="small"
               @click="delCronJob(scope.row.name, scope.row.namespace)"
-              >删除</el-button
-            >
+            >删除</el-button>
           </template>
         </el-table-column>
       </el-table>
       <el-pagination
-        @current-change="handleCurrentChange"
         :current-page="currentPage"
         :page-size="pageSize"
         layout=" prev, pager, next, jumper, ->, total, slot"
         :total="cronJobsAmount"
-      >
-      </el-pagination>
+        @current-change="handleCurrentChange"
+      />
     </el-card>
 
     <!-- CronJob 编辑框 -->
@@ -169,10 +165,10 @@
       title="编辑 CronJob"
       :visible.sync="editDialogVisible"
       width="70%"
-      @closed="handleClose"
-      @close="editDialogVisible = false"
       :append-to-body="true"
       :lock-scroll="true"
+      @closed="handleClose"
+      @close="editDialogVisible = false"
     >
       <el-tabs value="first" type="card">
         <el-tab-pane label="YAML" name="first">
@@ -200,7 +196,7 @@
       </textarea> -->
       <span slot="footer" class="dialog-footer">
         <div class="foot-info">
-          <i class="el-icon-warning"></i> 此操作相当于 kubectl apply -f
+          <i class="el-icon-warning" /> 此操作相当于 kubectl apply -f
           &ltspec.yaml>
         </div>
         <el-button @click="editDialogVisible = false">取 消</el-button>
@@ -212,30 +208,30 @@
 
 <script>
 // import language js
-import "codemirror/mode/javascript/javascript.js";
-import "codemirror/mode/yaml/yaml.js";
+import 'codemirror/mode/javascript/javascript.js'
+import 'codemirror/mode/yaml/yaml.js'
 // import theme style
-import "codemirror/theme/panda-syntax.css";
+import 'codemirror/theme/panda-syntax.css'
 
 export default {
-  name: "CronJobs",
+  name: 'CronJobs',
 
   data() {
     return {
-      namespaces: [], //命名空间
-      cronJobsAmount: 0, //CronJob 总数
-      currentPage: 1, //分页绑定当前页
-      cronJobsInCurrentPage: [], //页面中的 CronJobs
-      pageSize: 6, //一页显示数量
-      cronJobSuSpend: true,//CronJob 可调度情况
-      cronJobs: [], //所有CronJobs
+      namespaces: [], // 命名空间
+      cronJobsAmount: 0, // CronJob 总数
+      currentPage: 1, // 分页绑定当前页
+      cronJobsInCurrentPage: [], // 页面中的 CronJobs
+      pageSize: 6, // 一页显示数量
+      cronJobSuSpend: true, // CronJob 可调度情况
+      cronJobs: [], // 所有CronJobs
       loading: true, // 获取数据中
       editDialogVisible: false, // 编辑详情框
       addDialogVisible: false, // 添加框详情
       // codeJSON: "", // 编辑框的 json 数据
-      codeYaml: "", // 编辑框的 yaml 数据
-      addYaml: "", // 添加框的 yaml 数据
-      value: "",
+      codeYaml: '', // 编辑框的 yaml 数据
+      addYaml: '', // 添加框的 yaml 数据
+      value: '',
       // cmOptions: {
       //   // json codemirror 配置项
       //   tabSize: 4,
@@ -250,21 +246,21 @@ export default {
       cmOptionsYaml: {
         // yaml codemirror 配置项
         tabSize: 4,
-        mode: "yaml",
-        theme: "panda-syntax",
+        mode: 'yaml',
+        theme: 'panda-syntax',
         lineNumbers: true,
-        line: true,
-      },
-    };
+        line: true
+      }
+    }
   },
 
   created() {
-    this.getCronJobs();
+    this.getCronJobs()
   },
 
   methods: {
     // 详情页
-    goToCronJobDetails: function (cronJobName, cronJobNamespace) {
+    goToCronJobDetails: function(cronJobName, cronJobNamespace) {
       // console.log("deployments index namespace", deploymentNamespace);
       // this.$store
       //   .dispatch("cronJobs/toDetails", {cronJobName, cronJobNamespace});
@@ -274,20 +270,20 @@ export default {
     getCronJobs(namespace) {
       // console.log(namespace, "in CronJob")
       this.$store
-        .dispatch("cronJobs/getAllCronJobs", namespace)
+        .dispatch('cronJobs/getAllCronJobs', namespace)
         .then((res) => {
           // console.log(res.data);
-          this.cronJobs = res.data;
-          this.cronJobsAmount = this.cronJobs.length;
-          this.cronJobsInCurrentPage = this.cronJobs.slice(0, this.pageSize);
+          this.cronJobs = res.data
+          this.cronJobsAmount = this.cronJobs.length
+          this.cronJobsInCurrentPage = this.cronJobs.slice(0, this.pageSize)
         })
         .catch((error) => {
-          console.log(error);
-        });
+          console.log(error)
+        })
       // console.log(this.cronJobs.metadata.spec.schedule)
     },
 
-    //修改 CronJob 的为暂停或者运行
+    // 修改 CronJob 的为暂停或者运行
     changeCronJobSuSpend(cronJob) {
       // this.$store.dispatch("cronJobs/changeCronJobSuSpend")
       // .then((res) => {
@@ -300,157 +296,154 @@ export default {
     /* 按命名空间查询 */
     // 当选择框聚焦时获取命名空间
     initNamespace() {
-      if (this.namespaces.length == 0) {
-        this.namespaces = this.$store.state.namespaces.namespaces;
+      if (this.namespaces.length === 0) {
+        this.namespaces = this.$store.state.namespaces.namespaces
       }
     },
     // 选择框变化事件
     selectChange(value) {
       // console.log("selectChange", value, "++++\n\n")
-      this.loading = true;
-      this.getCronJobs(value);
+      this.loading = true
+      this.getCronJobs(value)
     },
     // 选择框清空事件
     clearSelect() {
-      this.loading = true;
-      this.getCronJobs();
+      this.loading = true
+      this.getCronJobs()
     },
 
-    //编辑 CronJob
+    // 编辑 CronJob
     showCronJobEditDialog(name, namespace) {
-      let cronJobDetails = {
+      const cronJobDetails = {
         name: name,
-        namespace: namespace,
-      };
+        namespace: namespace
+      }
 
       // 获取 yaml 格式
       this.$store
-        .dispatch("cronJobs/getCronJobYamlByNameAndNamespace", cronJobDetails)
+        .dispatch('cronJobs/getCronJobYamlByNameAndNamespace', cronJobDetails)
         .then((res) => {
-          this.codeYaml = res.data;
+          this.codeYaml = res.data
           // console.log("edit dialog init", this.codeYaml);
-          this.editDialogVisible = true; // 打开编辑对话框
+          this.editDialogVisible = true // 打开编辑对话框
         })
         .catch((error) => {
-          throw error;
-        });
+          throw error
+        })
 
       // json 格式
       this.$store
-        .dispatch("cronJobs/getCronJobByNameAndNamespace", cronJobDetails)
+        .dispatch('cronJobs/getCronJobByNameAndNamespace', cronJobDetails)
         .then((res) => {
           // console.log(res);
-          let json = JSON.stringify(res.data.cronJob);
+          const json = JSON.stringify(res.data.cronJob)
           this.codeJSON = this.beautify(json, {
             indent_size: 4,
-            space_in_empty_paren: true,
-          });
+            space_in_empty_paren: true
+          })
         })
         .catch((error) => {
-          throw error;
-        });
+          throw error
+        })
 
-      //this.editForm = res; // 查询结果写入表单
+      // this.editForm = res; // 查询结果写入表单
     },
 
     // 编辑器方法
     /* yaml */
     onYamlCmReady(cm) {
       setTimeout(() => {
-        cm.refresh();
-      }, 50);
+        cm.refresh()
+      }, 50)
     },
     onYamlCmCodeChange(newCode) {
-      this.codeYaml = newCode;
+      this.codeYaml = newCode
     },
 
-    //点击确认按钮触发此修改 CronJob 事件
+    // 点击确认按钮触发此修改 CronJob 事件
     commitYamlChange() {
-      this.$confirm("确认修改？", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "info",
+      this.$confirm('确认修改？', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'info'
       })
         .then(() => {
           this.$store
-            .dispatch("common/changeResourceByYaml", this.codeYaml)
+            .dispatch('cronJobs/changeCronJobByYamlString', this.codeYaml)
             .then((res) => {
               switch (res.code) {
                 case 1200:
-                  this.$message.success("修改成功");
-                  break;
+                  this.$message.success('修改成功')
+                  break
                 case 1201:
-                  this.$message.error("修改失败，请查看 yaml 文件格式");
-                  break;
-                case 1202:
-                  this.$message.error("创建失败，请查看云平台相关错误信息");
-                  break;
+                  this.$message.error('修改失败，请查看 yaml 文件格式或是否重名')
+                  break
                 default:
-                  this.$message.info("提交成功");
-                  break;
+                  this.$message.info('提交成功')
+                  break
               }
-              this.editDialogVisible = false;
+              this.editDialogVisible = false
             })
             .catch((error) => {
-              throw error;
-            });
+              throw error
+            })
         })
         .catch(() => {
-          console.log("cancel");
-        });
+          console.log('cancel')
+        })
     },
 
     // 关闭修改框
-    handleClose: function () {
-      this.addYaml = "";
+    handleClose: function() {
+      this.addYaml = ''
       setTimeout(() => {
-        this.codemorror.refresh();
-      }, 1);
+        this.codemorror.refresh()
+      }, 1)
     },
 
-    //删除 CronJob
+    // 删除 CronJob
     delCronJob(name, namespace) {
-      this.$confirm("确认删除 CronJob？", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning",
+      this.$confirm('确认删除 CronJob？', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
       })
         .then(() => {
-          let nameAndNamespace = {
+          const nameAndNamespace = {
             name: name,
-            namespace: namespace,
-          };
+            namespace: namespace
+          }
           this.$store
             .dispatch(
-              "cronJobs/deleteCronJobByNameAndNamespace",
+              'cronJobs/deleteCronJobByNameAndNamespace',
               nameAndNamespace
             )
             .then((res) => {
               if (res.data) {
-                this.$message.success("删除成功");
-                this.getCronJobs();
+                this.$message.success('删除成功')
+                this.getCronJobs()
               } else {
-                this.$message.error("删除失败");
+                this.$message.error('删除失败')
               }
               // console.log(res.data);
             })
             .catch((error) => {
-              console.log(error);
-            });
+              console.log(error)
+            })
         })
-        .catch(() => {});
+        .catch(() => {})
     },
 
-    //分页事件
+    // 分页事件
     handleCurrentChange(currentPage) {
-      this.currentPage = currentPage;
+      this.currentPage = currentPage
       this.cronJobsInCurrentPage = this.cronJobs.slice(
         (this.currentPage - 1) * this.pageSize,
         this.currentPage * this.pageSize
-      );
-    },
-  },
-};
+      )
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>

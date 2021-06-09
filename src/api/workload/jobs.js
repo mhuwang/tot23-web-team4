@@ -6,8 +6,8 @@
  * @LastEditors: zqy
  * @LastEditTime: 2021-04-14 21:23:28
  */
-import request from "@/utils/request"
-let baseUrl = require("../api").baseurl;
+import request from '@/utils/request'
+const baseUrl = require('../api').baseurl
 
 export function getAllJobs(data) {
   return request({
@@ -18,7 +18,6 @@ export function getAllJobs(data) {
     }
   })
 }
-
 export function getJobByNameAndNamespace(nameAndNamespace) {
   return request({
     url: baseUrl + '/jobs/getJobByNameAndNamespace',
@@ -29,7 +28,6 @@ export function getJobByNameAndNamespace(nameAndNamespace) {
     }
   })
 }
-
 export function deleteJobByNameAndNamespace(data) {
   return request({
     url: baseUrl + '/jobs/deleteJobByNameAndNamespace',
@@ -40,10 +38,9 @@ export function deleteJobByNameAndNamespace(data) {
     }
   })
 }
-
 export function getJobYamlByNameAndNamespace(data) {
   return request({
-    url :baseUrl + '/jobs/getJobYamlByNameAndNamespace',
+    url: baseUrl + '/jobs/getJobYamlByNameAndNamespace',
     method: 'get',
     params: {
       name: data.name,
@@ -51,10 +48,9 @@ export function getJobYamlByNameAndNamespace(data) {
     }
   })
 }
-
 export function getJobResources(data) {
   return request({
-    url :baseUrl + '/jobs/getJobResources',
+    url: baseUrl + '/jobs/getJobResources',
     method: 'get',
     params: {
       name: data.name,
@@ -70,6 +66,15 @@ export function getJobLogs(data) {
     params: {
       name: data.name,
       namespace: data.namespace
+    }
+  })
+}
+export function changeJobByYamlString(data) {
+  return request({
+    url: baseUrl + '/jobs/changeJobByYamlString',
+    method: 'post',
+    data: {
+      yaml: data
     }
   })
 }

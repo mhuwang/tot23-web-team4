@@ -179,24 +179,24 @@
       title="日志"
       :visible.sync="logDialogVisible"
       width="70%"
-      @close="logDialogVisible = false"
+      @close="logDialogClose"
       :append-to-body="true"
       :lock-scroll="true"
     >
       <el-tabs type="card">
-        <el-tab-pane :label="item.containerName"  v-for="item in logs" :key="item.containerName">
+        <el-tab-pane :label="item"  v-for="item in Object.keys(logs)" :key="item">
 <!--          <codemirror-->
 <!--            :value="item.log"-->
 <!--            :options="cmOptionsLog"-->
 <!--          />-->
-          <highlightjs javascript :code="item.log" />
+          <highlightjs javascript :code="logs[item]" />
         </el-tab-pane>
       </el-tabs>
       <span slot="footer" class="dialog-footer">
         <div class="foot-info">
           <i class="el-icon-warning"></i> 请选择要查看日志的容器
         </div>
-        <el-button type="primary" @click="logDialogVisible = false">确 定</el-button>
+        <el-button type="primary" @click="logDialogClose">确 定</el-button>
       </span>
     </el-dialog>
 
@@ -347,6 +347,10 @@ export default {
           throw error
         })
     },
+    logDialogClose() {
+      this.logDialogVisible = false
+      this.logs = {}
+    },
 
     /* 编辑部分 */
     showPodEditDialog(name, namespace) {
@@ -401,14 +405,14 @@ export default {
       })
         .then(() => {
           this.$store
-            .dispatch("common/changeResourceByYaml", this.codeYaml)
+            .dispatch("pods/changePodByYamlString", this.codeYaml)
             .then((res) => {
               switch (res.code) {
                 case 1200:
                   this.$message.success("修改成功");
                   break;
                 case 1201:
-                  this.$message.error("修改失败，请查看 yaml 文件格式");
+                  this.$message.error("修改失败，请查看 yaml 文件格式或是否重名");
                   break;
                 case 1202:
                   this.$message.error("创建失败，请查看云平台相关错误信息");

@@ -15,18 +15,18 @@
       <el-tabs tab-position="top" style="margin-bottom: 170px">
         <!-- 从表单创建 -->
         <el-tab-pane>
-          <span slot="label"><i class="el-icon-document"></i>从表单创建</span>
+          <span slot="label"><i class="el-icon-document" />从表单创建</span>
           <!-- 必填信息 -->
           <el-form
+            ref="baseInformation"
             :model="baseInformation"
             :rules="baseInformationRules"
-            ref="baseInformation"
             :label-position="'top'"
             label-width="100px"
             class="demo-ruleForm"
           >
             <el-form-item label="容器组 名称" prop="name" required>
-              <el-input v-model="baseInformation.name"></el-input>
+              <el-input v-model="baseInformation.name" />
             </el-form-item>
             <el-form-item label="容器组 命名空间" prop="namespace" required>
               <el-select
@@ -34,16 +34,15 @@
                 filterable
                 size="large"
                 style="width: 100%"
-                @focus="initNamespaces"
                 placeholder="请选择命名空间"
+                @focus="initNamespaces"
               >
                 <el-option
                   v-for="item in namespaces"
                   :key="item.value"
                   :label="item.label"
                   :value="item.value"
-                >
-                </el-option>
+                />
               </el-select>
             </el-form-item>
             <el-form
@@ -52,7 +51,7 @@
               :model="baseInformation"
             >
               <el-form-item label="容器镜像" prop="image" required>
-                <el-input v-model="baseInformation.image"></el-input>
+                <el-input v-model="baseInformation.image" />
               </el-form-item>
               <el-form-item
                 label="镜像下载策略"
@@ -63,9 +62,9 @@
                   v-model="baseInformation.imagePullPolicy"
                   placeholder="请选策略"
                 >
-                  <el-option label="总是下载" value="Always"></el-option>
-                  <el-option label="不存在时" value="IfNotPresent"></el-option>
-                  <el-option label="从不下载" value="Never"></el-option>
+                  <el-option label="总是下载" value="Always" />
+                  <el-option label="不存在时" value="IfNotPresent" />
+                  <el-option label="从不下载" value="Never" />
                 </el-select>
               </el-form-item>
             </el-form>
@@ -76,7 +75,7 @@
                 :min="1"
                 label="容器组 数量"
                 controls-position="right"
-              ></el-input-number>
+              />
             </el-form-item>
             <el-form-item label="服务" prop="service" required>
               <el-select
@@ -84,55 +83,55 @@
                 placeholder="请选服务"
                 @change="serviceChange"
               >
-                <el-option label="无服务" value="None"></el-option>
-                <el-option label="内部服务" value="Internal"></el-option>
-                <el-option label="外部服务" value="External"></el-option>
+                <el-option label="无服务" value="None" />
+                <el-option label="内部服务" value="Internal" />
+                <el-option label="外部服务" value="External" />
               </el-select>
             </el-form-item>
             <List
-              item-layout="horizontal"
-              :split="false"
               v-for="count in baseInformation.serviceCount"
               :key="count"
+              item-layout="horizontal"
+              :split="false"
             >
               <el-form :inline="true" class="demo-form-inline">
                 <el-form-item
                   v-if="
                     baseInformation.service == 'Internal' ||
-                    baseInformation.service == 'External'
+                      baseInformation.service == 'External'
                   "
                 >
                   <div class="service-item">
                     <p>端口{{ count }}</p>
                     <el-input-number
                       v-model="baseInformation.ports[count - 1]"
-                      @change="serviceDetailedChange"
                       :min="1"
                       :max="65535"
                       label="端口"
                       controls-position="right"
-                    ></el-input-number>
+                      @change="serviceDetailedChange"
+                    />
                   </div>
                   <div class="service-item">
                     <p>目的端口{{ count }}</p>
                     <el-input-number
                       v-model="baseInformation.targetPorts[count - 1]"
-                      @change="serviceDetailedChange"
                       :min="1"
                       :max="65535"
                       label="目的端口"
                       controls-position="right"
-                    ></el-input-number>
+                      @change="serviceDetailedChange"
+                    />
                   </div>
                   <div class="service-item">
                     <p>协议</p>
                     <el-select
-                      @change="serviceDetailedChange"
                       v-model="baseInformation.protocols[count - 1]"
                       placeholder="请选协议"
+                      @change="serviceDetailedChange"
                     >
-                      <el-option label="UDP" value="UDP"></el-option>
-                      <el-option label="TCP" value="TCP"></el-option>
+                      <el-option label="UDP" value="UDP" />
+                      <el-option label="TCP" value="TCP" />
                     </el-select>
                   </div>
                 </el-form-item>
@@ -141,57 +140,55 @@
             <el-form-item v-if="!completeOption">
               <el-button type="primary" @click="submitPod()">创 建</el-button>
               <el-button @click="resetPodInformation()">重 置</el-button>
-              <el-button @click="showCompleteOption(completeOption)" type="text"
-                >显示高级选项</el-button
-              >
+              <el-button
+                type="text"
+                @click="showCompleteOption(completeOption)"
+              >显示高级选项</el-button>
             </el-form-item>
           </el-form>
           <!-- 高级信息 -->
           <el-form
+            v-if="completeOption"
+            ref="seniorInformation"
             :model="seniorInformation"
             :rules="seniorInformationRules"
-            ref="seniorInformation"
             label-widsth="100px"
             class="demo-ruleForm"
             :label-position="'top'"
-            v-if="completeOption"
           >
             <el-form-item label="描述" prop="annotations">
               <el-input
+                v-model="seniorInformation.annotations"
                 type="textarea"
                 :autosize="{ minRows: 2, maxRows: 4 }"
                 placeholder="请输入内容"
-                v-model="seniorInformation.annotations"
-              >
-              </el-input>
+              />
             </el-form-item>
-            <el-form-item label="标签" >
+            <el-form-item label="标签">
               <List
-                item-layout="horizontal"
-                :split="false"
                 v-for="count in seniorInformation.labelsCount"
                 :key="count"
+                item-layout="horizontal"
+                :split="false"
               >
                 <el-form-item>
                   <div class="label-item">
                     <el-input
+                      v-model="seniorInformation.labelsKeys[count - 1]"
                       size="medium"
                       placeholder="键"
                       suffix-icon="el-icon-key"
-                      v-model="seniorInformation.labelsKeys[count - 1]"
                       @change="labelDetailedChange"
-                    >
-                    </el-input>
+                    />
                   </div>
                   <div class="label-item">
                     <el-input
+                      v-model="seniorInformation.labelsValues[count - 1]"
                       size="medium"
                       placeholder="值"
                       suffix-icon="el-icon-thumb"
-                      v-model="seniorInformation.labelsValues[count - 1]"
                       @change="labelDetailedChange"
-                    >
-                    </el-input>
+                    />
                   </div>
                 </el-form-item>
               </List>
@@ -203,7 +200,7 @@
                   :min="0"
                   label="CPU最低需求"
                   controls-position="right"
-                ></el-input-number>
+                />
               </el-form-item>
               <el-form-item label="CPU最高限制">
                 <el-input-number
@@ -211,15 +208,15 @@
                   :min="0"
                   label="CPU最高限制"
                   controls-position="right"
-                ></el-input-number>
+                />
               </el-form-item>
               <el-form-item label="单位">
                 <el-select
                   v-model="seniorInformation.cpuUnit"
                   placeholder="请选单位"
                 >
-                  <el-option label="核" value=""></el-option>
-                  <el-option label="m" value="m"></el-option>
+                  <el-option label="核" value="" />
+                  <el-option label="m" value="m" />
                 </el-select>
               </el-form-item>
             </el-form>
@@ -230,7 +227,7 @@
                   :min="0"
                   label="Memory最低需求"
                   controls-position="right"
-                ></el-input-number>
+                />
               </el-form-item>
               <el-form-item label="Memory最高限制">
                 <el-input-number
@@ -238,15 +235,15 @@
                   :min="0"
                   label="Memory最高限制"
                   controls-position="right"
-                ></el-input-number>
+                />
               </el-form-item>
               <el-form-item label="单位">
                 <el-select
                   v-model="seniorInformation.memoryUnit"
                   placeholder="请选单位"
                 >
-                  <el-option label="Gi" value="Gi"></el-option>
-                  <el-option label="Mi" value="Mi"></el-option>
+                  <el-option label="Gi" value="Gi" />
+                  <el-option label="Mi" value="Mi" />
                 </el-select>
               </el-form-item>
             </el-form>
@@ -266,54 +263,50 @@
                   :key="secret"
                   :label="secret"
                   :value="secret"
-                ></el-option>
+                />
               </el-select>
             </el-form-item>
             <el-form-item label="运行命令" prop="commands">
               <el-input
+                v-model="seniorInformation.command"
                 type="textarea"
                 :autosize="{ minRows: 2, maxRows: 4 }"
                 placeholder="请输入内容"
-                v-model="seniorInformation.command"
-              >
-              </el-input>
+              />
             </el-form-item>
             <el-form-item label="命令参数" prop="args">
               <el-input
+                v-model="seniorInformation.args"
                 type="textarea"
                 :autosize="{ minRows: 2, maxRows: 4 }"
                 placeholder="请输入内容"
-                v-model="seniorInformation.args"
-              >
-              </el-input>
+              />
             </el-form-item>
-            <el-form-item label="环境变量" >
+            <el-form-item label="环境变量">
               <List
-                item-layout="horizontal"
-                :split="false"
                 v-for="count in seniorInformation.envCount"
                 :key="count"
+                item-layout="horizontal"
+                :split="false"
               >
                 <el-form-item>
                   <div class="label-item">
                     <el-input
+                      v-model="seniorInformation.envKeys[count - 1]"
                       size="medium"
                       placeholder="键"
                       suffix-icon="el-icon-key"
-                      v-model="seniorInformation.envKeys[count - 1]"
                       @change="envDetailedChange"
-                    >
-                    </el-input>
+                    />
                   </div>
                   <div class="label-item">
                     <el-input
+                      v-model="seniorInformation.envValues[count - 1]"
                       size="medium"
                       placeholder="值"
                       suffix-icon="el-icon-thumb"
-                      v-model="seniorInformation.envValues[count - 1]"
                       @change="envDetailedChange"
-                    >
-                    </el-input>
+                    />
                   </div>
                 </el-form-item>
               </List>
@@ -323,19 +316,18 @@
               <el-button @click="resetPodInformation()">重 置</el-button>
               <el-button
                 round="true"
-                @click="showCompleteOption(completeOption)"
                 type="text"
-                >收起高级选项</el-button
-              >
+                @click="showCompleteOption(completeOption)"
+              >收起高级选项</el-button>
             </el-form-item>
           </el-form>
         </el-tab-pane>
 
         <!-- 输入并创建 -->
         <el-tab-pane>
-          <span slot="label"
-            ><i class="el-icon-document-add"></i>输入并创建</span
-          >
+          <span
+            slot="label"
+          ><i class="el-icon-document-add" />输入并创建</span>
           <codemirror
             ref="cmYamlAdd"
             :value="addYaml"
@@ -348,7 +340,7 @@
                 <i class="el-icon-warning"></i> 此操作相当于 kubectl apply -f
                 &ltspec.yaml>
               </div> -->
-            <br />
+            <br>
             <el-button type="primary" @click="commitPodAdd">创 建</el-button>
             <el-button @click="addDialogVisible = false">取 消</el-button>
           </span>
@@ -356,7 +348,7 @@
 
         <!-- 从文件创建 -->
         <el-tab-pane>
-          <span slot="label"><i class="el-icon-folder"></i>从文件创建</span>
+          <span slot="label"><i class="el-icon-folder" />从文件创建</span>
 
           <!-- <el-upload
             style="display: inline-block"
@@ -394,15 +386,15 @@
             :file-list="fileList"
             :http-request="uploadSectionFile"
           >
-            <i class="el-icon-upload"></i>
+            <i class="el-icon-upload" />
             <div class="el-upload__text">
               将文件拖到此处，或<em>点击上传</em>
             </div>
-            <div class="el-upload__tip" slot="tip">
+            <div slot="tip" class="el-upload__tip">
               只能上传Yaml格式的文件，且不超过500kb
             </div>
           </el-upload>
-          <br/>
+          <br>
           <!-- <el-button
               style="margin-left: 10px"
               icon="el-icon-upload2"
@@ -418,34 +410,35 @@
 
 <script>
 // import language js
-import "codemirror/mode/javascript/javascript.js";
-import "codemirror/mode/yaml/yaml.js";
+import 'codemirror/mode/javascript/javascript.js'
+import 'codemirror/mode/yaml/yaml.js'
 // import theme style
-import "codemirror/theme/panda-syntax.css";
-import request from "@/utils/request";
+import 'codemirror/theme/panda-syntax.css'
+// eslint-disable-next-line no-unused-vars
+import request from '@/utils/request'
 
 export default {
   data() {
     return {
-      /**页面数据 */
-      namespaces: [], //命名空间
-      secretsName: {}, //Secrets 的名字 按命名空间分类
-      secretsNameInNamespace: [], //在某一命名空间下的 Secrets 名字
+      /** 页面数据 */
+      namespaces: [], // 命名空间
+      secretsName: {}, // Secrets 的名字 按命名空间分类
+      secretsNameInNamespace: [], // 在某一命名空间下的 Secrets 名字
 
-      /**编辑框部分 */
+      /** 编辑框部分 */
       addDialogVisible: true, // 添加框详情
-      addYaml: "", // 输入框的 yaml 数据
+      addYaml: '', // 输入框的 yaml 数据
       cmOptionsYaml: {
         // yaml codemirror 配置项
         tabSize: 4,
-        mode: "yaml",
-        theme: "panda-syntax",
+        mode: 'yaml',
+        theme: 'panda-syntax',
         lineNumbers: true,
-        line: true,
+        line: true
       },
 
-      /**表单部分 */
-      completeOption: false, //是否显示高级选项
+      /** 表单部分 */
+      completeOption: false, // 是否显示高级选项
 
       // baseInformation: {
       //   name: "zqytest3",
@@ -485,37 +478,37 @@ export default {
       //   envCount: 1,
       // },
 
-      //基本选项
+      // 基本选项
       baseInformation: {
-        name: "",
-        namespace: "default",
-        image: "",
-        imagePullPolicy: "Always",
+        name: '',
+        namespace: 'default',
+        image: '',
+        imagePullPolicy: 'Always',
         number: 1,
-        service: "None",
+        service: 'None',
         serviceCount: 1,
         ports: [1],
         targetPorts: [1],
-        protocols: ["TCP"],
+        protocols: ['TCP']
       },
-      //高级选项
+      // 高级选项
       seniorInformation: {
-        annotations: "",
-        labelsKeys: [""],
-        labelsValues: [""],
+        annotations: '',
+        labelsKeys: [''],
+        labelsValues: [''],
         labelsCount: 1,
-        secret: "",
+        secret: '',
         cpuRequire: 0,
         cpuLimit: 0,
-        cpuUnit: "",
+        cpuUnit: '',
         memoryRequire: 0,
         memoryLimit: 0,
-        memoryUnit: "Mi",
-        commands: "",
-        args: "",
-        envKeys: [""],
-        envValues: [""],
-        envCount: 1,
+        memoryUnit: 'Mi',
+        commands: '',
+        args: '',
+        envKeys: [''],
+        envValues: [''],
+        envCount: 1
       },
       secretLoading: false,
       // baseInformationRules: {
@@ -556,35 +549,36 @@ export default {
       //   protocol: [{ required: true, message: "请填写活动形式", trigger: "blur" }],
       // },
 
-      /**上传文件部分 */
+      /** 上传文件部分 */
       uploadFileLimit: 5,
       fileList: [],
-      fileName: "pod.yaml",
-    };
+      fileName: 'pod.yaml'
+    }
   },
 
   created() {
-    this.getAllSecretsName();
+    this.getAllSecretsName()
   },
 
   methods: {
-    /**命名空间框的事件 */
+    /** 命名空间框的事件 */
     // 当选择框聚焦时获取命名空间
     initNamespaces() {
-      if (this.namespaces.length == 0) {
-        this.namespaces = this.$store.state.namespaces.namespaces.slice(1, -1);
+      if (this.namespaces.length === 0) {
+        this.namespaces = this.$store.state.namespaces.namespaces
+        this.namespaces = this.namespaces.slice(1, this.namespaces.length)
       }
     },
-    //命名空间变化时
+    // 命名空间变化时
     whenNamespaceChange() {},
 
     /** Pod 的选择服务框部分 */
     // Pod 的服务监控
     serviceChange() {
-      this.baseInformation.serviceCount = 1;
-      this.baseInformation.ports = [1];
-      this.baseInformation.targetPorts = [1];
-      this.baseInformation.protocols = ["TCP"];
+      this.baseInformation.serviceCount = 1
+      this.baseInformation.ports = [1]
+      this.baseInformation.targetPorts = [1]
+      this.baseInformation.protocols = ['TCP']
     },
     // Pod 的服务数量监控
     serviceDetailedChange() {
@@ -598,276 +592,276 @@ export default {
         this.baseInformation.protocols[this.baseInformation.serviceCount - 1] !=
           null
       ) {
-        this.addServicesList();
+        this.addServicesList()
       }
     },
-    //增加可选服务列表
+    // 增加可选服务列表
     addServicesList() {
-      this.baseInformation.serviceCount = this.baseInformation.serviceCount + 1;
-      this.baseInformation.ports.push(1);
-      this.baseInformation.targetPorts.push(1);
-      this.baseInformation.protocols.push("TCP");
+      this.baseInformation.serviceCount = this.baseInformation.serviceCount + 1
+      this.baseInformation.ports.push(1)
+      this.baseInformation.targetPorts.push(1)
+      this.baseInformation.protocols.push('TCP')
     },
 
     /** label 和 env 部分 */
     // label 和 env 的数量监控
     labelDetailedChange() {
       if (
-        this.seniorInformation.labelsKeys[this.seniorInformation.labelsCount - 1]
-          != "" &&
-        this.seniorInformation.labelsValues[this.seniorInformation.labelsCount - 1]
-          != "" 
+        this.seniorInformation.labelsKeys[this.seniorInformation.labelsCount - 1] !==
+          '' &&
+        this.seniorInformation.labelsValues[this.seniorInformation.labelsCount - 1] !==
+          ''
       ) {
-        this.addLabelsList();
+        this.addLabelsList()
       }
     },
     envDetailedChange() {
       if (
-        this.seniorInformation.envKeys[this.seniorInformation.envCount - 1] !=
-          "" &&
-        this.seniorInformation.envValues[this.seniorInformation.envCount - 1] !=
-          "" 
+        this.seniorInformation.envKeys[this.seniorInformation.envCount - 1] !==
+          '' &&
+        this.seniorInformation.envValues[this.seniorInformation.envCount - 1] !==
+          ''
       ) {
-        this.addEnvList();
+        this.addEnvList()
       }
     },
-    //增加 label 和 env 列表
+    // 增加 label 和 env 列表
     addLabelsList() {
-      this.seniorInformation.labelsCount += 1;
-      this.seniorInformation.labelsKeys.push("");
-      this.seniorInformation.labelsValues.push("");
+      this.seniorInformation.labelsCount += 1
+      this.seniorInformation.labelsKeys.push('')
+      this.seniorInformation.labelsValues.push('')
     },
     addEnvList() {
-      this.seniorInformation.envCount += 1;
-      this.seniorInformation.envKeys.push("");
-      this.seniorInformation.envValues.push("");
+      this.seniorInformation.envCount += 1
+      this.seniorInformation.envKeys.push('')
+      this.seniorInformation.envValues.push('')
     },
 
-    /**Secret 部分 */
-    //获取全部 Secrets 名字
+    /** Secret 部分 */
+    // 获取全部 Secrets 名字
     getAllSecretsName() {
       this.$store
-        .dispatch("secrets/getAllSecretsName", "")
+        .dispatch('secrets/getAllSecretsName', '')
         .then((res) => {
-          console.log(res.data);
-          this.secretsName = res.data;
+          console.log(res.data)
+          this.secretsName = res.data
         })
         .catch((error) => {
-          console.log(error);
-        });
+          console.log(error)
+        })
     },
-    //Secrets 选择框焦距事件
+    // Secrets 选择框焦距事件
     showSecretsInNamespace() {
       // if(Object.keys(this.secretsName).length == 0) this.getAllSecretsName();
       this.secretsNameInNamespace = this.secretsName[
         this.baseInformation.namespace
-      ];
+      ]
     },
 
-    /**从表单创建 Pod 按钮部分 */
-    //显示高级选项
+    /** 从表单创建 Pod 按钮部分 */
+    // 显示高级选项
     showCompleteOption(completeOption) {
       // console.log(completeOption);
       switch (completeOption) {
         case true:
-          this.completeOption = false;
+          this.completeOption = false
           // console.log(1);
-          break;
+          break
         case false:
-          this.completeOption = true;
+          this.completeOption = true
           // console.log(2);
-          break;
+          break
       }
     },
-    //提交并创建Pod
+    // 提交并创建Pod
     submitPod() {
-      let podForm = new FormData();
-      podForm.append("name", this.baseInformation.name);
-      podForm.append("namespace",this.baseInformation.namespace);
-      podForm.append("labelsKeys", this.seniorInformation.labelsKeys.splice(0, this.seniorInformation.labelsKeys.length - 1));
-      podForm.append("labelsValues", this.seniorInformation.labelsValues.splice(0,  this.seniorInformation.labelsValues.length - 1));
-      let annotations = this.seniorInformation.annotations.split("\n");
-      let annotationsKeys = [];
-      let annotationsValues = [];
-      for(let index in annotations){
-        let tmp = annotations[index].split(':');
-        if(tmp.length == 2){
-          annotationsKeys.push(tmp[0]);
-          annotationsValues.push(tmp[1]);
+      const podForm = new FormData()
+      podForm.append('name', this.baseInformation.name)
+      podForm.append('namespace', this.baseInformation.namespace)
+      podForm.append('labelsKeys', this.seniorInformation.labelsKeys.splice(0, this.seniorInformation.labelsKeys.length - 1))
+      podForm.append('labelsValues', this.seniorInformation.labelsValues.splice(0, this.seniorInformation.labelsValues.length - 1))
+      const annotations = this.seniorInformation.annotations.split('\n')
+      const annotationsKeys = []
+      const annotationsValues = []
+      for (const index in annotations) {
+        const tmp = annotations[index].split(':')
+        if (tmp.length === 2) {
+          annotationsKeys.push(tmp[0])
+          annotationsValues.push(tmp[1])
         }
       }
-      podForm.append("annotationsKeys", annotationsKeys);
-      podForm.append("annotationsValues", annotationsValues);
-      podForm.append("image", this.baseInformation.image);
-      podForm.append("imagePullPolicy", this.baseInformation.imagePullPolicy);
-      podForm.append("commands", this.seniorInformation.commands.split('\n'));
-      podForm.append("args", this.seniorInformation.args.split('\n'));
-      podForm.append("cpuLimit", this.seniorInformation.cpuLimit.toString() + this.seniorInformation.cpuUnit);
-      podForm.append("cpuRequest", this.seniorInformation.cpuRequire.toString() + this.seniorInformation.cpuUnit);
-      podForm.append("memoryLimit", this.seniorInformation.memoryLimit.toString() + this.seniorInformation.memoryUnit);
-      podForm.append("memoryRequest", this.seniorInformation.memoryRequire.toString() + this.seniorInformation.memoryUnit);
-      console.log(this.seniorInformation.cpuLimit.toString() + this.seniorInformation.cpuUnit);
-      console.log(this.seniorInformation.memoryRequire.toString() + this.seniorInformation.memoryUnit);
-      podForm.append("envKeys", this.seniorInformation.envKeys.splice(0, this.seniorInformation.envKeys.length - 1));
-      podForm.append("envValues", this.seniorInformation.envValues.splice(0, this.seniorInformation.envValues.length - 1));
-      podForm.append("amount", this.baseInformation.number);
-      this.$confirm("确认修改？", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "info",
+      podForm.append('annotationsKeys', annotationsKeys)
+      podForm.append('annotationsValues', annotationsValues)
+      podForm.append('image', this.baseInformation.image)
+      podForm.append('imagePullPolicy', this.baseInformation.imagePullPolicy)
+      podForm.append('commands', this.seniorInformation.commands.split('\n'))
+      podForm.append('args', this.seniorInformation.args.split('\n'))
+      podForm.append('cpuLimit', this.seniorInformation.cpuLimit.toString() + this.seniorInformation.cpuUnit)
+      podForm.append('cpuRequest', this.seniorInformation.cpuRequire.toString() + this.seniorInformation.cpuUnit)
+      podForm.append('memoryLimit', this.seniorInformation.memoryLimit.toString() + this.seniorInformation.memoryUnit)
+      podForm.append('memoryRequest', this.seniorInformation.memoryRequire.toString() + this.seniorInformation.memoryUnit)
+      console.log(this.seniorInformation.cpuLimit.toString() + this.seniorInformation.cpuUnit)
+      console.log(this.seniorInformation.memoryRequire.toString() + this.seniorInformation.memoryUnit)
+      podForm.append('envKeys', this.seniorInformation.envKeys.splice(0, this.seniorInformation.envKeys.length - 1))
+      podForm.append('envValues', this.seniorInformation.envValues.splice(0, this.seniorInformation.envValues.length - 1))
+      podForm.append('amount', this.baseInformation.number)
+      this.$confirm('确认修改？', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'info'
       })
         .then(() => {
           this.$store
-            .dispatch("establish/createPodFromForm", podForm)
+            .dispatch('establish/createPodFromForm', podForm)
             .then((res) => {
-              this.resetPodInformation();
-              console.log(res);
+              this.resetPodInformation()
+              console.log(res)
               switch (res.code) {
                 case 1200:
-                  this.$message.success("创建成功");
+                  this.$message.success('创建成功')
                   // this.addDialogVisible = false;
-                  break;
+                  break
                 case 1201:
-                  this.$message.error("创建失败，请查看是否重名");
-                  this.addDialogVisible = false;
-                  break;
+                  this.$message.error('创建失败，请查看是否重名')
+                  this.addDialogVisible = false
+                  break
                 default:
-                  this.$message.info("提交成功");
-                  break;
+                  this.$message.info('提交成功')
+                  break
               }
             })
             .catch((error) => {
-              console.log(error);
-            });
+              console.log(error)
+            })
         })
         .catch(() => {
-          console.log("wrong in views/establish/submitPod");
-        });
+          console.log('wrong in views/establish/submitPod')
+        })
     },
-    //重置 Pod 信息
+    // 重置 Pod 信息
     resetPodInformation() {
       this.baseInformation = {
-        name: "",
-        namespace: "default",
-        image: "",
-        imagePullPolicy: "Always",
+        name: '',
+        namespace: 'default',
+        image: '',
+        imagePullPolicy: 'Always',
         number: 1,
-        service: "None",
+        service: 'None',
         serviceCount: 1,
         ports: [1],
         targetPorts: [1],
-        protocols: ["TCP"],
-      };
+        protocols: ['TCP']
+      }
       this.seniorInformation = {
-        annotations: "",
-        labelsKeys: [""],
-        labelsValues: [""],
+        annotations: '',
+        labelsKeys: [''],
+        labelsValues: [''],
         labelsCount: 1,
-        secret: "",
+        secret: '',
         cpuRequire: 0,
         cpuLimit: 0,
-        cpuUnit: "",
+        cpuUnit: '',
         memoryRequire: 0,
         memoryLimit: 0,
-        memoryUnit: "Mi",
-        commands: "",
-        args: "",
-        envKeys: [""],
-        envValues: [""],
-        envCount: 1,
-      };
+        memoryUnit: 'Mi',
+        commands: '',
+        args: '',
+        envKeys: [''],
+        envValues: [''],
+        envCount: 1
+      }
     },
 
-    /* 从输入创建 */
+    /** 从输入创建 */
     // 添加的 yaml 框
     onAddYamlCmReady(cm) {
       setTimeout(() => {
-        cm.refresh();
-      }, 50);
+        cm.refresh()
+      }, 50)
     },
     onAddYamlCmCodeChange(newCode) {
       // console.log(newCode, "输入")
-      this.addYaml = newCode;
+      this.addYaml = newCode
     },
-    //提交创建申请并返回结果
+    // 提交创建申请并返回结果
     commitPodAdd() {
-      this.$confirm("创建资源？", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "info",
+      this.$confirm('创建资源？', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'info'
       })
         .then(() => {
           this.$store
-            .dispatch("common/changeResourceByYaml", this.addYaml)
+            .dispatch('common/changeResourceByYaml', this.addYaml)
             .then((res) => {
               switch (res.code) {
                 case 1200:
-                  this.$message.success("添加成功");
-                  this.addDialogVisible = false;
-                  break;
+                  this.$message.success('添加成功')
+                  this.addDialogVisible = false
+                  break
                 case 1201:
-                  this.$message.error("添加失败，请查看云平台相关错误信息");
-                  this.addDialogVisible = false;
-                  break;
+                  this.$message.error('添加失败，请查看云平台相关错误信息')
+                  this.addDialogVisible = false
+                  break
                 case 1202:
                   this.$message.error(
-                    "添加失败，请查看 yaml 文件格式，命名空间必须指定"
-                  );
-                  break;
+                    '添加失败，请查看 yaml 文件格式，命名空间必须指定'
+                  )
+                  break
                 default:
-                  this.$message.info("提交成功");
-                  break;
+                  this.$message.info('提交成功')
+                  break
               }
             })
             .catch((error) => {
-              throw error;
-            });
+              throw error
+            })
         })
         .catch(() => {
-          console.log("cancel");
-        });
+          console.log('cancel')
+        })
     },
 
-    /**从文件创建 */
+    /** 从文件创建 */
     uploadSectionFile(param) {
       console.log(param)
-      let yamlFile = param.file;
-      let yamlForm = new FormData();
-      yamlForm.append("yaml", yamlFile);//文件以表单形式提交 文件名 yaml 与后台@RequestParam中参数对应  
+      const yamlFile = param.file
+      const yamlForm = new FormData()
+      yamlForm.append('yaml', yamlFile)// 文件以表单形式提交 文件名 yaml 与后台@RequestParam中参数对应
       this.$store
-        .dispatch("establish/createPodFromYamlFile", yamlForm)
+        .dispatch('establish/createPodFromYamlFile', yamlForm)
         .then((res) => {
           console.log(res)
           switch (res.code) {
             case 1200:
-              this.$message.success("创建成功");
+              this.$message.success('创建成功')
               // this.addDialogVisible = false;
-              break;
+              break
             case 1201:
-              this.$message.error("文件为空");
+              this.$message.error('文件为空')
               // this.addDialogVisible = false;
-              break;
+              break
             case 1202:
-              this.$message.error("创建失败，请查看云平台相关信息");
+              this.$message.error('创建失败，请查看云平台相关信息')
               // this.addDialogVisible = false;
-              break;
+              break
             case 1203:
               this.$message.error(
-                "创建失败，命名空间必须被指定，或已有重名资源"
-              );
-              break;
+                '创建失败，命名空间必须被指定，或已有重名资源'
+              )
+              break
             default:
-              this.$message.info("创建失败");
-              break;
+              this.$message.info('创建失败')
+              break
           }
         })
-        .catch(() => {});
+        .catch(() => {})
     },
     submitUpload() {
-      this.uploadSectionFile;
-    },
-  },
-};
+      this.uploadSectionFile
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>

@@ -7,7 +7,7 @@
  * @LastEditTime: 2021-05-12 20:31:09
  */
 import request from '@/utils/request'
-let baseUrl = require("../api").baseurl;
+const baseUrl = require('../api').baseurl
 
 export function getAllDeployments(data) {
   return request({
@@ -26,7 +26,7 @@ export function setReplica(data) {
     params: {
       name: data.name,
       namespace: data.namespace,
-      replica: data.replica,
+      replica: data.replica
     }
   })
 }
@@ -42,7 +42,7 @@ export function getDeploymentByNameAndNamespace(dep) {
 }
 export function getDeploymentYamlByNameAndNamespace(data) {
   return request({
-    url :baseUrl + '/deployments/getDeploymentYamlByNameAndNamespace',
+    url: baseUrl + '/deployments/getDeploymentYamlByNameAndNamespace',
     method: 'get',
     params: {
       name: data.name,
@@ -70,15 +70,13 @@ export function getDeploymentResources(data) {
     }
   })
 }
-export function changeDeploymentByYaml(data) {
-  console.log(data);
+export function changeDeploymentByYamlString(data) {
   return request({
-    url: baseUrl + '/deployments/changeDeploymentByYaml',
+    url: baseUrl + '/deployments/changeDeploymentByYamlString',
     method: 'post',
     data: {
-      yaml: data,
+      yaml: data
     }
   })
 }
-
 
