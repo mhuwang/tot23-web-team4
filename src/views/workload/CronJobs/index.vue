@@ -102,18 +102,6 @@
             {{ scope.row.runningJobs }}
           </template>
         </el-table-column>
-        <!-- <el-table-column label="标签">
-          <template slot-scope="scope">
-            <span>k8s-app: {{scope.row.metadata.labels['k8s-app']}}</span>
-            <br>
-            <span>pod-template-hash: {{scope.row.metadata.labels['pod-template-hash']}}</span>
-          </template>
-        </el-table-column> -->
-        <!-- <el-table-column prop="apiVersion" label="apiVersion"> </el-table-column> -->
-        <!-- <el-table-column prop="kind" label="kind"> </el-table-column> -->
-        <!-- <el-table-column prop="metadata.uid" label="uid"> </el-table-column> -->
-        <!-- <el-table-column prop="spec.nodeName" width="140" label="所属节点"> </el-table-column>
-        <el-table-column prop="status.podIP" width="140" label="主机ip地址"> </el-table-column> -->
         <el-table-column label="最后调度时间" width="200">
           <template slot-scope="scope">
             <span>{{
@@ -179,21 +167,7 @@
             @input="onYamlCmCodeChange"
           />
         </el-tab-pane>
-        <!-- JSON 格式 -->
-        <!-- <el-tab-pane label="JSON" name="second">
-          <codemirror
-            ref="cmYamlEditor"
-            :value="codeJSON"
-            :options="cmOptions"
-            @ready="onJSONCmReady"
-            @input="onJSONCmCodeChange"
-          />
-        </el-tab-pane> -->
       </el-tabs>
-
-      <!-- <textarea style="width:100%" name="describe" id="pod" cols="30" rows="10">
-        {{code}}
-      </textarea> -->
       <span slot="footer" class="dialog-footer">
         <div class="foot-info">
           <i class="el-icon-warning" /> 此操作相当于 kubectl apply -f
@@ -218,31 +192,23 @@ export default {
 
   data() {
     return {
+      /** 基础信息 */
+      cronJobs: [], // 所有CronJobs
+      loading: true, // 获取数据中
+      cronJobSuSpend: true, // CronJob 可调度情况
+      /** 命名空间*/
       namespaces: [], // 命名空间
+      value: '',
+      /** 分页 */
       cronJobsAmount: 0, // CronJob 总数
       currentPage: 1, // 分页绑定当前页
       cronJobsInCurrentPage: [], // 页面中的 CronJobs
       pageSize: 6, // 一页显示数量
-      cronJobSuSpend: true, // CronJob 可调度情况
-      cronJobs: [], // 所有CronJobs
-      loading: true, // 获取数据中
-      editDialogVisible: false, // 编辑详情框
-      addDialogVisible: false, // 添加框详情
-      // codeJSON: "", // 编辑框的 json 数据
+      /** 编辑 */
       codeYaml: '', // 编辑框的 yaml 数据
       addYaml: '', // 添加框的 yaml 数据
-      value: '',
-      // cmOptions: {
-      //   // json codemirror 配置项
-      //   tabSize: 4,
-      //   mode: {
-      //     name: "javascript",
-      //     json: true,
-      //   },
-      //   theme: "panda-syntax",
-      //   lineNumbers: true,
-      //   line: true,
-      // },
+      editDialogVisible: false, // 编辑详情框
+      addDialogVisible: false, // 添加框详情
       cmOptionsYaml: {
         // yaml codemirror 配置项
         tabSize: 4,
@@ -259,20 +225,15 @@ export default {
   },
 
   methods: {
+    /** 基础 */
     // 详情页
-    goToCronJobDetails: function(cronJobName, cronJobNamespace) {
-      // console.log("deployments index namespace", deploymentNamespace);
-      // this.$store
-      //   .dispatch("cronJobs/toDetails", {cronJobName, cronJobNamespace});
-    },
-
+    goToCronJobDetails: function(cronJobName, cronJobNamespace) {},
     // 获取所有 CronJobs
     getCronJobs(namespace) {
-      // console.log(namespace, "in CronJob")
       this.$store
         .dispatch('cronJobs/getAllCronJobs', namespace)
         .then((res) => {
-          // console.log(res.data);
+          console.log(res.data.message);
           this.cronJobs = res.data
           this.cronJobsAmount = this.cronJobs.length
           this.cronJobsInCurrentPage = this.cronJobs.slice(0, this.pageSize)
@@ -280,9 +241,7 @@ export default {
         .catch((error) => {
           console.log(error)
         })
-      // console.log(this.cronJobs.metadata.spec.schedule)
     },
-
     // 修改 CronJob 的为暂停或者运行
     changeCronJobSuSpend(cronJob) {
       // this.$store.dispatch("cronJobs/changeCronJobSuSpend")
@@ -293,7 +252,7 @@ export default {
       // })
     },
 
-    /* 按命名空间查询 */
+    /** 按命名空间查询 */
     // 当选择框聚焦时获取命名空间
     initNamespace() {
       if (this.namespaces.length === 0) {
@@ -312,45 +271,26 @@ export default {
       this.getCronJobs()
     },
 
+    /** 编辑 */
     // 编辑 CronJob
     showCronJobEditDialog(name, namespace) {
       const cronJobDetails = {
         name: name,
         namespace: namespace
       }
-
       // 获取 yaml 格式
       this.$store
         .dispatch('cronJobs/getCronJobYamlByNameAndNamespace', cronJobDetails)
         .then((res) => {
+          console.log(res.data.message);
           this.codeYaml = res.data
-          // console.log("edit dialog init", this.codeYaml);
           this.editDialogVisible = true // 打开编辑对话框
         })
         .catch((error) => {
           throw error
         })
-
-      // json 格式
-      this.$store
-        .dispatch('cronJobs/getCronJobByNameAndNamespace', cronJobDetails)
-        .then((res) => {
-          // console.log(res);
-          const json = JSON.stringify(res.data.cronJob)
-          this.codeJSON = this.beautify(json, {
-            indent_size: 4,
-            space_in_empty_paren: true
-          })
-        })
-        .catch((error) => {
-          throw error
-        })
-
-      // this.editForm = res; // 查询结果写入表单
     },
-
     // 编辑器方法
-    /* yaml */
     onYamlCmReady(cm) {
       setTimeout(() => {
         cm.refresh()
@@ -359,7 +299,6 @@ export default {
     onYamlCmCodeChange(newCode) {
       this.codeYaml = newCode
     },
-
     // 点击确认按钮触发此修改 CronJob 事件
     commitYamlChange() {
       this.$confirm('确认修改？', {
@@ -376,7 +315,10 @@ export default {
                   this.$message.success('修改成功')
                   break
                 case 1201:
-                  this.$message.error('修改失败，请查看 yaml 文件格式或是否重名')
+                  this.$message.error('修改失败，请查看 yaml 文件')
+                  break
+                case 1202:
+                  this.$message.error('您的操作有误')
                   break
                 default:
                   this.$message.info('提交成功')
@@ -392,7 +334,6 @@ export default {
           console.log('cancel')
         })
     },
-
     // 关闭修改框
     handleClose: function() {
       this.addYaml = ''
@@ -401,6 +342,7 @@ export default {
       }, 1)
     },
 
+    /** 删除*/
     // 删除 CronJob
     delCronJob(name, namespace) {
       this.$confirm('确认删除 CronJob？', {
@@ -419,7 +361,8 @@ export default {
               nameAndNamespace
             )
             .then((res) => {
-              if (res.data) {
+              console.log(res.data.message)
+              if (res.data.code === 1200) {
                 this.$message.success('删除成功')
                 this.getCronJobs()
               } else {
@@ -434,6 +377,7 @@ export default {
         .catch(() => {})
     },
 
+    /** 分页*/
     // 分页事件
     handleCurrentChange(currentPage) {
       this.currentPage = currentPage

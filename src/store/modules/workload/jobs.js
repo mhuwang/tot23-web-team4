@@ -17,7 +17,6 @@ import {
   changeJobByYamlString
 } from '@/api/workload/jobs'
 import { getToken } from '@/utils/auth'
-import { changeDeploymentByYamlString } from '@/api/workload/deployments'
 
 const getDefaultState = () => {
   return {
@@ -137,7 +136,7 @@ const actions = {
         reject(error)
       })
     })
-  },
+  }
 }
 
 export default {

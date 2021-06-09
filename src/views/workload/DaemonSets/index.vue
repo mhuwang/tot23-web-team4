@@ -247,17 +247,18 @@ export default {
 
   data() {
     return {
+      /** 基础信息*/
+      daemonSets: [], // 所有 DaemonSets
       loading: true, // 获取数据中
-      /* 分页部分*/
+      /** 分页部分*/
       daemonSetsAmount: 0, // DaemonSets 总数
       currentPage: 1, // 分页绑定当前页
       daemonSetsInCurrentPage: [], // 页面中的 DaemonSets
       pageSize: 6, // 一页显示数量
-      /* 命名空间部分*/
+      /** 命名空间部分*/
       value: '',
       namespaces: [], // 命名空间
-      daemonSets: [], // 所有 DaemonSets
-      /* 日志部分*/
+      /** 日志部分*/
       logs: {},
       log: '',
       podName: '',
@@ -271,7 +272,7 @@ export default {
         lineNumbers: true,
         line: true
       },
-      /* 编辑框部分*/
+      /** 编辑框部分*/
       codeYaml: '', // 编辑框的 yaml 数据
       editDialogVisible: false, // 编辑详情框
       cmOptionsYaml: {
@@ -282,7 +283,7 @@ export default {
         lineNumbers: true,
         line: true
       },
-      /* 添加框部分*/
+      /** 添加框部分*/
       addDialogVisible: false, // 添加框详情
       addYaml: '' // 添加框的 yaml 数据
     }
@@ -293,7 +294,7 @@ export default {
   },
 
   computed: {
-    /* 日志部分*/
+    /** 日志部分*/
     podNames() {
       const names = []
       const tmp = Object.keys(this.logs)
@@ -313,12 +314,13 @@ export default {
   },
 
   methods: {
+    /** 基础*/
     // 获取所有 DaemonSets
     getDaemonSets(namespace = '') {
       this.$store
         .dispatch('daemonSets/getAllDaemonSets', namespace)
         .then((res) => {
-          // console.log(res.data);
+          console.log(res.data.message)
           this.daemonSets = res.data
           this.daemonSetsAmount = this.daemonSets.length
           this.daemonSetsInCurrentPage = this.daemonSets.slice(0, this.pageSize)
@@ -328,7 +330,7 @@ export default {
         })
     },
 
-    /* 按命名空间查询 */
+    /** 按命名空间查询 */
     // 当选择框聚焦时获取命名空间
     initNamespace() {
       if (this.namespaces.length === 0) {
@@ -347,14 +349,14 @@ export default {
       this.getDaemonSets()
     },
 
-    /* 日志部分*/
+    /** 日志部分*/
     showLogDialog(name, namespace) {
       const data = {
         name: name,
         namespace: namespace
       }
       this.$store.dispatch('daemonSets/getDaemonSetLogs', data).then(res => {
-        console.log(res)
+        console.log(res.data.message)
         this.logs = res.data
         if (Object.keys(this.logs).length !== 0) {
           this.podName = Object.keys(this.logs)[0]
@@ -377,7 +379,7 @@ export default {
       this.log = ''
     },
 
-    /* 编辑部分*/
+    /** 编辑部分*/
     // 编辑 DaemonSet
     showDaemonSetEditDialog(name, namespace) {
       const daemonSetDetails = {
@@ -391,8 +393,8 @@ export default {
           daemonSetDetails
         )
         .then((res) => {
+          console.log(res.data.message)
           this.codeYaml = res.data
-          // console.log("edit dialog init", this.codeYaml);
           this.editDialogVisible = true // 打开编辑对话框
         })
         .catch((error) => {
@@ -424,7 +426,10 @@ export default {
                   this.$message.success('修改成功')
                   break
                 case 1201:
-                  this.$message.error('修改失败，请查看 yaml 文件格式或是否重名')
+                  this.$message.error('修改失败，请查看 yaml 文件')
+                  break
+                case 1202:
+                  this.$message.error('您的操作有误')
                   break
                 default:
                   this.$message.info('提交成功')
@@ -448,7 +453,7 @@ export default {
       }, 1)
     },
 
-    /* 删除部分*/
+    /** 删除部分*/
     // 删除 DaemonSet
     delDaemonSet(name, namespace) {
       this.$confirm('确认删除 DaemonSet', {
@@ -467,13 +472,21 @@ export default {
               nameAndNamespace
             )
             .then((res) => {
-              if (res.data) {
-                this.$message.success('删除成功')
-                this.getDaemonSets()
-              } else {
-                this.$message.error('删除失败')
+              switch (res.code) {
+                case 1200:
+                  this.$message.success('删除成功')
+                  break
+                case 1201:
+                  this.$message.error('删除失败')
+                  break
+                case 1202:
+                  this.$message.error('您的操作有误')
+                  break
+                default:
+                  this.$message.info('提交成功')
+                  break
               }
-              console.log(res.data)
+              console.log(res.data.message)
             })
             .catch((error) => {
               console.log(error)
@@ -482,7 +495,7 @@ export default {
         .catch(() => {})
     },
 
-    /* 分页部分*/
+    /** 分页部分*/
     // 分页事件
     handleCurrentChange(currentPage) {
       this.currentPage = currentPage

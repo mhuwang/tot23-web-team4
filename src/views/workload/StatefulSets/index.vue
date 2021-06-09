@@ -442,7 +442,10 @@ export default {
                   this.$message.success('修改成功')
                   break
                 case 1201:
-                  this.$message.error('修改失败，请查看 yaml 文件格式或是否重名')
+                  this.$message.error('修改失败，请查看 yaml 文件')
+                  break
+                case 1202:
+                  this.$message.error('您的操作有误')
                   break
                 default:
                   this.$message.info('提交成功')

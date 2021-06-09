@@ -242,20 +242,32 @@ export default {
 
   data() {
     return {
+      /** 基础*/
+      replicationControllers: [],
+      loading: true, // 获取数据中
+      /** 命名空间*/
+      namespaces: [],
+      value: '',
+      /** 分页*/
       replicationControllersAmount: 0, // ReplicationControllers 总数
       currentPage: 1, // 分页绑定当前页
       replicationControllersInCurrentPage: [], // 页面中的 ReplicationControllers
       pageSize: 6, // 一页显示数量
-      namespaces: [],
-      replicationControllers: [],
-      loading: true, // 获取数据中
+      /** 编辑*/
       editDialogVisible: false, // 编辑详情框
       addDialogVisible: false, // 添加框详情
       // codeJSON: "", // 编辑框的 json 数据
       codeYaml: '', // 编辑框的 yaml 数据
       addYaml: '', // 添加框的 yaml 数据
-      value: '',
-      /* 日志部分*/
+      cmOptionsYaml: {
+        // yaml codemirror 配置项
+        tabSize: 4,
+        mode: 'yaml',
+        theme: 'panda-syntax',
+        lineNumbers: true,
+        line: true
+      },
+      /** 日志部分*/
       logs: [],
       log: '',
       podName: '',
@@ -268,31 +280,12 @@ export default {
         theme: 'panda-syntax',
         lineNumbers: true,
         line: true
-      },
-      // cmOptions: {
-      //   // json codemirror 配置项
-      //   tabSize: 4,
-      //   mode: {
-      //     name: "javascript",
-      //     json: true,
-      //   },
-      //   theme: "panda-syntax",
-      //   lineNumbers: true,
-      //   line: true,
-      // },
-      cmOptionsYaml: {
-        // yaml codemirror 配置项
-        tabSize: 4,
-        mode: 'yaml',
-        theme: 'panda-syntax',
-        lineNumbers: true,
-        line: true
       }
     }
   },
 
   computed: {
-    /* 日志部分*/
+    /** 日志部分*/
     podNames() {
       const names = []
       const tmp = Object.keys(this.logs)
@@ -316,6 +309,7 @@ export default {
   },
 
   methods: {
+    /** 基础*/
     // 获取所有 ReplicationControllers
     getReplicationControllers(namespace = '') {
       this.$store
@@ -324,7 +318,7 @@ export default {
           namespace
         )
         .then((res) => {
-          // console.log(res.data);
+          console.log(res.data.message)
           this.replicationControllers = res.data
           this.replicationControllersAmount = this.replicationControllers.length
           this.replicationControllersInCurrentPage = this.replicationControllers.slice(0, this.pageSize)
@@ -334,7 +328,7 @@ export default {
         })
     },
 
-    /* 按命名空间查询 */
+    /** 按命名空间查询 */
     // 当选择框聚焦时获取命名空间
     initNamespace() {
       if (this.namespaces.length === 0) {
@@ -343,7 +337,6 @@ export default {
     },
     // 选择框变化事件
     selectChange(value) {
-      // console.log("selectChange", value, "++++\n\n")
       this.loading = true
       this.getReplicationControllers(value)
     },
@@ -353,14 +346,14 @@ export default {
       this.getReplicationControllers()
     },
 
-    /* 日志部分*/
+    /** 日志部分*/
     showLogDialog(name, namespace) {
       const data = {
         name: name,
         namespace: namespace
       }
       this.$store.dispatch('replicationControllers/getReplicationControllerLogs', data).then(res => {
-        console.log(res)
+        console.log(res.data.message)
         this.logs = res.data
         if (Object.keys(this.logs).length !== 0) {
           this.podName = Object.keys(this.logs)[0]
@@ -383,13 +376,13 @@ export default {
       this.log = ''
     },
 
+    /** 编辑*/
     // 编辑 ReplicationController
     showReplicationControllerEditDialog(name, namespace) {
       const replicationControllerDetails = {
         name: name,
         namespace: namespace
       }
-
       // 获取 yaml 格式
       this.$store
         .dispatch(
@@ -404,28 +397,7 @@ export default {
         .catch((error) => {
           throw error
         })
-
-      // json 格式
-      this.$store
-        .dispatch(
-          'replicationControllers/getReplicationControllerByNameAndNamespace',
-          replicationControllerDetails
-        )
-        .then((res) => {
-          // console.log(res);
-          const json = JSON.stringify(res.data.cronJob)
-          this.codeJSON = this.beautify(json, {
-            indent_size: 4,
-            space_in_empty_paren: true
-          })
-        })
-        .catch((error) => {
-          throw error
-        })
-
-      // this.editForm = res; // 查询结果写入表单
     },
-
     // 编辑器方法
     /* yaml */
     onYamlCmReady(cm) {
@@ -436,7 +408,6 @@ export default {
     onYamlCmCodeChange(newCode) {
       this.codeYaml = newCode
     },
-
     // 点击确认按钮触发此修改 ReplicationController 事件
     commitYamlChange() {
       this.$confirm('确认修改？', {
@@ -453,7 +424,10 @@ export default {
                   this.$message.success('修改成功')
                   break
                 case 1201:
-                  this.$message.error('修改失败，请查看 yaml 文件格式或是否重名')
+                  this.$message.error('修改失败，请查看 yaml 文件')
+                  break
+                case 1202:
+                  this.$message.error('您的操作有误')
                   break
                 default:
                   this.$message.info('提交成功')
@@ -469,7 +443,6 @@ export default {
           console.log('cancel')
         })
     },
-
     // 关闭修改框
     handleClose: function() {
       this.addYaml = ''
@@ -478,6 +451,7 @@ export default {
       }, 1)
     },
 
+    /** 删除*/
     // 删除 CronJob
     delReplicationController(name, namespace) {
       this.$confirm('确认删除 ReplicationController', {
@@ -496,13 +470,21 @@ export default {
               nameAndNamespace
             )
             .then((res) => {
-              if (res.data) {
-                this.$message.success('删除成功')
-                this.getReplicationControllers()
-              } else {
-                this.$message.error('删除失败')
+              switch (res.code) {
+                case 1200:
+                  this.$message.success('删除成功')
+                  break
+                case 1201:
+                  this.$message.error('删除失败')
+                  break
+                case 1202:
+                  this.$message.error('您的操作有误')
+                  break
+                default:
+                  this.$message.info('提交成功')
+                  break
               }
-              // console.log(res.data);
+              console.log(res.data.message)
             })
             .catch((error) => {
               console.log(error)
@@ -511,6 +493,7 @@ export default {
         .catch(() => {})
     },
 
+    /** 分页*/
     // 分页事件
     handleCurrentChange(currentPage) {
       this.currentPage = currentPage

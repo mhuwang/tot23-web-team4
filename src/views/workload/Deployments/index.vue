@@ -208,31 +208,22 @@ export default {
 
   data() {
     return {
+      /** 基础*/
       deploymentsAmount: 0, // Deployments 总数
+      loading: true, // 获取数据中
+      /** 命名空间*/
+      namespaces: [],
+      value: '',
+      /** 分页*/
       currentPage: 1, // 分页绑定当前页
       deploymentsInCurrentPage: [], // 页面中的 Deployments
       pageSize: 6, // 一页显示数量
-      namespaces: [],
       deployments: [],
-      loading: true, // 获取数据中
+      /** 编辑*/
       editDialogVisible: false, // 编辑详情框
       addDialogVisible: false, // 添加框详情
-      // codeJSON: "", // 编辑框的 json 数据
       codeYaml: '', // 编辑框的 yaml 数据
       addYaml: '', // 添加框的 yaml 数据
-      value: '',
-
-      // cmOptions: {
-      //   // json codemirror 配置项
-      //   tabSize: 4,
-      //   mode: {
-      //     name: "javascript",
-      //     json: true,
-      //   },
-      //   theme: "panda-syntax",
-      //   lineNumbers: true,
-      //   line: true,
-      // },
       cmOptionsYaml: {
         // yaml codemirror 配置项
         tabSize: 4,
@@ -249,40 +240,20 @@ export default {
   },
 
   methods: {
-    /* 按命名空间查询 */
-    // 当选择框聚焦时获取命名空间
-    initNamespace() {
-      if (this.namespaces.length === 0) {
-        this.namespaces = this.$store.state.namespaces.namespaces
-      }
-    },
-    // 选择框变化事件
-    selectChange(value) {
-      // console.log("selectChange", value, "++++\n\n")
-      this.loading = true
-      this.getDeployments(value)
-    },
-    // 选择框清空事件
-    clearSelect() {
-      this.loading = true
-      this.getDeployments()
-    },
-
+    /** 基础*/
     // 详情页
     goToDeploymentsDetails: function(deploymentName, deploymentNamespace) {
-      // console.log("deployments index namespace", deploymentNamespace);
       this.$store.dispatch('deployments/toDetails', {
         deploymentName,
         deploymentNamespace
       })
     },
-
     // 获取所有 Deployments
     getDeployments(namespace = '') {
       this.$store
         .dispatch('deployments/getAllDeployments', namespace)
         .then((res) => {
-          console.log(res.data)
+          console.log(res.data.message)
           this.deployments = res.data
           this.deploymentsAmount = this.deployments.length
           this.deploymentsInCurrentPage = this.deployments.slice(
@@ -295,13 +266,31 @@ export default {
         })
     },
 
+    /** 按命名空间查询 */
+    // 当选择框聚焦时获取命名空间
+    initNamespace() {
+      if (this.namespaces.length === 0) {
+        this.namespaces = this.$store.state.namespaces.namespaces
+      }
+    },
+    // 选择框变化事件
+    selectChange(value) {
+      this.loading = true
+      this.getDeployments(value)
+    },
+    // 选择框清空事件
+    clearSelect() {
+      this.loading = true
+      this.getDeployments()
+    },
+
+    /** 编辑*/
     // 编辑 Deployment
     showDeploymentEditDialog(name, namespace) {
       const deploymentDetails = {
         name: name,
         namespace: namespace
       }
-
       // 获取 yaml 格式
       this.$store
         .dispatch(
@@ -309,32 +298,14 @@ export default {
           deploymentDetails
         )
         .then((res) => {
+          console.log(res.data.message)
           this.codeYaml = res.data
-          // console.log("edit dialog init", this.codeYaml);
           this.editDialogVisible = true // 打开编辑对话框
         })
         .catch((error) => {
           throw error
         })
-
-      // json 格式
-      //   this.$store
-      //     .dispatch("cronJobs/getCronJobByNameAndNamespace", cronJobDetails)
-      //     .then((res) => {
-      //       // console.log(res);
-      //       let json = JSON.stringify(res.data.cronJob);
-      //       this.codeJSON = this.beautify(json, {
-      //         indent_size: 4,
-      //         space_in_empty_paren: true,
-      //       });
-      //     })
-      //     .catch((error) => {
-      //       throw error;
-      //     });
-
-    //   //this.editForm = res; // 查询结果写入表单
     },
-
     // 编辑器方法
     /* yaml */
     onYamlCmReady(cm) {
@@ -345,7 +316,6 @@ export default {
     onYamlCmCodeChange(newCode) {
       this.codeYaml = newCode
     },
-
     // 点击确认按钮触发此修改 Deployment 事件
     commitYamlChange() {
       this.$confirm('确认修改？', {
@@ -362,7 +332,10 @@ export default {
                   this.$message.success('修改成功')
                   break
                 case 1201:
-                  this.$message.error('修改失败，请查看 yaml 文件格式或是否重名')
+                  this.$message.error('修改失败，请查看 yaml 文件')
+                  break
+                case 1202:
+                  this.$message.error('您的操作有误')
                   break
                 default:
                   this.$message.info('提交成功')
@@ -378,7 +351,6 @@ export default {
           console.log('cancel')
         })
     },
-
     // 关闭修改框
     handleClose: function() {
       this.addYaml = ''
@@ -387,6 +359,7 @@ export default {
       }, 1)
     },
 
+    /** 副本*/
     setReplica(name, namespace) {
       this.$prompt('请输入副本数', '提示', {
         confirmButtonText: '确定',
@@ -401,11 +374,19 @@ export default {
             namespace: namespace
           }
           this.$store.dispatch('deployments/setReplica', data).then((res) => {
-            if (res.code === 1200) {
-              this.$message.success('修改成功')
-              this.getDeployments()
-            } else {
-              this.$message.error('修改失败')
+            switch (res.code) {
+              case 1200:
+                this.$message.success('设置成功')
+                break
+              case 1201:
+                this.$message.error('设置失败')
+                break
+              case 1202:
+                this.$message.error('您的操作有误')
+                break
+              default:
+                this.$message.info('提交成功')
+                break
             }
           })
         })
@@ -417,6 +398,7 @@ export default {
         })
     },
 
+    /** 删除*/
     // 删除 Deployment
     delDeployment(name, namespace) {
       this.$confirm('确认删除 Deployment？', {
@@ -435,13 +417,21 @@ export default {
               nameAndNamespace
             )
             .then((res) => {
-              if (res.data) {
-                this.$message.success('删除成功')
-                this.getDeployments()
-              } else {
-                this.$message.error('删除失败')
+              switch (res.code) {
+                case 1200:
+                  this.$message.success('删除成功')
+                  break
+                case 1201:
+                  this.$message.error('删除失败')
+                  break
+                case 1202:
+                  this.$message.error('您的操作有误')
+                  break
+                default:
+                  this.$message.info('提交成功')
+                  break
               }
-              // console.log(res.data);
+              console.log(res.data.message)
             })
             .catch((error) => {
               console.log(error)
@@ -450,6 +440,7 @@ export default {
         .catch(() => {})
     },
 
+    /** 分页*/
     // 分页事件
     handleCurrentChange(currentPage) {
       this.currentPage = currentPage
