@@ -396,7 +396,7 @@
           &ltspec.yaml>
         </div>
         <el-button @click="podEditDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="commitYamlChange">确 定</el-button>
+        <el-button type="primary" @click="commitYamlChange('pods/changePodByYamlString')">确 定</el-button>
       </span>
     </el-dialog>
 
@@ -430,7 +430,7 @@
           &ltspec.yaml>
         </div>
         <el-button @click="serviceEditDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="commitYamlChange">确 定</el-button>
+        <el-button type="primary" @click="commitYamlChange('service/changeServiceByYamlString')">确 定</el-button>
       </span>
     </el-dialog>
   </dev>
@@ -616,7 +616,7 @@ export default {
       this.annoDialogVisible = false
     },
 
-    /* 编辑部分 Pod 和 Service*/
+    /** 编辑部分 Pod 和 Service*/
     showPodEditDialog(name, namespace) {
       const podDetails = {
         podName: name,
@@ -704,8 +704,8 @@ export default {
     },
 
     // 提交修改
-    commitYamlChange() {
-      console.log('提交修改的 yaml', this.codeYaml)
+    commitYamlChange(path) {
+      console.log('提交修改的 yaml', this.codeYaml, '路径\n',path)
       this.$confirm('确认修改？', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -713,17 +713,17 @@ export default {
       })
         .then(() => {
           this.$store
-            .dispatch('common/changeResourceByYaml', this.codeYaml)
+            .dispatch(path, this.codeYaml)
             .then((res) => {
               switch (res.code) {
                 case 1200:
                   this.$message.success('修改成功')
                   break
                 case 1201:
-                  this.$message.error('修改失败，请查看 yaml 文件格式')
+                  this.$message.error('修改失败，请查看 yaml 文件')
                   break
                 case 1202:
-                  this.$message.error('创建失败，请查看云平台相关错误信息')
+                  this.$message.error('您的操作有误')
                   break
                 default:
                   this.$message.info('提交成功')

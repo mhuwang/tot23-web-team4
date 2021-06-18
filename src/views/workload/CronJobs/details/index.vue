@@ -113,7 +113,7 @@
         </div>
         <div class="metadata-item">
           <p>并发策略</p>
-          <span>{{ cronJob.spec.concurrencyPolicy }}</span>
+          <span>{{ cronJob.spec.concurrencyPolicy === 'Allow' ? '允许' : '不允许' }}</span>
         </div>
       </List>
     </el-card>
@@ -153,18 +153,6 @@
           </template>
         </el-table-column>
         <el-table-column prop="namespace" label="命名空间" />
-        <!-- <el-table-column label="标签">
-          <template slot-scope="scope">
-            <span>k8s-app: {{scope.row.metadata.labels['k8s-app']}}</span>
-            <br>
-            <span>pod-template-hash: {{scope.row.metadata.labels['pod-template-hash']}}</span>
-          </template>
-        </el-table-column> -->
-        <!-- <el-table-column prop="apiVersion" label="apiVersion"> </el-table-column> -->
-        <!-- <el-table-column prop="kind" label="kind"> </el-table-column> -->
-        <!-- <el-table-column prop="metadata.uid" label="uid"> </el-table-column> -->
-        <!-- <el-table-column prop="spec.nodeName" width="140" label="所属节点"> </el-table-column> -->
-        <!-- <el-table-column prop="status.podIP" width="140" label="主机ip地址"> </el-table-column> -->
         <el-table-column label="容器组" width="200">
           <template slot-scope="scope">
             <span>
@@ -181,20 +169,6 @@
             }}</span>
           </template>
         </el-table-column>
-        <!-- <el-table-column label="镜像" width="200">
-          <template slot-scope="scope">
-            <li v-for="image in images(scope.row)" :key="image" style = "list-style:none">
-            <li style = "list-style:none; display:inline-block;">
-              <el-tag
-                class="lebel-tag"
-                effect="dark"
-                size="medium"
-                color="#bedcfa"
-                >{{ image }}</el-tag
-              >
-            </li>
-          </template>
-        </el-table-column> -->
 
         <el-table-column label="操作">
           <template slot-scope="scope">
@@ -545,23 +519,6 @@ export default {
         .catch((error) => {
           throw error
         })
-
-      // json 格式
-      this.$store
-        .dispatch('jobs/getJobByNameAndNamespace', jobDetails)
-        .then((res) => {
-          // console.log(res);
-          const json = JSON.stringify(res.data.job)
-          this.codeJSON = this.beautify(json, {
-            indent_size: 4,
-            space_in_empty_paren: true
-          })
-        })
-        .catch((error) => {
-          throw error
-        })
-
-      // this.editForm = res; // 查询结果写入表单
     },
 
     // 编辑器方法
@@ -585,17 +542,17 @@ export default {
       })
         .then(() => {
           this.$store
-            .dispatch('common/changeResourceByYaml', this.codeYaml)
+            .dispatch('jobs/changeJobByYamlString', this.codeYaml)
             .then((res) => {
               switch (res.code) {
                 case 1200:
                   this.$message.success('修改成功')
                   break
                 case 1201:
-                  this.$message.error('修改失败，请查看 yaml 文件格式')
+                  this.$message.error('修改失败，请查看 yaml 文件')
                   break
                 case 1202:
-                  this.$message.error('创建失败，请查看云平台相关错误信息')
+                  this.$message.error('您的操作有误')
                   break
                 default:
                   this.$message.info('提交成功')

@@ -62,7 +62,15 @@ export function getEndpointBySvcNameAndNamespace(svc) {
     }
   })
 }
-
+export function changeServiceByYamlString(data) {
+  return request({
+    url: baseUrl + '/service/changeServiceByYamlString',
+    method: 'post',
+    data: {
+      yaml: data
+    }
+  })
+}
 // export function getPodBySvcLabel(lab) {
 //   return request({
 //     url: baseUrl + '/service/getPodBySvcLabel',

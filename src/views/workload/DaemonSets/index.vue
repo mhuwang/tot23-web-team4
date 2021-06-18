@@ -57,7 +57,13 @@
           </el-button>
         </el-col> -->
       </el-row>
-      <el-table :data="daemonSetsInCurrentPage" style="width: 100%" stripe>
+      <el-table
+        v-loading="loading"
+        :data="daemonSetsInCurrentPage"
+        style="width: 100%"
+        stripe
+        element-loading-text="获取数据中..."
+      >
         <el-table-column width="40">
           <template slot-scope="scope">
             <svg-icon
@@ -83,7 +89,7 @@
               class="link-type"
               @click.native="goToDaemonSetsDetails(scope.row)"
             >
-              <span style="color: #409eff; text-decoration: underline">{{scope.row.name }}</span>
+              <span style="color: #409eff; text-decoration: underline">{{ scope.row.name }}</span>
             </router-link>
           </template>
         </el-table-column>
@@ -91,13 +97,13 @@
         <el-table-column label="Pods">
           <template slot-scope="scope">
             <span>
-              {{ scope.row.runningPods }}/{{scope.row.replicas }}
+              {{ scope.row.runningPods }}/{{ scope.row.replicas }}
             </span>
           </template>
         </el-table-column>
         <el-table-column label="启动时间" width="200">
           <template slot-scope="scope">
-            <span>{{scope.row.creationTimestamp.replaceAll(/[TZ]/g, " ") }}</span>
+            <span>{{ scope.row.creationTimestamp.replaceAll(/[TZ]/g, " ") }}</span>
           </template>
         </el-table-column>
         <el-table-column label="操作">
@@ -155,19 +161,19 @@
       title="日志"
       :visible.sync="logDialogVisible"
       width="70%"
-      @close="logDialogClose"
       :append-to-body="true"
       :lock-scroll="true"
+      @close="logDialogClose"
     >
-      <template >
+      <template>
         <el-select v-model="podName" placeholder="请选择容器组" style="margin-right: 5px" @change="logSelectChange">
           <el-option
             v-for="item in podNames"
             :key="item"
             :label="item"
             :value="item"
-            :disabled="item === podName">
-          </el-option>
+            :disabled="item === podName"
+          />
         </el-select>
       </template>
       <template>
@@ -177,14 +183,14 @@
             :key="item"
             :label="item"
             :value="item"
-            :disabled="item === containerName">
-          </el-option>
+            :disabled="item === containerName"
+          />
         </el-select>
       </template>
       <highlightjs javascript :code="log" />
       <span slot="footer" class="dialog-footer">
         <div class="foot-info">
-          <i class="el-icon-warning"></i> 请选择要查看日志的 容器组 和 容器组中的容器
+          <i class="el-icon-warning" /> 请选择要查看日志的 容器组 和 容器组中的容器
         </div>
         <el-button type="primary" @click="logDialogClose">确 定</el-button>
       </span>
@@ -289,10 +295,6 @@ export default {
     }
   },
 
-  created() {
-    this.getDaemonSets()
-  },
-
   computed: {
     /** 日志部分*/
     podNames() {
@@ -313,6 +315,10 @@ export default {
     }
   },
 
+  created() {
+    this.getDaemonSets()
+  },
+
   methods: {
     /** 基础*/
     // 获取所有 DaemonSets
@@ -326,8 +332,12 @@ export default {
           this.daemonSetsInCurrentPage = this.daemonSets.slice(0, this.pageSize)
         })
         .catch((error) => {
+          this.daemonSets = []
+          this.daemonSetsAmount = 0
+          this.daemonSetsInCurrentPage = []
           console.log(error)
         })
+      this.loading = false
     },
 
     /** 按命名空间查询 */

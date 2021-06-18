@@ -45,10 +45,12 @@
                 />
               </el-select>
             </el-form-item>
+            <el-form/>
             <el-form
               :inline="true"
               :label-position="'top'"
               :model="baseInformation"
+              :rules="baseInformationRules"
             >
               <el-form-item label="容器镜像" prop="image" required>
                 <el-input v-model="baseInformation.image" />
@@ -73,6 +75,7 @@
               <el-input-number
                 v-model="baseInformation.number"
                 :min="1"
+                :max="100000"
                 label="容器组 数量"
                 controls-position="right"
               />
@@ -164,17 +167,19 @@
                 placeholder="请输入内容"
               />
             </el-form-item>
-            <el-form-item label="标签">
+            <el-form-item label="标签" prop="labels">
               <List
-                v-for="count in seniorInformation.labelsCount"
-                :key="count"
                 item-layout="horizontal"
                 :split="false"
               >
-                <el-form-item>
+                <el-form-item
+                  v-for="count in seniorInformation.labelsCount"
+                  :key="count"
+                  prop="labelsKeys[count - 1]"
+                >
                   <div class="label-item">
                     <el-input
-                      v-model="seniorInformation.labelsKeys[count - 1]"
+                      v-model="seniorInformation.labels.labelsKeys[count - 1]"
                       size="medium"
                       placeholder="键"
                       suffix-icon="el-icon-key"
@@ -183,7 +188,7 @@
                   </div>
                   <div class="label-item">
                     <el-input
-                      v-model="seniorInformation.labelsValues[count - 1]"
+                      v-model="seniorInformation.labels.labelsValues[count - 1]"
                       size="medium"
                       placeholder="值"
                       suffix-icon="el-icon-thumb"
@@ -282,7 +287,7 @@
                 placeholder="请输入内容"
               />
             </el-form-item>
-            <el-form-item label="环境变量">
+            <el-form-item label="环境变量" prop="env">
               <List
                 v-for="count in seniorInformation.envCount"
                 :key="count"
@@ -292,7 +297,7 @@
                 <el-form-item>
                   <div class="label-item">
                     <el-input
-                      v-model="seniorInformation.envKeys[count - 1]"
+                      v-model="seniorInformation.env.envKeys[count - 1]"
                       size="medium"
                       placeholder="键"
                       suffix-icon="el-icon-key"
@@ -301,7 +306,7 @@
                   </div>
                   <div class="label-item">
                     <el-input
-                      v-model="seniorInformation.envValues[count - 1]"
+                      v-model="seniorInformation.env.envValues[count - 1]"
                       size="medium"
                       placeholder="值"
                       suffix-icon="el-icon-thumb"
@@ -312,7 +317,7 @@
               </List>
             </el-form-item>
             <el-form-item>
-              <el-button type="primary" @click="submitPod()">创 建</el-button>
+              <el-button type="primary" @click="submitPod">创 建</el-button>
               <el-button @click="resetPodInformation()">重 置</el-button>
               <el-button
                 round="true"
@@ -419,6 +424,76 @@ import request from '@/utils/request'
 
 export default {
   data() {
+    /** 基础性项验证*/
+    // 名称
+    const validateName = (rule, value, callback) => {
+      const legalName = /^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$/
+      const illegalName = /[^0-9a-z\.-]/g
+      if (value === '') {
+        callback(new Error('请输入容器组名称，允许输入数字，小写字母，-和.'))
+      } else if (illegalName.test(value)) {
+        // callback(new Error('请输入数字，小写字母，-和.'))
+        this.baseInformation.name = this.baseInformation.name.replace(/[^0-9a-z\.-]/g, '')
+      } else if (value.length > 63) {
+        callback(new Error('长度不能超过63位'))
+      } else if (!legalName.test(value)) {
+        callback(new Error('格式有误，允许输入数字，小写字母，-和.'))
+      }
+    }
+    // 镜像
+    const validateImage = (rule, value, callback) => {
+      const illegalName = /[^\x00-\xff]/
+      if (value === '') {
+        callback(new Error('请输入镜像名称及版本号'))
+      } else if (illegalName.test(value)) {
+        callback(new Error('请勿输入中文字符'))
+      } else if (/[ ]/.test(value)) {
+        callback(new Error('请勿输入空格'))
+      }
+    }
+    /** 高级选项验证*/
+    // 描述
+    const validateAnnotations = (rule, value, callback) => {
+      const legalKey = /^ *([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9] *:[ ]*[^ ]+$/
+      const illegalSpace = /^[ ]*[^ |:]+( )+[^ |:]+[^:]*:/
+      const enter = /^[ ]*$/
+      const annotations = value.split('\n')
+      for (let i = 0; i < annotations.length; i += 1) {
+        console.log(annotations[i].search(/[^ ]/), annotations[i].search(/\b[ |:]/))
+        console.log('+++', annotations[i].slice(annotations[i].indexOf(' '), annotations[i].indexOf(/\b./)))
+        // console.log(annotations[i])
+        if (enter.test(annotations[i])) {
+          continue
+        } else if (illegalSpace.test(annotations[i])) {
+          callback(new Error('请勿在键中输入空格'))
+        } else if (!legalKey.test(annotations[i])) {
+          callback(new Error('格式有误，允许输入数字，英文字母，下划线，-，.，请勿在键中输入空格'))
+        } else if (annotations[i].slice(annotations[i].search(/[^ ]/), annotations[i].search(/\b[ |:]/)).length > 63) {
+          callback(new Error('键的长度不能超过63'))
+        }
+      }
+    }
+    // labelsKey
+    const validateLabelsKey = (rule, value, callback) => {
+      const legalKey = /^([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9]$/
+      // const legalValue //
+      if (value.length > 63) {
+        callback(new Error('长度不能超过63位'))
+      } else if (!legalKey.test(value)) {
+        callback(new Error('格式有误，允许输入数字，英文字母，下划线，-和.'))
+      }
+    }
+    // labelsValue
+    const validateLabelsValue = (rule, value, callback) => {
+      const legalValue = /^(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])?$/
+      // const legalValue //
+      if (value.length > 63) {
+        callback(new Error('长度不能超过63位'))
+      } else if (!legalValue.test(value)) {
+        callback(new Error('格式有误，允许输入数字，英文字母，下划线，-和.'))
+      }
+    }
+
     return {
       /** 页面数据 */
       namespaces: [], // 命名空间
@@ -438,46 +513,6 @@ export default {
       },
 
       /** 表单部分 */
-      completeOption: false, // 是否显示高级选项
-
-      // baseInformation: {
-      //   name: "zqytest3",
-      //   namespace: "default",
-      //   image: "nginx",
-      //   imagePullPolicy: "Always",
-      //   number: 1,
-      //   service: "None",
-      //   serviceCount: 1,
-      //   ports: [1],
-      //   targetPorts: [1],
-      //   protocols: ["TCP"],
-      // },
-      // //高级选项
-      // seniorInformation: {
-      //   annotations: "1",
-      //   labels: [
-      //     {
-      //       key: "name",
-      //       value: "zqytest3",
-      //     },
-      //   ],
-      //   labelsCount: 1,
-      //   secret: "",
-      //   cpuRequire: 1,
-      //   cpuLimit: 3,
-      //   memoryRequire: 1000,
-      //   memoryLimit: 2000,
-      //   command: "",
-      //   args: "",
-      //   env: [
-      //     {
-      //       key: "NAME",
-      //       value: "zqytest3",
-      //     },
-      //   ],
-      //   envCount: 1,
-      // },
-
       // 基本选项
       baseInformation: {
         name: '',
@@ -486,7 +521,7 @@ export default {
         imagePullPolicy: 'Always',
         number: 1,
         service: 'None',
-        serviceCount: 1,
+        serviceCount: 0,
         ports: [1],
         targetPorts: [1],
         protocols: ['TCP']
@@ -494,8 +529,10 @@ export default {
       // 高级选项
       seniorInformation: {
         annotations: '',
-        labelsKeys: [''],
-        labelsValues: [''],
+        labels: {
+          labelsKeys: [''],
+          labelsValues: ['']
+        },
         labelsCount: 1,
         secret: '',
         cpuRequire: 0,
@@ -506,48 +543,42 @@ export default {
         memoryUnit: 'Mi',
         commands: '',
         args: '',
-        envKeys: [''],
-        envValues: [''],
+        env: {
+          envKeys: [''],
+          envValues: ['']
+        },
         envCount: 1
       },
+      completeOption: false, // 是否显示高级选项
       secretLoading: false,
-      // baseInformationRules: {
-      //   name: [
-      //     { required: true, message: "请输入Pod名称", trigger: "blur" },
-      //     { min: 3, max: 5, message: "长度在 3 到 5 个字符", trigger: "blur" },
-      //   ],
-      //   namespace: [
-      //     { required: true, message: "请选择命名空间", trigger: "change" },
-      //   ],
-      //   number: [
-      //     {
-      //       type: "date",
-      //       required: true,
-      //       message: "请选择日期",
-      //       trigger: "change",
-      //     },
-      //   ],
-      //   service: [
-      //     {
-      //       type: "date",
-      //       required: true,
-      //       message: "请选择时间",
-      //       trigger: "change",
-      //     },
-      //   ],
-      //   port: [
-      //     {
-      //       type: "array",
-      //       required: true,
-      //       message: "请至少选择一个活动性质",
-      //       trigger: "change",
-      //     },
-      //   ],
-      //   targetPort: [
-      //     { required: true, message: "请选择活动资源", trigger: "change" },
-      //   ],
-      //   protocol: [{ required: true, message: "请填写活动形式", trigger: "blur" }],
-      // },
+      // 基础选项验证
+      baseInformationRules: {
+        name: [
+          { validator: validateName, trigger: 'blur' }
+        ],
+        image: [
+          { validator: validateImage, trigger: 'blur' }
+        ]
+      },
+
+      // 高级选项验证
+      seniorInformationRules: {
+        annotations: [
+          { validator: validateAnnotations, trigger: 'blur' }
+        ],
+        labels: [{
+          type: 'Object',
+          trigger: 'change',
+          fields: {
+            labelsKeys: {
+              0: { validator: validateLabelsKey, trigger: 'blur' }
+            },
+            labelsValues: {
+              0: { validator: validateLabelsValue, trigger: 'blur' }
+            }
+          }
+        }]
+      },
 
       /** 上传文件部分 */
       uploadFileLimit: 5,
@@ -561,6 +592,7 @@ export default {
   },
 
   methods: {
+    /** 表单部分开始*/
     /** 命名空间框的事件 */
     // 当选择框聚焦时获取命名空间
     initNamespaces() {
@@ -576,9 +608,9 @@ export default {
     // Pod 的服务监控
     serviceChange() {
       this.baseInformation.serviceCount = 1
-      this.baseInformation.ports = [1]
-      this.baseInformation.targetPorts = [1]
-      this.baseInformation.protocols = ['TCP']
+      this.baseInformation.ports = []
+      this.baseInformation.targetPorts = []
+      this.baseInformation.protocols = []
     },
     // Pod 的服务数量监控
     serviceDetailedChange() {
@@ -598,18 +630,18 @@ export default {
     // 增加可选服务列表
     addServicesList() {
       this.baseInformation.serviceCount = this.baseInformation.serviceCount + 1
-      this.baseInformation.ports.push(1)
-      this.baseInformation.targetPorts.push(1)
-      this.baseInformation.protocols.push('TCP')
+      // this.baseInformation.ports.push(1)
+      // this.baseInformation.targetPorts.push(1)
+      // this.baseInformation.protocols.push('TCP')
     },
 
     /** label 和 env 部分 */
     // label 和 env 的数量监控
     labelDetailedChange() {
       if (
-        this.seniorInformation.labelsKeys[this.seniorInformation.labelsCount - 1] !==
+        this.seniorInformation.labels.labelsKeys[this.seniorInformation.labelsCount - 1] !==
           '' &&
-        this.seniorInformation.labelsValues[this.seniorInformation.labelsCount - 1] !==
+        this.seniorInformation.labels.labelsValues[this.seniorInformation.labelsCount - 1] !==
           ''
       ) {
         this.addLabelsList()
@@ -617,9 +649,9 @@ export default {
     },
     envDetailedChange() {
       if (
-        this.seniorInformation.envKeys[this.seniorInformation.envCount - 1] !==
+        this.seniorInformation.env.envKeys[this.seniorInformation.envCount - 1] !==
           '' &&
-        this.seniorInformation.envValues[this.seniorInformation.envCount - 1] !==
+        this.seniorInformation.env.envValues[this.seniorInformation.envCount - 1] !==
           ''
       ) {
         this.addEnvList()
@@ -628,13 +660,13 @@ export default {
     // 增加 label 和 env 列表
     addLabelsList() {
       this.seniorInformation.labelsCount += 1
-      this.seniorInformation.labelsKeys.push('')
-      this.seniorInformation.labelsValues.push('')
+      this.seniorInformation.labels.labelsKeys.push('')
+      this.seniorInformation.labels.labelsValues.push('')
     },
     addEnvList() {
       this.seniorInformation.envCount += 1
-      this.seniorInformation.envKeys.push('')
-      this.seniorInformation.envValues.push('')
+      this.seniorInformation.env.envKeys.push('')
+      this.seniorInformation.env.envValues.push('')
     },
 
     /** Secret 部分 */
@@ -675,19 +707,29 @@ export default {
     },
     // 提交并创建Pod
     submitPod() {
+      // this.$refs['ruleForm'].validate((valid) => {
+      //   if (valid) {
+      //     alert('submit!');
+      //   } else {
+      //     console.log('error submit!!');
+      //     return false;
+      //   }
+      // });
       const podForm = new FormData()
       podForm.append('name', this.baseInformation.name)
       podForm.append('namespace', this.baseInformation.namespace)
-      podForm.append('labelsKeys', this.seniorInformation.labelsKeys.splice(0, this.seniorInformation.labelsKeys.length - 1))
-      podForm.append('labelsValues', this.seniorInformation.labelsValues.splice(0, this.seniorInformation.labelsValues.length - 1))
+      podForm.append('labelsKeys', this.seniorInformation.labels.labelsKeys.splice(0, this.seniorInformation.labels.labelsKeys.length - 1))
+      podForm.append('labelsValues', this.seniorInformation.labels.labelsValues.splice(0, this.seniorInformation.labels.labelsValues.length - 1))
       const annotations = this.seniorInformation.annotations.split('\n')
       const annotationsKeys = []
       const annotationsValues = []
       for (const index in annotations) {
-        const tmp = annotations[index].split(':')
-        if (tmp.length === 2) {
-          annotationsKeys.push(tmp[0])
-          annotationsValues.push(tmp[1])
+        console.log(annotations[index])
+        const value = annotations[index].slice(0, annotations[index].indexOf(':'))
+        const key = annotations[index].slice(annotations[index].indexOf(':') + 1)
+        if (value.length > 0 && key.length > 0) {
+          annotationsKeys.push(value.replaceAll(/^ +| +$/, ''))
+          annotationsValues.push(key.replaceAll(/^ +| +$/, ''))
         }
       }
       podForm.append('annotationsKeys', annotationsKeys)
@@ -700,12 +742,12 @@ export default {
       podForm.append('cpuRequest', this.seniorInformation.cpuRequire.toString() + this.seniorInformation.cpuUnit)
       podForm.append('memoryLimit', this.seniorInformation.memoryLimit.toString() + this.seniorInformation.memoryUnit)
       podForm.append('memoryRequest', this.seniorInformation.memoryRequire.toString() + this.seniorInformation.memoryUnit)
-      console.log(this.seniorInformation.cpuLimit.toString() + this.seniorInformation.cpuUnit)
+      console.log('cpu = ', this.seniorInformation.cpuLimit.toString() + this.seniorInformation.cpuUnit)
       console.log(this.seniorInformation.memoryRequire.toString() + this.seniorInformation.memoryUnit)
-      podForm.append('envKeys', this.seniorInformation.envKeys.splice(0, this.seniorInformation.envKeys.length - 1))
-      podForm.append('envValues', this.seniorInformation.envValues.splice(0, this.seniorInformation.envValues.length - 1))
+      podForm.append('envKeys', this.seniorInformation.env.envKeys.splice(0, this.seniorInformation.env.envKeys.length - 1))
+      podForm.append('envValues', this.seniorInformation.env.envValues.splice(0, this.seniorInformation.env.envValues.length - 1))
       podForm.append('amount', this.baseInformation.number)
-      this.$confirm('确认修改？', {
+      this.$confirm('确认创建？', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'info'
@@ -714,11 +756,11 @@ export default {
           this.$store
             .dispatch('establish/createPodFromForm', podForm)
             .then((res) => {
-              this.resetPodInformation()
               console.log(res)
               switch (res.code) {
                 case 1200:
                   this.$message.success('创建成功')
+                  this.resetPodInformation()
                   // this.addDialogVisible = false;
                   break
                 case 1201:
@@ -747,15 +789,17 @@ export default {
         imagePullPolicy: 'Always',
         number: 1,
         service: 'None',
-        serviceCount: 1,
+        serviceCount: 0,
         ports: [1],
         targetPorts: [1],
         protocols: ['TCP']
       }
       this.seniorInformation = {
         annotations: '',
-        labelsKeys: [''],
-        labelsValues: [''],
+        labels: {
+          labelsKeys: [''],
+          labelsValues: ['']
+        },
         labelsCount: 1,
         secret: '',
         cpuRequire: 0,
@@ -766,12 +810,16 @@ export default {
         memoryUnit: 'Mi',
         commands: '',
         args: '',
-        envKeys: [''],
-        envValues: [''],
+        env: {
+          envKeys: [''],
+          envValues: ['']
+        },
         envCount: 1
       }
     },
+    /** 表单部分结束*/
 
+    /** 输入部分开始*/
     /** 从输入创建 */
     // 添加的 yaml 框
     onAddYamlCmReady(cm) {
@@ -821,7 +869,9 @@ export default {
           console.log('cancel')
         })
     },
+    /** 输入部分结束*/
 
+    /** 文件部分开始*/
     /** 从文件创建 */
     uploadSectionFile(param) {
       console.log(param)
@@ -860,6 +910,7 @@ export default {
     submitUpload() {
       this.uploadSectionFile
     }
+    /** 文件部分结束*/
   }
 }
 </script>

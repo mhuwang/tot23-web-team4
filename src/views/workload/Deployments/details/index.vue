@@ -689,17 +689,17 @@ export default {
       })
         .then(() => {
           this.$store
-            .dispatch('common/changeResourceByYaml', this.codeYaml)
+            .dispatch('replicaSets/changeReplicaSetByYamlString', this.codeYaml)
             .then((res) => {
               switch (res.code) {
                 case 1200:
                   this.$message.success('修改成功')
                   break
                 case 1201:
-                  this.$message.error('修改失败，请查看 yaml 文件格式')
+                  this.$message.error('修改失败，请查看 yaml 文件')
                   break
                 case 1202:
-                  this.$message.error('创建失败，请查看云平台相关错误信息')
+                  this.$message.error('您的操作有误')
                   break
                 default:
                   this.$message.info('提交成功')

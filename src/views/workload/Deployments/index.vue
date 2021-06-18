@@ -54,7 +54,13 @@
           </el-button>
         </el-col> -->
       </el-row>
-      <el-table :data="deploymentsInCurrentPage" style="width: 100%" stripe>
+      <el-table
+        v-loading="loading"
+        :data="deploymentsInCurrentPage"
+        style="width: 100%"
+        stripe
+        element-loading-text="获取数据中..."
+      >
         <el-table-column width="40">
           <template slot-scope="scope">
             <svg-icon
@@ -263,7 +269,11 @@ export default {
         })
         .catch((error) => {
           console.log(error)
+          this.deployments = []
+          this.deploymentsAmount = 0
+          this.deploymentsInCurrentPage = []
         })
+      this.loading = false
     },
 
     /** 按命名空间查询 */

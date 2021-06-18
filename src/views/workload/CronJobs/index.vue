@@ -55,7 +55,13 @@
           </el-button>
         </el-col> -->
       </el-row>
-      <el-table :data="cronJobsInCurrentPage" style="width: 100%" stripe>
+      <el-table
+        v-loading="loading"
+        :data="cronJobsInCurrentPage"
+        style="width: 100%"
+        stripe
+        element-loading-text="获取数据中..."
+      >
         <el-table-column width="40">
           <template>
             <svg-icon :icon-class="'load-success'" />
@@ -233,14 +239,18 @@ export default {
       this.$store
         .dispatch('cronJobs/getAllCronJobs', namespace)
         .then((res) => {
-          console.log(res.data.message);
+          console.log(res.data.message)
           this.cronJobs = res.data
           this.cronJobsAmount = this.cronJobs.length
           this.cronJobsInCurrentPage = this.cronJobs.slice(0, this.pageSize)
         })
         .catch((error) => {
           console.log(error)
+          this.cronJobs = []
+          this.cronJobsAmount = 0
+          this.cronJobsInCurrentPage = []
         })
+      this.loading = false
     },
     // 修改 CronJob 的为暂停或者运行
     changeCronJobSuSpend(cronJob) {
@@ -282,7 +292,7 @@ export default {
       this.$store
         .dispatch('cronJobs/getCronJobYamlByNameAndNamespace', cronJobDetails)
         .then((res) => {
-          console.log(res.data.message);
+          console.log(res.data.message)
           this.codeYaml = res.data
           this.editDialogVisible = true // 打开编辑对话框
         })

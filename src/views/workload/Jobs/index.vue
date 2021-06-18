@@ -66,7 +66,13 @@
           </el-button>
         </el-col> -->
       </el-row>
-      <el-table :data="jobsInCurrentPage" style="width: 100%" stripe>
+      <el-table
+        v-loading="loading"
+        :data="jobsInCurrentPage"
+        style="width: 100%"
+        stripe
+        element-loading-text="获取数据中..."
+      >
         <el-table-column width="40">
           <template slot-scope="scope">
             <svg-icon :icon-class="scope.row.status == '1'? 'load-success': 'load-failed'" />
@@ -356,7 +362,11 @@ export default {
         })
         .catch((error) => {
           console.log(error)
+          this.jobs = []
+          this.jobsAmount = 0
+          this.jobsInCurrentPage = []
         })
+      this.loading = false
     },
 
     /** 按命名空间查询 */

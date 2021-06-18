@@ -329,7 +329,7 @@ export default {
       this.$store.dispatch("pods/toDetails", podDetails);
     },
 
-    /* 日志部分 */
+    /** 日志部分 */
     showPodLogDialog(name, namespace) {
       const data = {
         podName: name,
