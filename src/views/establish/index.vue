@@ -220,7 +220,7 @@
                   v-model="seniorInformation.cpuUnit"
                   placeholder="请选单位"
                 >
-                  <el-option label="核" value="" />
+                  <el-option label="核" value="M" />
                   <el-option label="m" value="m" />
                 </el-select>
               </el-form-item>
@@ -454,7 +454,7 @@ export default {
     /** 高级选项验证*/
     // 描述
     const validateAnnotations = (rule, value, callback) => {
-      const legalKey = /^ *([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9] *:[ ]*[^ ]+$/
+      const legalKey = /^ *([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9] *:[ ]*[^ ].*$/
       const illegalSpace = /^[ ]*[^ |:]+( )+[^ |:]+[^:]*:/
       const enter = /^[ ]*$/
       const annotations = value.split('\n')
@@ -537,7 +537,7 @@ export default {
         secret: '',
         cpuRequire: 0,
         cpuLimit: 0,
-        cpuUnit: '',
+        cpuUnit: 'M',
         memoryRequire: 0,
         memoryLimit: 0,
         memoryUnit: 'Mi',
@@ -724,12 +724,11 @@ export default {
       const annotationsKeys = []
       const annotationsValues = []
       for (const index in annotations) {
-        console.log(annotations[index])
         const value = annotations[index].slice(0, annotations[index].indexOf(':'))
         const key = annotations[index].slice(annotations[index].indexOf(':') + 1)
         if (value.length > 0 && key.length > 0) {
-          annotationsKeys.push(value.replaceAll(/^ +| +$/, ''))
-          annotationsValues.push(key.replaceAll(/^ +| +$/, ''))
+          annotationsKeys.push(value.replace(/^ +| +$/g, ''))
+          annotationsValues.push(key.replace(/^ +| +$/g, ''))
         }
       }
       podForm.append('annotationsKeys', annotationsKeys)
@@ -738,12 +737,12 @@ export default {
       podForm.append('imagePullPolicy', this.baseInformation.imagePullPolicy)
       podForm.append('commands', this.seniorInformation.commands.split('\n'))
       podForm.append('args', this.seniorInformation.args.split('\n'))
-      podForm.append('cpuLimit', this.seniorInformation.cpuLimit.toString() + this.seniorInformation.cpuUnit)
-      podForm.append('cpuRequest', this.seniorInformation.cpuRequire.toString() + this.seniorInformation.cpuUnit)
-      podForm.append('memoryLimit', this.seniorInformation.memoryLimit.toString() + this.seniorInformation.memoryUnit)
-      podForm.append('memoryRequest', this.seniorInformation.memoryRequire.toString() + this.seniorInformation.memoryUnit)
-      console.log('cpu = ', this.seniorInformation.cpuLimit.toString() + this.seniorInformation.cpuUnit)
-      console.log(this.seniorInformation.memoryRequire.toString() + this.seniorInformation.memoryUnit)
+      podForm.append('cpuLimit', this.seniorInformation.cpuLimit.toString())
+      podForm.append('cpuUnit', this.seniorInformation.cpuUnit)
+      podForm.append('cpuRequest', this.seniorInformation.cpuRequire.toString())
+      podForm.append('memoryLimit', this.seniorInformation.memoryLimit.toString())
+      podForm.append('memoryRequest', this.seniorInformation.memoryRequire.toString())
+      podForm.append('memoryUnit', this.seniorInformation.memoryUnit)
       podForm.append('envKeys', this.seniorInformation.env.envKeys.splice(0, this.seniorInformation.env.envKeys.length - 1))
       podForm.append('envValues', this.seniorInformation.env.envValues.splice(0, this.seniorInformation.env.envValues.length - 1))
       podForm.append('amount', this.baseInformation.number)
@@ -760,11 +759,11 @@ export default {
               switch (res.code) {
                 case 1200:
                   this.$message.success('创建成功')
-                  this.resetPodInformation()
+                  // this.resetPodInformation()
                   // this.addDialogVisible = false;
                   break
                 case 1201:
-                  this.$message.error('创建失败，请查看是否重名')
+                  this.$message.error('创建失败')
                   this.addDialogVisible = false
                   break
                 default:
@@ -804,7 +803,7 @@ export default {
         secret: '',
         cpuRequire: 0,
         cpuLimit: 0,
-        cpuUnit: '',
+        cpuUnit: 'M',
         memoryRequire: 0,
         memoryLimit: 0,
         memoryUnit: 'Mi',

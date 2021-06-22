@@ -10,7 +10,6 @@ import request from '@/utils/request'
 const baseUrl = require('./api').baseurl
 
 export function createPodFromForm(data) {
-  console.log(data)
   return request({
     url: baseUrl + '/establish/createPodFromForm',
     method: 'post',
