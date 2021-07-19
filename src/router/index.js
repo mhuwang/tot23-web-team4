@@ -3,8 +3,8 @@
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-03-10 15:03:17
- * @LastEditors: Rex Joush
- * @LastEditTime: 2021-05-16 16:36:04
+ * @LastEditors: Bernie
+ * @LastEditTime: 2021-07-18 13:24:36
  */
 import Vue from 'vue'
 import Router from 'vue-router'
@@ -354,17 +354,17 @@ export const constantRoutes = [
   },
 
   // 负载预测
-  {
-    path: '/loadforecasting',
-    component: Layout,
-    redirect: '/loadforecasting',
-    children: [{
-      path: 'loadforecasting',
-      name: '负载预测',
-      component: () => import('@/views/LoadForecasting/index'),
-      meta: { title: '负载预测', icon: 'load-forecasting' }
-    }]
-  },
+  // {
+  //   path: '/loadforecasting',
+  //   component: Layout,
+  //   redirect: '/loadforecasting',
+  //   children: [{
+  //     path: 'loadforecasting',
+  //     name: '负载预测',
+  //     component: () => import('@/views/LoadForecasting/index'),
+  //     meta: { title: '负载预测', icon: 'load-forecasting' }
+  //   }]
+  // },
   // 边缘节点
   {
     path: '/edge',
