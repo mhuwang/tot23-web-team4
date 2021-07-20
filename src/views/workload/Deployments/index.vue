@@ -373,9 +373,10 @@ export default {
     setReplica(name, namespace) {
       this.$prompt('请输入副本数', '提示', {
         confirmButtonText: '确定',
-        cancelButtonText: '取消'
+        cancelButtonText: '取消',
+        inputPattern: /^[0-9]+$/,
         // inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
-        // inputErrorMessage: "请输入数字",
+        inputErrorMessage: "请输入数字",
       })
         .then(({ value }) => {
           const data = {
@@ -398,6 +399,7 @@ export default {
                 this.$message.info('提交成功')
                 break
             }
+            this.getDeployments()
           })
         })
         .catch(() => {

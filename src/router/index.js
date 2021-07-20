@@ -354,17 +354,17 @@ export const constantRoutes = [
   },
 
   // 负载预测
-  {
-    path: '/loadforecasting',
-    component: Layout,
-    redirect: '/loadforecasting',
-    children: [{
-      path: 'loadforecasting',
-      name: '负载预测',
-      component: () => import('@/views/LoadForecasting/index'),
-      meta: { title: '负载预测', icon: 'load-forecasting' }
-    }]
-  },
+  // {
+  //   path: '/loadforecasting',
+  //   component: Layout,
+  //   redirect: '/loadforecasting',
+  //   children: [{
+  //     path: 'loadforecasting',
+  //     name: '负载预测',
+  //     component: () => import('@/views/LoadForecasting/index'),
+  //     meta: { title: '负载预测', icon: 'load-forecasting' }
+  //   }]
+  // },
   // 边缘节点
   {
     path: '/edge',
