@@ -3,8 +3,8 @@
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-03-30 19:58:14
- * @LastEditors: zqy
- * @LastEditTime: 2021-04-16 22:54:40
+ * @LastEditors: Bernie
+ * @LastEditTime: 2021-07-19 19:40:29
 -->
 
 <template>
@@ -15,6 +15,7 @@
     ><span style="font-weight: bold; font-size: 20px">
       {{ deployment.metadata.name }}
     </span></el-divider>
+    
 
     <!-- 元数据 -->
     <el-card class="box-card">

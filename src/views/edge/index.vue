@@ -3,8 +3,8 @@
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-03-17 19:37:28
- * @LastEditors: Rex Joush
- * @LastEditTime: 2021-05-13 00:38:14
+ * @LastEditors: Bernie
+ * @LastEditTime: 2021-07-19 18:13:42
 -->
 <template>
   <div>
@@ -43,7 +43,17 @@
                 scope.row.metadata.name
               }}</span>
             </router-link>
+            <!-- <router-link
+              :to="'/summary/nodes/' + scope.row.metadata.name"
+              @click.native="goToNodeDetails(scope.row.metadata.name)"
+              class="link-type"
+            >
+              <span style="color: #409eff; text-decoration: underline">{{
+                scope.row.metadata.name
+              }}</span>
+            </router-link> -->
           </template>
+          
         </el-table-column>
         <!-- <el-table-column label="标签">
           <template slot-scope="scope">
@@ -137,9 +147,9 @@
          <template slot-scope="">
             <a
               style="color: #409eff; text-decoration: underline"
-              href="http://kubeedge-counter-app.mc.com"
+              href="http://edgetest.mc.com/"
               target="_blank"
-              >{{ "kubeedge-counter-app.mc.com" }}</a
+              >{{ "test" }}</a
             >
           </template>
         </el-table-column>
@@ -405,7 +415,7 @@ export default {
                   self.$store.dispatch("edge/toDetails", params.value);
                   self.$router.push("/edge/edgenodes/" + params.value);
                 } else if (params.name === "Device") {
-                  window.location.href = "http://kubeedge-counter-app.mc.com";
+                  window.location.href = "http://edgetest.mc.com/";
                 } else {
                   let podDetails = {
                     podName: params.value,
@@ -457,6 +467,10 @@ export default {
     goToEdgeNodeDetails: function (edgenodeName) {
       this.$store.dispatch("edge/toDetails", edgenodeName);
     },
+    // goToNodeDetails: function (nodeName) {
+    //   this.$store.dispatch("nodes/toDetails", nodeName);
+    // },
+
 
     goToObjectDetails: function (name,namespace) {
        let objectDetails = {

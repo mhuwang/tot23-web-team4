@@ -3,8 +3,8 @@
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-03-10 15:03:17
- * @LastEditors: Rex Joush
- * @LastEditTime: 2021-05-16 16:36:04
+ * @LastEditors: Bernie
+ * @LastEditTime: 2021-07-18 13:24:36
  */
 import Vue from 'vue'
 import Router from 'vue-router'

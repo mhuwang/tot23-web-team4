@@ -3,8 +3,8 @@
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-03-30 19:58:14
- * @LastEditors: Leo
- * @LastEditTime: 2021-04-26 09:52:18
+ * @LastEditors: Bernie
+ * @LastEditTime: 2021-07-20 11:39:03
 -->
 
 <template>
@@ -116,7 +116,7 @@
         style="width: 100%"
         stripe
       >
-        <el-table-column prop="ip" label="主机 ip" width="240">
+        <el-table-column prop="ip" label="服务 ip" width="240">
         </el-table-column>
         <el-table-column label="端口信息(名称，端口，协议)" width="540">
           <template>

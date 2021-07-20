@@ -3,8 +3,8 @@
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-05-11 20:19:00
- * @LastEditors: Rex Joush
- * @LastEditTime: 2021-05-17 15:27:17
+ * @LastEditors: Bernie
+ * @LastEditTime: 2021-07-18 15:15:57
 -->
 <template>
   <div>
@@ -83,7 +83,11 @@
       >
       </el-pagination>
     </el-card>
+  <!-- <div>
+    <iframe id="mainframe" width="96%" style="min-height: 1260px;" scrolling="no" frameborder="0" noresize="noresize" name="mainframe" src="http://172.18.7.22:180/"> </iframe>
+  </div> -->
   </div>
+ 
 </template>
 
 <script>
