@@ -3,8 +3,8 @@
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
- * @LastEditors: Rex Joush
- * @LastEditTime: 2021-05-13 09:11:37
+ * @LastEditors: Bernie
+ * @LastEditTime: 2021-07-20 11:37:21
 -->
 <template>
   <div>
@@ -124,7 +124,7 @@
         </el-table-column>
         <el-table-column prop="nodeName" width="120" label="所属节点">
         </el-table-column>
-        <el-table-column prop="podIP" width="120" label="主机ip地址">
+        <el-table-column prop="podIP" width="120" label="容器ip地址">
         </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
