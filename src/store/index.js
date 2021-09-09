@@ -39,6 +39,7 @@ import edge from './modules/edge'
 import image from './modules/image'
 
 import establish from './modules/establish'
+import loadForecasting from './modules/loadForecasting'
 
 
 Vue.use(Vuex)
@@ -73,6 +74,7 @@ const store = new Vuex.Store({
     image,
 
     establish,
+    loadForecasting,
   },
   getters
 })

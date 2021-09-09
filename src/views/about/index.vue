@@ -38,7 +38,7 @@
 
       <el-row style="margin-top: 20px">
         © Copyright {{ new Date().getFullYear() }} | North West University |
-        西北大学云计算开发组
+        西北大学云平台开发组
       </el-row>
     </div>
   </el-card>
