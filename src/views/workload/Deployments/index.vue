@@ -72,7 +72,33 @@
         </el-table-column>
         <el-table-column prop="name" label="名称">
           <template slot-scope="scope">
+            <!-- 具有别名 -->
+            <el-popover
+              v-if="scope.row.alias"
+              placement="right-start"
+              title="别名"
+              width="200"
+              trigger="hover"
+              :content="scope.row.name">
+              <router-link
+              slot="reference"
+              :to="{
+                name: 'Deployment 详情',
+                params: { name: scope.row.name + ',' + scope.row.namespace },
+              }"
+              class="link-type"
+              @click.native="
+                goToDeploymentsDetails(scope.row.name, scope.row.namespace)
+              "
+            >
+              <span style="color: #409eff; text-decoration: underline">{{
+                scope.row.alias
+              }}</span>
+            </router-link>
+            </el-popover>
+            <!-- 不具有别名 -->
             <router-link
+              v-if="!scope.row.alias"
               :to="{
                 name: 'Deployment 详情',
                 params: { name: scope.row.name + ',' + scope.row.namespace },
@@ -259,7 +285,7 @@ export default {
       this.$store
         .dispatch('deployments/getAllDeployments', namespace)
         .then((res) => {
-          console.log(res.data.message)
+          console.log(res)
           this.deployments = res.data
           this.deploymentsAmount = this.deployments.length
           this.deploymentsInCurrentPage = this.deployments.slice(

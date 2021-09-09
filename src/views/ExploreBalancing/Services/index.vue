@@ -3,8 +3,8 @@
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
- * @LastEditors: Leo
- * @LastEditTime: 2021-05-10 19:36:46
+ * @LastEditors: Bernie
+ * @LastEditTime: 2021-07-20 11:47:29
 
  -->
 <template>
@@ -103,8 +103,8 @@
         <!-- <el-table-column prop="apiVersion" label="apiVersion"> </el-table-column> -->
         <!-- <el-table-column prop="kind" label="kind"> </el-table-column> -->
         <!-- <el-table-column prop="metadata.uid" label="uid"> </el-table-column> -->
-        <!-- <el-table-column prop="spec.nodeName" width="140" label="所属节点"> </el-table-column>
-        <el-table-column prop="status.serviceIP" width="140" label="主机ip地址"> </el-table-column> -->
+        <!-- <el-table-column prop="spec.nodeName" width="140" label="所属节点"> </el-table-column>--->
+        <el-table-column prop="spec.clusterIP" width="300" label="服务ip地址"> </el-table-column>
         <el-table-column label="创建时间" width="300">
           <template slot-scope="scope">
             <span>{{

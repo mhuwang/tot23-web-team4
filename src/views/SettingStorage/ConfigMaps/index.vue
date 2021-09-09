@@ -269,7 +269,7 @@ export default {
     },
 
     // 获取所有 configMaps
-    getConfigMaps(namespace) {
+    getConfigMaps(namespace = '') {
       this.$store
         .dispatch("configMaps/getAllConfigMaps", namespace)
         .then((res) => {

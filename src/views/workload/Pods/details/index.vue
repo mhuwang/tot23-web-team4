@@ -3,8 +3,8 @@
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-05-10 20:38:09
- * @LastEditors: Rex Joush
- * @LastEditTime: 2021-05-10 20:38:10
+ * @LastEditors: Bernie
+ * @LastEditTime: 2021-07-19 19:38:25
 -->
 <template>
   <div>
@@ -17,7 +17,7 @@
     <div v-if="usage.length > 0">
       <el-card class="box-card">
         <div slot="header" class="clearfix">
-          <span style="font-size: 16px">资源利用率</span>
+          <span style="font-size: 16px">资源利用量</span>
         </div>
         <div>
           <el-row>

@@ -3,8 +3,14 @@
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-03-19 16:14:56
- * @LastEditors: Rex Joush
- * @LastEditTime: 2021-05-14 20:24:26
+ * @LastEditors: Bernie
+ * @LastEditTime: 2021-07-19 19:26:51
  */
+<<<<<<< HEAD
 exports.baseurl = 'http://localhost:8081'
 // exports.baseurl = 'http://192.168.79.128:8081'
+=======
+ exports.baseurl = 'http://219.245.19.85:8081'
+
+// exports.baseurl = 'http://172.18.7.58:3448'
+>>>>>>> 24d920e5655a26203a79246dc1f50a7d6055320b
