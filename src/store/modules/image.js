@@ -4,9 +4,9 @@
  * @Author: Rex Joush
  * @Date: 2021-05-16 12:37:58
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-05-17 15:27:49
+ * @LastEditTime: 2021-05-22 14:06:35
  */
-import { getAllImages, getImageById } from '@/api/images'
+import { getAllImages, getImageById, delImage } from '@/api/images'
 import { getToken } from '@/utils/auth'
 
 const state = {

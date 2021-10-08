@@ -4,13 +4,13 @@
  * @Author: Rex Joush
  * @Date: 2021-05-16 16:33:04
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-05-17 15:07:50
+ * @LastEditTime: 2021-06-07 23:36:13
 -->
 <template>
   <div>
     <el-divider content-position="left"
       ><span style="font-weight: bold; font-size: 20px">{{
-        image.repoDigests[0].split("@")[0]
+        image.name
       }}</span></el-divider
     >
 
@@ -61,7 +61,7 @@
       <el-row>
         <el-col :span="2"> Build </el-col>
         <el-col :span="20">
-          Docker {{ image.dockerVersion }} on {{ image.os }}, {{ image.arch }}
+          {{ image.build }}
         </el-col>
       </el-row>
     </el-card>
@@ -113,8 +113,6 @@
         :data="layers"
         style="width: 100%"
         stripe
-        v-loading="loading"
-        element-loading-text="获取数据中..."
       >
         <el-table-column type="index" width="50"></el-table-column>
         <el-table-column label="大小" width="80"
@@ -124,7 +122,7 @@
         </el-table-column>
         <el-table-column prop="CreatedBy" label="信息">
           <template slot-scope="scope">
-            {{scope.row.CreatedBy.replaceAll(/\/bin\/sh -c #\(nop\)/g, "")}}
+            {{ scope.row.CreatedBy.replaceAll(/\/bin\/sh -c #\(nop\)/g, "") }}
           </template>
         </el-table-column>
       </el-table>
@@ -161,10 +159,11 @@ export default {
     this.$store
       .dispatch("image/getImageById", id)
       .then((res) => {
+        console.log(res.data);
         this.layers = JSON.parse(res.data.layers).sort(
           (a, b) => a.Created - b.Created
         );
-        this.image = res.data.image;
+        this.image = res.data;
         console.log(this.layers);
         console.log(this.image);
       })
