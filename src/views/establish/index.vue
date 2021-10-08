@@ -35,6 +35,7 @@
                 size="large"
                 style="width: 100%"
                 placeholder="请选择命名空间"
+                @change='whenNamespaceChange'
                 @focus="initNamespaces"
               >
                 <el-option
@@ -602,7 +603,9 @@ export default {
       }
     },
     // 命名空间变化时
-    whenNamespaceChange() {},
+    whenNamespaceChange() {
+      this.seniorInformation.secret = ''
+    },
 
     /** Pod 的选择服务框部分 */
     // Pod 的服务监控
@@ -688,6 +691,7 @@ export default {
       this.secretsNameInNamespace = this.secretsName[
         this.baseInformation.namespace
       ]
+      
     },
 
     /** 从表单创建 Pod 按钮部分 */

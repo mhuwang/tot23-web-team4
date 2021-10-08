@@ -353,19 +353,19 @@ export const constantRoutes = [
     ]
   },
 
-  // 负载预测
-  // {
-  //   path: '/loadforecasting',
-  //   component: Layout,
-  //   redirect: '/loadforecasting',
-  //   children: [{
-  //     path: 'loadforecasting',
-  //     name: '负载预测',
-  //     component: () => import('@/views/LoadForecasting/index'),
-  //     meta: { title: '负载预测', icon: 'load-forecasting' }
-  //   }]
-  // },
-  // 边缘节点
+  //负载预测
+  {
+    path: '/loadforecasting',
+    component: Layout,
+    redirect: '/loadforecasting',
+    children: [{
+      path: 'loadforecasting',
+      name: '负载预测',
+      component: () => import('@/views/LoadForecasting/index'),
+      meta: { title: '负载预测', icon: 'load-forecasting' }
+    }]
+  },
+  //边缘节点
   {
     path: '/edge',
     component: Layout,
@@ -397,6 +397,19 @@ export const constantRoutes = [
       component: () => import('@/views/establish/index'),
       meta: { title: '创建资源', icon: 'establish' }
     }]
+  },
+  //可视化
+  {
+    path: '/visualization',
+    component: Layout,
+    redirect: '/visualization',
+    children: [{
+      path: 'visualization',
+      name: '可视化',
+      component: () => import('@/views/visualization/index'),
+      meta: { title: '可视化', icon: 'visualization'}
+    }],
+    hidden: false
   },
   // 容器管理
   {

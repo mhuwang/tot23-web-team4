@@ -6,7 +6,7 @@
  * @LastEditors: zqy
  * @LastEditTime: 2021-05-10 22:07:27
  */
-import { getAllDeployments, setReplica, getDeploymentByNameAndNamespace, getDeploymentYamlByNameAndNamespace, deleteDeploymentByNameAndNamespace, getDeploymentResources, changeDeploymentByYamlString } from '@/api/workload/deployments'
+import { getAllDeployments, setReplica, getDeploymentByNameAndNamespace, getDeploymentYamlByNameAndNamespace, deleteDeploymentByNameAndNamespace, getDeploymentResources, changeDeploymentByYamlString, getAllDeploymentsName } from '@/api/workload/deployments'
 import { getToken } from '@/utils/auth'
 
 const state = {
@@ -124,6 +124,20 @@ const actions = {
         const { data } = response
         if (!data) {
           return reject('修改失败')
+        }
+        resolve(data)
+      }).catch((error) => {
+        reject(error)
+      })
+    })
+  },
+
+  getAllDeploymentsName({ commit }, namespace) {
+    return new Promise((resolve, reject) => {
+      getAllDeploymentsName(namespace).then((response) => {
+        const { data } = response
+        if (!data) {
+          return reject('获取失败')
         }
         resolve(data)
       }).catch((error) => {

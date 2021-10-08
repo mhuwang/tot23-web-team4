@@ -13,39 +13,37 @@
       <el-col :span="8">
         <!-- 负载预测 -->
         <el-form ref="form" :model="form" label-width="80px">
-          <el-form-item label="添加资源">
+          <!-- <el-form-item label="添加资源">
             <span><strong>容器组</strong></span>
+          </el-form-item> -->
+          <el-form-item label="部署">
+            <el-select
+              v-model="form.name"
+              filterable
+              clearable
+              size="large"
+              style="width: 100%"
+              @focus="showDeploymentsInNamespace"
+              placeholder="请选择部署"
+            >
+              <el-option
+                v-for="item in deploymentsNameInNamespace"
+                :key="item"
+                :label="item"
+                :value="item"
+              >
+              </el-option>
+            </el-select>
           </el-form-item>
           <el-form-item label="命名空间">
             <el-select
               v-model="form.namespace"
               filterable
-              clearable
               size="large"
               style="width: 100%"
-              @change="selectChange"
+              @change="whenNamespaceChange"
               @focus="initNamespace"
               placeholder="请选择命名空间"
-            >
-              <el-option
-                v-for="item in namespaces"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              >
-              </el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="容器组">
-            <el-select
-              v-model="form.namespace"
-              filterable
-              clearable
-              size="large"
-              style="width: 100%"
-              @change="selectChange"
-              @focus="initNamespace"
-              placeholder="请选择容器组"
             >
               <el-option
                 v-for="item in namespaces"
@@ -73,26 +71,21 @@
               label="描述文字"
             ></el-input-number>
           </el-form-item>
-          <!-- <el-form-item label="活动性质">
-            <el-checkbox-group v-model="form.type">
-              <el-checkbox label="美食/餐厅线上活动" name="type"></el-checkbox>
-              <el-checkbox label="地推活动" name="type"></el-checkbox>
-              <el-checkbox label="线下主题活动" name="type"></el-checkbox>
-              <el-checkbox label="单纯品牌曝光" name="type"></el-checkbox>
-            </el-checkbox-group>
+          <el-form-item label="动态伸缩">
+            <el-switch
+            v-model="suspend"
+            active-color="#13ce66"
+            inactive-color="#ff4949"
+            active-text=""
+            inactive-text="          "
+          >
+          </el-switch>
           </el-form-item>
-          <el-form-item label="特殊资源">
-            <el-radio-group v-model="form.resource">
-              <el-radio label="线上品牌商赞助"></el-radio>
-              <el-radio label="线下场地免费"></el-radio>
-            </el-radio-group>
-          </el-form-item>
-          <el-form-item label="活动形式">
-            <el-input type="textarea" v-model="form.desc"></el-input>
-          </el-form-item> -->
+          
           <el-form-item>
-            <el-button type="primary" @click="onSubmit">立即创建</el-button>
-            <el-button>取消</el-button>
+            <el-button type="primary" @click="onSubmit">执行</el-button>
+            <!-- <el-button v-if='!suspend' type="primary" @click="onSubmit">停止</el-button> -->
+            <el-button @click="cancle">取消</el-button>
           </el-form-item>
         </el-form>
       </el-col>
@@ -105,32 +98,36 @@
 export default {
   data() {
     return {
-      namespaces: [],
+      /**命名空间部分 */
+      namespaces: [], // 命名空间名称
+      /**部署部分 */
+      deploymentsName: [], // 所有命名空间下的所有部署名称
+      deploymentsNameInNamespace: {}, // 特定命名空间下的部署名称
+      /**动态伸缩部分 */
+      suspend: false, // 启动按钮
+      /**表单部分 */
       form: {
-        name: "",
-        namespace: "",
-        datatime: "",
-        amount: 1,
-        type: [],
-        resource: "",
-        desc: "",
+        name: "", // 选中的部署
+        namespace: "default",// 选中的命名空间
+        // 以下暂时没用
+        // datatime: "",
+        // amount: 1,
+        // type: [],
+        // resource: "",
+        // desc: "",
       },
     };
   },
 
   created: function () {
-    this.namespace = this.$store.state.namespaces.namespaces;
+    this.getAllDeploymentsName()
   },
 
   mounted: function () {},
 
   methods: {
-    // 提交任务
-    onSubmit: function () {
-      console.log("submit");
-    },
-
-    /* 命名空间 */
+    /**命名空间部分 */
+    // 初始化
     initNamespace() {
       if (this.namespaces.length == 0) {
         this.namespaces = this.$store.state.namespaces.namespaces.slice(
@@ -138,12 +135,62 @@ export default {
           this.$store.state.namespaces.namespaces.length
         );
       }
+      this.form.namespace = 'default'
     },
-    // 选择框变化事件
-    selectChange(value) {
-      this.loading = true;
-      this.form.namespace = value;
+    // 选择框变化
+    whenNamespaceChange() {
+      this.form.name = ''
     },
+
+    /**部署部分 */
+    // 选择框焦距时选择特定命名空间下的部署
+    showDeploymentsInNamespace() {
+      this.deploymentsNameInNamespace = this.deploymentsName[this.form.namespace]
+    },
+    // 获取所有命名空间下的所有部署名称
+    getAllDeploymentsName () {
+      this.$store
+        .dispatch('deployments/getAllDeploymentsName', '')
+        .then((res) => {
+          console.log(res)
+          this.deploymentsName = res.data
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+    },
+
+    /**按钮部分 */
+    // 提交任务
+    onSubmit: function () {
+      if(this.form.name === '' || this.form.namespace === ''){
+        this.$message.info('请选择部署')
+        return;
+      }
+      const deploymentInfo = {
+        name: this.form.name,
+        namespace: this.form.namespace,
+        suspend: this.suspend,
+      };
+      this.$store
+        .dispatch(
+          "loadForecasting/autoExpandShrinkDeployment",
+          deploymentInfo
+        )
+        .then((res) => {
+          console.log(res.data.message);
+        })
+        .catch((error) => {
+          throw error;
+        });
+
+      console.log("submit");
+    },
+    // 取消
+    cancle() {
+      this.form.name = ''
+      this.form.namespace = 'default'
+    }
   },
 };
 </script>
