@@ -3,8 +3,8 @@
  * @version: 1.0
  * @Author: zqy
  * @Date: 2021.03.29 16:19
- * @LastEditors: zqy
- * @LastEditTime: 2021-04-15 21:39:33
+ * @LastEditors: Rex Joush
+ * @LastEditTime: 2022-10-30 19:50:33
  */
 import request from '@/utils/request'
 const baseUrl = require('../api').baseurl
@@ -65,15 +65,6 @@ export function getReplicationControllerLogs(data) {
     params: {
       name: data.name,
       namespace: data.namespace
-    }
-  })
-}
-export function changeReplicationControllerByYamlString(data) {
-  return request({
-    url: baseUrl + '/replicationControllers/changeReplicationControllerByYamlString',
-    method: 'post',
-    data: {
-      yaml: data
     }
   })
 }

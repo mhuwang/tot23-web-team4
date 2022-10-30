@@ -4,7 +4,7 @@
  * @Author: zqy
  * @Date: 2021.03.29 16:18
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-05-10 18:43:42
+ * @LastEditTime: 2022-10-30 19:05:16
  */
 import request from '@/utils/request'
 const baseUrl = require('../api').baseurl
@@ -74,16 +74,6 @@ export function getDaemonSetLogs(data) {
     params: {
       name: data.name,
       namespace: data.namespace
-    }
-  })
-}
-export function changeDaemonSetByYamlString(data) {
-  console.log(123123123);
-  return request({
-    url: baseUrl + '/daemonSets/changeDaemonSetByYamlString',
-    method: 'post',
-    data: {
-      yaml: data
     }
   })
 }

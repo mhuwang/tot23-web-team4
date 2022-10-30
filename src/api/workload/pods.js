@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-22 17:20:47
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-05-10 18:44:32
+ * @LastEditTime: 2022-10-30 19:45:39
  */
 import request from '@/utils/request'
 const baseUrl = require('../api').baseurl
@@ -100,15 +100,6 @@ export function createPodFromForm(data) {
     url: baseUrl + '/pods/createPodFromForm',
     method: 'post',
     data: data
-  })
-}
-export function changePodByYamlString(data) {
-  return request({
-    url: baseUrl + '/pods/changePodByYamlString',
-    method: 'post',
-    data: {
-      yaml: data
-    }
   })
 }
 

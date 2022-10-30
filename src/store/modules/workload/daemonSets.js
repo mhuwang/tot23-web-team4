@@ -3,8 +3,8 @@
  * @version: 1.0
  * @Author: zqy
  * @Date: 2021.03.29 16:25
- * @LastEditors: zqy
- * @LastEditTime: 2021-04-16 20:30:06
+ * @LastEditors: Rex Joush
+ * @LastEditTime: 2022-10-30 19:05:26
  */
 import {
   getAllDaemonSets,
@@ -13,8 +13,7 @@ import {
   getDaemonSetYamlByNameAndNamespace,
   getDaemonSetResources,
   createOrReplaceDaemonSetByYaml,
-  getDaemonSetLogs,
-  changeDaemonSetByYamlString
+  getDaemonSetLogs
 } from '@/api/workload/daemonSets'
 import { getToken } from '@/utils/auth'
 
@@ -136,20 +135,6 @@ const actions = {
       })
     })
   },
-
-  changeDaemonSetByYamlString({ commit }, yamlData) {
-    return new Promise((resolve, reject) => {
-      changeDaemonSetByYamlString(yamlData).then((response) => {
-        const { data } = response
-        if (!data) {
-          return reject('修改失败')
-        }
-        resolve(data)
-      }).catch((error) => {
-        reject(error)
-      })
-    })
-  }
 }
 
 export default {

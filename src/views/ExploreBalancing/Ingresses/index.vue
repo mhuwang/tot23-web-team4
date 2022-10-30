@@ -3,8 +3,8 @@
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
- * @LastEditors: Leo
- * @LastEditTime: 2021-05-10 20:03:17
+ * @LastEditors: Rex Joush
+ * @LastEditTime: 2022-10-30 10:27:33
 -->
 <template>
   <div>
@@ -296,7 +296,7 @@ export default {
       })
         .then(() => {
           this.$store
-            .dispatch("common/changeIngressesByYaml", this.codeYaml)
+            .dispatch("common/changeResourceByYaml", this.codeYaml)
             .then((res) => {
               switch (res.code) {
                 case 1200:

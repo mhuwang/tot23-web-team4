@@ -3,8 +3,8 @@
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
- * @LastEditors: zqy
- * @LastEditTime: 2021-05-10 19:47:47
+ * @LastEditors: Rex Joush
+ * @LastEditTime: 2022-10-30 19:00:27
 -->
 
 <template>
@@ -318,7 +318,7 @@ export default {
       })
         .then(() => {
           this.$store
-            .dispatch('cronJobs/changeCronJobByYamlString', this.codeYaml)
+            .dispatch('common/changeResourceByYaml', this.codeYaml)
             .then((res) => {
               switch (res.code) {
                 case 1200:

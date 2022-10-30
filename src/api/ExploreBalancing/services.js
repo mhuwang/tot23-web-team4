@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-27 14:23:44
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-05-10 18:44:52
+ * @LastEditTime: 2022-10-30 20:05:38
  */
 import request from '@/utils/request'
 let baseUrl = require("../api").baseurl;
@@ -62,22 +62,3 @@ export function getEndpointBySvcNameAndNamespace(svc) {
     }
   })
 }
-export function changeServiceByYamlString(data) {
-  return request({
-    url: baseUrl + '/service/changeServiceByYamlString',
-    method: 'post',
-    data: {
-      yaml: data
-    }
-  })
-}
-// export function getPodBySvcLabel(lab) {
-//   return request({
-//     url: baseUrl + '/service/getPodBySvcLabel',
-//     method: 'get',
-//     params: {
-//       key: lab.name,
-//       value: lab.namespace
-//     }
-//   })
-// }

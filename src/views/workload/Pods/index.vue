@@ -3,8 +3,8 @@
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
- * @LastEditors: Bernie
- * @LastEditTime: 2021-07-20 11:37:21
+ * @LastEditors: Rex Joush
+ * @LastEditTime: 2022-10-30 19:45:08
 -->
 <template>
   <div>
@@ -405,7 +405,7 @@ export default {
       })
         .then(() => {
           this.$store
-            .dispatch("pods/changePodByYamlString", this.codeYaml)
+            .dispatch("common/changeResourceByYaml", this.codeYaml)
             .then((res) => {
               switch (res.code) {
                 case 1200:

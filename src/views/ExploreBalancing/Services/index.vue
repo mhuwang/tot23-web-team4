@@ -3,8 +3,8 @@
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
- * @LastEditors: Bernie
- * @LastEditTime: 2021-07-20 11:47:29
+ * @LastEditors: Rex Joush
+ * @LastEditTime: 2022-10-30 10:03:39
 
  -->
 <template>
@@ -104,7 +104,8 @@
         <!-- <el-table-column prop="kind" label="kind"> </el-table-column> -->
         <!-- <el-table-column prop="metadata.uid" label="uid"> </el-table-column> -->
         <!-- <el-table-column prop="spec.nodeName" width="140" label="所属节点"> </el-table-column>--->
-        <el-table-column prop="spec.clusterIP" width="300" label="服务ip地址"> </el-table-column>
+        <el-table-column prop="spec.clusterIP" width="300" label="服务ip地址">
+        </el-table-column>
         <el-table-column label="创建时间" width="300">
           <template slot-scope="scope">
             <span>{{
@@ -289,20 +290,12 @@ export default {
       this.$store
         .dispatch("services/getServiceYamlByNameAndNamespace", serviceDetails)
         .then((res) => {
-          // console.log(res);
-          // let json = JSON.stringify(res.data);
-          // this.codeJSON = this.beautify(json, {
-          //   indent_size: 4,
-          //   space_in_empty_paren: true,
-          // });
           this.codeYaml = res.data;
           this.editDialogVisible = true; // 打开编辑对话框
         })
         .catch((error) => {
           throw error;
         });
-
-      //this.editForm = res; // 查询结果写入表单
     },
 
     // 提交修改
@@ -314,7 +307,7 @@ export default {
       })
         .then(() => {
           this.$store
-            .dispatch("common/changeServicesByYaml", this.codeYaml)
+            .dispatch("common/changeResourceByYaml", this.codeYaml)
             .then((res) => {
               switch (res.code) {
                 case 1200:
@@ -351,7 +344,7 @@ export default {
 
     /* 删除 Service */
     delService: function (name, namespace) {
-      this.$confirm("确认删除该 服务 ？", {
+      this.$confirm("确认删除该 服务 ?", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
@@ -365,28 +358,28 @@ export default {
             .dispatch("services/delServiceByNameAndNamespace", serviceDetails)
             .then((res) => {
               if (res.code == 1200) {
-                this.$message.success("删除成功");
-                this.getServices();
+                this.$message.success("删除成功")
+                this.getServices()
               } else {
-                this.$message.error("删除失败");
+                this.$message.error("删除失败")
               }
             })
             .catch((error) => {
-              throw error;
+              throw error
             });
         })
-        .catch(() => {});
+        .catch(() => {})
     },
 
     // 选择框变化事件
     selectChange(value) {
       this.loading = true;
-      this.getServices(value);
+      this.getServices(value)
     },
     // 选择框清空事件
     clearSelect() {
-      this.loading = true;
-      this.getServices();
+      this.loading = true
+      this.getServices()
     },
 
     //分页事件
@@ -395,7 +388,7 @@ export default {
       this.servicesInCurrentPage = this.services.slice(
         (this.currentPage - 1) * this.pageSize,
         this.currentPage * this.pageSize
-      );
+      )
     },
   },
 };

@@ -11,8 +11,7 @@ import {
   getAllReplicationControllers,
   getReplicationControllerYamlByNameAndNamespace,
   deleteReplicationControllerByNameAndNamespace,
-  getReplicationControllerResources,
-  changeReplicationControllerByYamlString
+  getReplicationControllerResources
 } from '@/api/workload/replicationControllers'
 import { getToken } from '@/utils/auth'
 
@@ -106,20 +105,6 @@ const actions = {
       })
     })
   },
-
-  changeReplicationControllerByYamlString({ commit }, yamlData) {
-    return new Promise((resolve, reject) => {
-      changeReplicationControllerByYamlString(yamlData).then((response) => {
-        const { data } = response
-        if (!data) {
-          return reject('修改失败')
-        }
-        resolve(data)
-      }).catch((error) => {
-        reject(error)
-      })
-    })
-  }
 }
 
 export default {

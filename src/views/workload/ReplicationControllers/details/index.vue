@@ -3,8 +3,8 @@
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-03-30 19:58:14
- * @LastEditors: zqy
- * @LastEditTime: 2021-04-17 12:41:24
+ * @LastEditors: Rex Joush
+ * @LastEditTime: 2022-10-30 19:44:55
 -->
 
 <template>
@@ -401,7 +401,7 @@
           &ltspec.yaml>
         </div>
         <el-button @click="podEditDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="commitYamlChange('pods/changePodByYamlString')">确 定</el-button>
+        <el-button type="primary" @click="commitYamlChange('common/changeResourceByYaml')">确 定</el-button>
       </span>
     </el-dialog>
 
@@ -435,7 +435,7 @@
           &ltspec.yaml>
         </div>
         <el-button @click="serviceEditDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="commitYamlChange('service/changeServiceByYamlString')">确 定</el-button>
+        <el-button type="primary" @click="commitYamlChange('common/changeResourceByYaml')">确 定</el-button>
       </span>
     </el-dialog>
   </div>

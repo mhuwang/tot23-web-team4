@@ -16,8 +16,7 @@ import {
   createPodFromForm,
   getPodLogFromContainer,
   getPodAllLogs,
-  getPodResources,
-  changePodByYamlString
+  getPodResources
 } from '@/api/workload/pods'
 import { getToken } from '@/utils/auth'
 
@@ -185,20 +184,6 @@ const actions = {
         }
         resolve(data)
       }).catch(error => {
-        reject(error)
-      })
-    })
-  },
-
-  changePodByYamlString({ commit }, yamlData) {
-    return new Promise((resolve, reject) => {
-      changePodByYamlString(yamlData).then((response) => {
-        const { data } = response
-        if (!data) {
-          return reject('修改失败')
-        }
-        resolve(data)
-      }).catch((error) => {
         reject(error)
       })
     })

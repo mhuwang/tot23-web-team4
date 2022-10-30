@@ -11,8 +11,7 @@ import {
   getCronJobByNameAndNamespace,
   deleteCronJobByNameAndNamespace,
   getCronJobYamlByNameAndNamespace,
-  getCronJobResources,
-  changeCronJobByYamlString
+  getCronJobResources
 } from '@/api/workload/cronJobs'
 import { getToken } from '@/utils/auth'
 
@@ -107,20 +106,6 @@ const actions = {
       })
     })
   },
-
-  changeCronJobByYamlString({ commit }, yamlData) {
-    return new Promise((resolve, reject) => {
-      changeCronJobByYamlString(yamlData).then((response) => {
-        const { data } = response
-        if (!data) {
-          return reject('修改失败')
-        }
-        resolve(data)
-      }).catch((error) => {
-        reject(error)
-      })
-    })
-  }
 }
 
 export default {

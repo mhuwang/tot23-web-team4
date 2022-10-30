@@ -445,7 +445,7 @@ export default {
       })
         .then(() => {
           this.$store
-            .dispatch('statefulSets/changeStatefulSetByYamlString', this.codeYaml)
+            .dispatch('common/changeResourceByYaml', this.codeYaml)
             .then((res) => {
               switch (res.code) {
                 case 1200:

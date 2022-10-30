@@ -4,7 +4,7 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-05-13 00:04:01
+ * @LastEditTime: 2022-10-29 22:21:02
 -->
 <template>
   <div>
@@ -361,7 +361,7 @@ export default {
       })
         .then(() => {
           this.$store
-            .dispatch('deployments/changeDeploymentByYamlString', this.codeYaml)
+            .dispatch('common/changeResourceByYaml', this.codeYaml)
             .then((res) => {
               switch (res.code) {
                 case 1200:

@@ -3,16 +3,8 @@
  * @version: 1.0
  * @Author: Bernie
  * @Date: 2021-04-12 10:43:03
- * @LastEditors: Bernie
- * @LastEditTime: 2021-04-29 15:49:07
--->
-<!--
- * @Description: your project
- * @version: 1.0
- * @Author: Rex Bernie
- * @Date: 2021-04-4 13:57
- * @LastEditors: Rex Bernie
- * @LastEditTime: 
+ * @LastEditors: Rex Joush
+ * @LastEditTime: 2022-10-30 11:15:04
 -->
 <template>
   <div>
@@ -234,7 +226,7 @@ export default {
       })
         .then(() => {
           this.$store
-            .dispatch("common/changeCrdObjectByYaml", data)
+            .dispatch("common/changeResourceByYaml", data)
             .then((res) => {
               switch (res.code) {
                 case 1200:

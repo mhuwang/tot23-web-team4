@@ -1,11 +1,10 @@
-
 /*
  * @Description: your project
  * @version: 1.0
  * @Author: zqy
  * @Date: 2021.03.29 16:25
- * @LastEditors: zqy
- * @LastEditTime: 2021-04-14 21:24:41
+ * @LastEditors: Rex Joush
+ * @LastEditTime: 2022-10-30 19:17:14
  */
 import {
   getAllJobs,
@@ -13,9 +12,9 @@ import {
   deleteJobByNameAndNamespace,
   getJobResources,
   getJobYamlByNameAndNamespace,
-  getJobLogs,
-  changeJobByYamlString
+  getJobLogs
 } from '@/api/workload/jobs'
+
 import { getToken } from '@/utils/auth'
 
 const getDefaultState = () => {
@@ -123,20 +122,6 @@ const actions = {
       })
     })
   },
-
-  changeJobByYamlString({ commit }, yamlData) {
-    return new Promise((resolve, reject) => {
-      changeJobByYamlString(yamlData).then((response) => {
-        const { data } = response
-        if (!data) {
-          return reject('修改失败')
-        }
-        resolve(data)
-      }).catch((error) => {
-        reject(error)
-      })
-    })
-  }
 }
 
 export default {

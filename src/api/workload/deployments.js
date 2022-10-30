@@ -3,8 +3,8 @@
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-03-27 14:23:44
- * @LastEditors: zqy
- * @LastEditTime: 2021-05-12 20:31:09
+ * @LastEditors: Rex Joush
+ * @LastEditTime: 2022-10-29 22:21:21
  */
 import request from '@/utils/request'
 const baseUrl = require('../api').baseurl
@@ -70,15 +70,7 @@ export function getDeploymentResources(data) {
     }
   })
 }
-export function changeDeploymentByYamlString(data) {
-  return request({
-    url: baseUrl + '/deployments/changeDeploymentByYamlString',
-    method: 'post',
-    data: {
-      yaml: data
-    }
-  })
-}
+
 export function getAllDeploymentsName(data) {
   return request({
     url: baseUrl + '/deployments/getAllDeploymentsName',

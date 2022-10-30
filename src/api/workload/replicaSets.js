@@ -3,8 +3,8 @@
  * @version: 1.0
  * @Author: zqy
  * @Date: 2021.03.29 16:18
- * @LastEditors: zqy
- * @LastEditTime: 2021-04-15 20:47:27
+ * @LastEditors: Rex Joush
+ * @LastEditTime: 2022-10-30 19:19:07
  */
 import request from '@/utils/request'
 const baseUrl = require('../api').baseurl
@@ -66,15 +66,6 @@ export function getReplicaSetLogs(data) {
     params: {
       name: data.name,
       namespace: data.namespace
-    }
-  })
-}
-export function changeReplicaSetByYamlString(data) {
-  return request({
-    url: baseUrl + '/replicaSets/changeReplicaSetByYamlString',
-    method: 'post',
-    data: {
-      yaml: data
     }
   })
 }

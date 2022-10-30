@@ -12,8 +12,7 @@ import {
   getReplicaSetByNameAndNamespace,
   getReplicaSetYamlByNameAndNamespace,
   deleteReplicaSetByNameAndNamespace,
-  getReplicaSetResources,
-  changeReplicaSetByYamlString
+  getReplicaSetResources
 } from '@/api/workload/replicaSets'
 import { getToken } from '@/utils/auth'
 
@@ -122,20 +121,6 @@ const actions = {
       })
     })
   },
-
-  changeReplicaSetByYamlString({ commit }, yamlData) {
-    return new Promise((resolve, reject) => {
-      changeReplicaSetByYamlString(yamlData).then((response) => {
-        const { data } = response
-        if (!data) {
-          return reject('修改失败')
-        }
-        resolve(data)
-      }).catch((error) => {
-        reject(error)
-      })
-    })
-  }
 }
 
 export default {

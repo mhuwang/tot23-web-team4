@@ -4,7 +4,7 @@
  * @Author: zqy
  * @Date: 2021.03.29 16:16
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-05-10 18:44:22
+ * @LastEditTime: 2022-10-30 19:00:57
  */
 import request from '@/utils/request'
 const baseUrl = require('../api').baseurl
@@ -59,12 +59,4 @@ export function getCronJobResources(data) {
     }
   })
 }
-export function changeCronJobByYamlString(data) {
-  return request({
-    url: baseUrl + '/cronJobs/changeCronJobByYamlString',
-    method: 'post',
-    data: {
-      yaml: data
-    }
-  })
-}
+

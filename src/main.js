@@ -3,8 +3,8 @@
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-03-10 15:03:17
- * @LastEditors: Anna
- * @LastEditTime: 2021-04-26 13:21:30
+ * @LastEditors: Rex Joush
+ * @LastEditTime: 2022-10-30 10:25:29
  */
 import Vue from 'vue'
 
@@ -24,7 +24,6 @@ import 'highlight.js/styles/atelier-forest-light.css' // 样式
 import beautify from 'js-beautify'
 
 // 引入 json 2 ymal
-import json2yaml from 'json2yaml'
 import jsYaml from 'js-yaml'
 
 // 引入 codemirror

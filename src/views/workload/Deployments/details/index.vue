@@ -690,7 +690,7 @@ export default {
       })
         .then(() => {
           this.$store
-            .dispatch('replicaSets/changeReplicaSetByYamlString', this.codeYaml)
+            .dispatch('common/changeResourceByYaml', this.codeYaml)
             .then((res) => {
               switch (res.code) {
                 case 1200:

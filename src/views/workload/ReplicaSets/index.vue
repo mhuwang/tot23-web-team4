@@ -3,8 +3,8 @@
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
- * @LastEditors: zqy
- * @LastEditTime: 2021-05-08 10:01:17
+ * @LastEditors: Rex Joush
+ * @LastEditTime: 2022-10-30 19:18:13
 -->
 <!--<template>
   <h1>Replication Controllers</h1>
@@ -339,7 +339,7 @@ export default {
     /** 按命名空间查询 */
     // 当选择框聚焦时获取命名空间
     initNamespace() {
-      if (this.namespaces.length == 0) {
+      if (this.namespaces.length === 0) {
         this.namespaces = this.$store.state.namespaces.namespaces
       }
     },
@@ -423,7 +423,7 @@ export default {
       })
         .then(() => {
           this.$store
-            .dispatch('replicaSets/changeReplicaSetByYamlString', this.codeYaml)
+            .dispatch('common/changeResourceByYaml', this.codeYaml)
             .then((res) => {
               switch (res.code) {
                 case 1200:

@@ -3,8 +3,8 @@
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
- * @LastEditors: zqy
- * @LastEditTime: 2021-05-12 20:57:28
+ * @LastEditors: Rex Joush
+ * @LastEditTime: 2022-10-30 19:04:33
 -->
 <!--<template>-->
 <!--  <h1>Daemon Sets</h1>-->
@@ -429,7 +429,7 @@ export default {
       })
         .then(() => {
           this.$store
-            .dispatch('daemonSets/changeDaemonSetByYamlString', this.codeYaml)
+            .dispatch('common/changeResourceByYaml', this.codeYaml)
             .then((res) => {
               switch (res.code) {
                 case 1200:

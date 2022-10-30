@@ -4,8 +4,8 @@
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
 <<<<<<< HEAD
- * @LastEditors: Bernie
- * @LastEditTime: 2021-05-07 11:29:23
+ * @LastEditors: Rex Joush
+ * @LastEditTime: 2022-10-30 19:13:09
 =======
  * @LastEditors: zqy
 <<<<<<< HEAD
@@ -457,7 +457,7 @@ export default {
         .then(() => {
           console.log(this.codeYaml)
           this.$store
-            .dispatch('jobs/changeJobByYamlString', this.codeYaml)
+            .dispatch('common/changeResourceByYaml', this.codeYaml)
             .then((res) => {
               switch (res.code) {
                 case 1200:

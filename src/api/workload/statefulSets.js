@@ -4,7 +4,7 @@
  * @Author: zqy
  * @Date: 2021.03.29 16:19
  * @LastEditors: Rex Joush
- * @LastEditTime: 2021-05-10 18:43:59
+ * @LastEditTime: 2022-10-30 19:55:45
  */
 import request from '@/utils/request'
 const baseUrl = require('../api').baseurl
@@ -65,15 +65,6 @@ export function getStatefulSetLogs(data) {
     params: {
       name: data.name,
       namespace: data.namespace
-    }
-  })
-}
-export function changeStatefulSetByYamlString(data) {
-  return request({
-    url: baseUrl + '/statefulSets/changeStatefulSetByYamlString',
-    method: 'post',
-    data: {
-      yaml: data
     }
   })
 }
