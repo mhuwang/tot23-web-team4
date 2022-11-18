@@ -3,15 +3,14 @@
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-03-27 14:18:28
- * @LastEditors: Leo
- * @LastEditTime: 2021-04-11 21:41:41
+ * @LastEditors: Rex Joush
+ * @LastEditTime: 2022-11-01 14:31:52
  */
 import {
   getAllServices,
   getServicesByNameAndNamespace,
   getServiceYamlByNameAndNamespace,
-  delServiceByNameAndNamespace,
-  changeServiceByYamlString
+  delServiceByNameAndNamespace
 } from '@/api/ExploreBalancing/services'
 import { getToken } from '@/utils/auth'
 
@@ -94,21 +93,6 @@ const actions = {
             })
         })
     },
-
-  changeServiceByYamlString({ commit }, yamlData) {
-      console.log('aaaaaaaaahahahahahaa')
-    return new Promise((resolve, reject) => {
-      changeServiceByYamlString(yamlData).then((response) => {
-        const { data } = response
-        if (!data) {
-          return reject('修改失败')
-        }
-        resolve(data)
-      }).catch((error) => {
-        reject(error)
-      })
-    })
-  },
 
     // 点击名字进入详情页
     toDetails({ commit }, dep) {

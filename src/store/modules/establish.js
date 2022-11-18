@@ -3,10 +3,10 @@
  * @version: 1.0
  * @Author: zqy
  * @Date: 2021-04-26 12:21:50
- * @LastEditors: zqy
- * @LastEditTime: 2021-05-06 18:44:50
+ * @LastEditors: Rex Joush
+ * @LastEditTime: 2022-11-01 14:32:25
  */
-import { createPodFromForm, createPodFromYamlFile } from '@/api/establish'
+import { createPodFromForm, createPodFromYamlFile, createResourceByYaml } from '@/api/establish'
 import { getToken } from '@/utils/auth'
 
 const getDefaultState = () => {
@@ -22,6 +22,20 @@ const mutations = {
 }
 
 const actions = {
+
+  createResourceByYaml({commit}, yaml) {
+    return new Promise((resolve, reject) => {
+      createResourceByYaml(yaml).then(response => {
+        const { data } = response
+        if (!data) {
+          return reject('修改失败')
+        }
+        resolve(data)
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
 
   // 从输入创建资源
   createPodFromForm({ commit }, podForm) {

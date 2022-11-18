@@ -3,8 +3,8 @@
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-03-10 15:03:17
- * @LastEditors: Bernie
- * @LastEditTime: 2021-07-18 13:24:36
+ * @LastEditors: Rex Joush
+ * @LastEditTime: 2022-11-05 14:51:33
  */
 import Vue from 'vue'
 import Router from 'vue-router'
@@ -399,18 +399,18 @@ export const constantRoutes = [
     }]
   },
   //可视化
-  {
-    path: '/visualization',
-    component: Layout,
-    redirect: '/visualization',
-    children: [{
-      path: 'visualization',
-      name: '可视化',
-      component: () => import('@/views/visualization/index'),
-      meta: { title: '可视化', icon: 'visualization'}
-    }],
-    hidden: false
-  },
+  // {
+  //   path: '/visualization',
+  //   component: Layout,
+  //   redirect: '/visualization',
+  //   children: [{
+  //     path: 'visualization',
+  //     name: '可视化',
+  //     component: () => import('@/views/visualization/index'),
+  //     meta: { title: '可视化', icon: 'visualization'}
+  //   }],
+  //   hidden: false
+  // },
   // 容器管理
   {
     path: '/image',

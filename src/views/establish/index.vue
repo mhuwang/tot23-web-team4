@@ -3,8 +3,8 @@
  * @version: 1.0
  * @Author: Rex Joush
  * @Date: 2021-03-17 15:26:16
- * @LastEditors: zqy
- * @LastEditTime: 2021-05-07 22:15:44
+ * @LastEditors: Rex Joush
+ * @LastEditTime: 2022-11-01 21:59:15
 -->
 <template>
   <div>
@@ -842,9 +842,11 @@ export default {
         type: 'info'
       })
         .then(() => {
+          console.log("addResource")
           this.$store
-            .dispatch('common/changeResourceByYaml', this.addYaml)
+            .dispatch('establish/createResourceByYaml', this.addYaml)
             .then((res) => {
+              console.log(res)
               switch (res.code) {
                 case 1200:
                   this.$message.success('添加成功')
