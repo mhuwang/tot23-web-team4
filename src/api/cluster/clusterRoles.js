@@ -1,11 +1,3 @@
-/*
- * @Description: your project
- * @version: 1.0
- * @Author: Rex Joush
- * @Date: 2021-03-27 13:50:29
- * @LastEditors: Rex Joush
- * @LastEditTime: 2021-04-12 15:45:49
- */
 import request from '@/utils/request'
 let baseUrl = require("../api").baseurl;
 

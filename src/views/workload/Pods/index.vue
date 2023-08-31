@@ -1,39 +1,20 @@
-<!--
- * @Description: your project
- * @version: 1.0
- * @Author: Rex Joush
- * @Date: 2021-03-17 15:26:16
- * @LastEditors: Rex Joush
- * @LastEditTime: 2022-10-30 19:45:08
--->
 <template>
   <div>
     <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <span>所有 容器组</span>
+        <span>其他列表</span>
       </div>
       <el-row :gutter="20">
         <el-col :span="6">
           <!-- 搜索区域 -->
-          <el-select
-            v-model="value"
-            filterable
-            clearable
-            size="large"
-            style="width: 100%"
-            @change="selectChange"
-            @clear="clearSelect"
-            @focus="initNamespace"
-            placeholder="请选择命名空间"
-          >
-            <el-option
-              v-for="item in namespaces"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            >
-            </el-option>
-          </el-select>
+          <el-input
+            ref="othername"
+            placeholder="文件名称"
+            name="othername"
+            type="text"
+            tabindex="1"
+            auto-complete="on"
+          ></el-input>
           <!-- 搜索按钮
             <el-button
               slot="append"
@@ -53,6 +34,26 @@
             添加 Pod
           </el-button>
         </el-col> -->
+        <el-col :span="4">
+          <el-button
+            type="primary"
+            size="large"
+            @click="addDialogVisible = true"
+          >
+            搜索
+          </el-button>
+        </el-col>
+        <!-- 添加按钮 -->
+        <el-col :span="4">
+         <el-button
+            type="primary"
+            size="large"
+            icon="el-icon-plus"
+            @click="addDialogVisible = true"
+          >
+            上传
+          </el-button>
+        </el-col>
       </el-row>
       <el-table
         :data="currentPods"

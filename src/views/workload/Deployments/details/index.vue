@@ -1,12 +1,3 @@
-<!--
- * @Description: your project
- * @version: 1.0
- * @Author: Rex Joush
- * @Date: 2021-03-30 19:58:14
- * @LastEditors: Bernie
- * @LastEditTime: 2021-07-19 19:40:29
--->
-
 <template>
   <div>
     <!-- 标题 -->

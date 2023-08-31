@@ -1,60 +1,41 @@
-<!--
- * @Description: your project
- * @version: 1.0
- * @Author: Rex Joush
- * @Date: 2021-03-17 15:26:16
- * @LastEditors: Rex Joush
- * @LastEditTime: 2022-10-30 19:00:27
--->
-
 <template>
   <div>
     <!-- CronJobs 主体部分 -->
     <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <span>所有 定时任务</span>
+        <span>图片列表</span>
       </div>
       <el-row :gutter="20">
         <el-col :span="6">
-          <!-- 搜索区域 -->
-          <el-select
-            v-model="value"
-            filterable
-            clearable
-            size="large"
-            style="width: 100%"
-            placeholder="请选择命名空间"
-            @change="selectChange"
-            @clear="clearSelect"
-            @focus="initNamespace"
-          >
-            <el-option
-              v-for="item in namespaces"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            />
-          </el-select>
-          <!-- 搜索按钮
-            <el-button
-              slot="append"
-              size="large"
-              icon="el-icon-plus"
-              @click="getPods"
-            ></el-button> -->
+          <el-input v-model="searchInput" placeholder="请输入内容"></el-input>
         </el-col>
-        <!-- 添加按钮 -->
-        <!-- <el-col :span="4">
+        <!-- 搜索按钮 --> 
+        <el-col :span="4">
           <el-button
             type="primary"
             size="large"
-            icon="el-icon-plus"
-            @click="addDialogVisible = true"
+            @click="searchByFileName()"
           >
-            添加
+            搜索
           </el-button>
-        </el-col> -->
+        </el-col>
+        <!-- 添加按钮 -->
+        <el-col :span="4">
+          <el-upload
+             v-if="show"
+            :show-file-list="false"
+            class="upload-demo"
+            action="a"
+            :limit="1"
+            ref="upload"
+            accept=".png"
+            :on-success="handleAvatarSuccess"
+            :http-request="uploadFile">
+            <el-button size="small" type="primary">上传文件</el-button>
+          </el-upload>
+        </el-col>
       </el-row>
+      <!-- 展示查询table -->
       <el-table
         v-loading="loading"
         :data="cronJobsInCurrentPage"
@@ -67,61 +48,13 @@
             <svg-icon :icon-class="'load-success'" />
           </template>
         </el-table-column>
-        <el-table-column prop="name" label="名称">
-          <template slot-scope="scope">
-            <router-link
-              :to="{
-                name: 'CronJob 详情',
-                params: {
-                  name: scope.row.name + ',' + scope.row.namespace,
-                },
-              }"
-              class="link-type"
-              @click.native="
-                goToCronJobDetails(scope.row.name, scope.row.namespace)
-              "
-            >
-              <span style="color: #409eff; text-decoration: underline">{{
-                scope.row.name
-              }}</span>
-            </router-link>
-          </template>
+        <el-table-column prop="fileName" label="文件名称">
+        
         </el-table-column>
         <!-- <el-table-column prop="apiVersion" label="版本"> </el-table-column> -->
-        <el-table-column prop="namespace" label="命名空间" />
-        <el-table-column prop="schedule" label="调度" />
-        <!-- <el-table-column label="暂停">
-          <template slot-scope="scope">
-            <el-switch
-              v-model="scope.row.status"
-              active-color="#13ce66"
-              inactive-color="#ff4949"
-              active-text="运行"
-              inactive-text="暂停"
-              @change="changeCronJobSuSpend(scope.row)"
-            >
-            </el-switch>
-          </template>
-        </el-table-column> -->
-        <el-table-column label="运行中">
-          <template slot-scope="scope">
-            {{ scope.row.runningJobs }}
-          </template>
-        </el-table-column>
-        <el-table-column label="最后调度时间" width="200">
-          <template slot-scope="scope">
-            <span>{{
-              scope.row.lastSchedulingTime.replaceAll(/[TZ]/g, " ")
-            }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="创建时间" width="200">
-          <template slot-scope="scope">
-            <span>{{
-              scope.row.creationTimestamp.replaceAll(/[TZ]/g, " ")
-            }}</span>
-          </template>
-        </el-table-column>
+        <el-table-column prop="fileType" label="文件类型" />
+        <el-table-column prop="fileSize" label="文件大小" />
+
         <el-table-column label="操作">
           <template slot-scope="scope">
             <!-- 编辑 -->
@@ -131,20 +64,29 @@
               icon="el-icon-edit"
               size="small"
               @click="
-                showCronJobEditDialog(scope.row.name, scope.row.namespace)
+                loadfile(scope.row.fileId,scope.row.fileName)
               "
-            >编辑</el-button>
-            <br>
+            >下载</el-button>
+     
             <!-- 删除 -->
             <el-button
               type="danger"
               icon="el-icon-delete"
               size="small"
-              @click="delCronJob(scope.row.name, scope.row.namespace)"
+              @click="delCronJob(scope.row.fileId)"
             >删除</el-button>
+
+                  <!-- 删除 -->
+            <el-button
+              type="warning"
+              icon="el-icon-delete"
+              size="small"
+              @click=""
+            >预览</el-button>
           </template>
         </el-table-column>
       </el-table>
+
       <el-pagination
         :current-page="currentPage"
         :page-size="pageSize"
@@ -153,36 +95,7 @@
         @current-change="handleCurrentChange"
       />
     </el-card>
-
-    <!-- CronJob 编辑框 -->
-    <el-dialog
-      title="编辑 CronJob"
-      :visible.sync="editDialogVisible"
-      width="70%"
-      :append-to-body="true"
-      :lock-scroll="true"
-      @closed="handleClose"
-      @close="editDialogVisible = false"
-    >
-      <el-tabs value="first" type="card">
-        <el-tab-pane label="YAML" name="first">
-          <codemirror
-            :value="codeYaml"
-            :options="cmOptionsYaml"
-            @ready="onYamlCmReady"
-            @input="onYamlCmCodeChange"
-          />
-        </el-tab-pane>
-      </el-tabs>
-      <span slot="footer" class="dialog-footer">
-        <div class="foot-info">
-          <i class="el-icon-warning" /> 此操作相当于 kubectl apply -f
-          &ltspec.yaml>
-        </div>
-        <el-button @click="editDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="commitYamlChange">确 定</el-button>
-      </span>
-    </el-dialog>
+    
   </div>
 </template>
 
@@ -192,18 +105,18 @@ import 'codemirror/mode/javascript/javascript.js'
 import 'codemirror/mode/yaml/yaml.js'
 // import theme style
 import 'codemirror/theme/panda-syntax.css'
-
+import axios from 'axios';
+import { Upload } from 'view-design';
 export default {
   name: 'CronJobs',
 
   data() {
     return {
       /** 基础信息 */
-      cronJobs: [], // 所有CronJobs
+      searchInput:'',
+      show:true,
       loading: true, // 获取数据中
-      cronJobSuSpend: true, // CronJob 可调度情况
       /** 命名空间*/
-      namespaces: [], // 命名空间
       value: '',
       /** 分页 */
       cronJobsAmount: 0, // CronJob 总数
@@ -211,38 +124,37 @@ export default {
       cronJobsInCurrentPage: [], // 页面中的 CronJobs
       pageSize: 6, // 一页显示数量
       /** 编辑 */
-      codeYaml: '', // 编辑框的 yaml 数据
-      addYaml: '', // 添加框的 yaml 数据
-      editDialogVisible: false, // 编辑详情框
-      addDialogVisible: false, // 添加框详情
-      cmOptionsYaml: {
-        // yaml codemirror 配置项
-        tabSize: 4,
-        mode: 'yaml',
-        theme: 'panda-syntax',
-        lineNumbers: true,
-        line: true
-      }
     }
   },
 
   created() {
-    this.getCronJobs()
+    const data = {
+        current: "1",
+        size: "5",
+        fileName:""
+      }
+    this.getCronJobs(data)
   },
 
   methods: {
     /** 基础 */
-    // 详情页
-    goToCronJobDetails: function(cronJobName, cronJobNamespace) {},
-    // 获取所有 CronJobs
-    getCronJobs(namespace) {
+    //搜索通过文件名
+    searchByFileName() {
+      const data = {
+        current: "1",
+        size: "2",
+        fileName:  this.searchInput
+      }
       this.$store
-        .dispatch('cronJobs/getAllCronJobs', namespace)
+        .dispatch('cronJobs/getAllCronJobs', data)
         .then((res) => {
-          console.log(res.data.message)
-          this.cronJobs = res.data
-          this.cronJobsAmount = this.cronJobs.length
-          this.cronJobsInCurrentPage = this.cronJobs.slice(0, this.pageSize)
+          console.log(res.data)
+          
+          this.pageSize = parseInt(data.size)
+          // this.cronJobs =res.data
+          this.cronJobsAmount = res.data.total
+          // this.cronJobsInCurrentPage = this.cronJobs.slice(0, this.pageSize)
+          this.cronJobsInCurrentPage =res.data.records
         })
         .catch((error) => {
           console.log(error)
@@ -252,129 +164,127 @@ export default {
         })
       this.loading = false
     },
-    // 修改 CronJob 的为暂停或者运行
-    changeCronJobSuSpend(cronJob) {
-      // this.$store.dispatch("cronJobs/changeCronJobSuSpend")
-      // .then((res) => {
-      //   this.cronJobSuSpend = res.data;
-      // }).catch((error) => {
-      //   console.log(error);
-      // })
+
+    handleAvatarSuccess(){
+      console.log("handleAvatarSuccess");
+      this.$refs.upload.clearFiles();
     },
 
-    /** 按命名空间查询 */
-    // 当选择框聚焦时获取命名空间
-    initNamespace() {
-      if (this.namespaces.length === 0) {
-        this.namespaces = this.$store.state.namespaces.namespaces
-      }
-    },
-    // 选择框变化事件
-    selectChange(value) {
-      // console.log("selectChange", value, "++++\n\n")
-      this.loading = true
-      this.getCronJobs(value)
-    },
-    // 选择框清空事件
-    clearSelect() {
-      this.loading = true
-      this.getCronJobs()
-    },
-
-    /** 编辑 */
-    // 编辑 CronJob
-    showCronJobEditDialog(name, namespace) {
-      const cronJobDetails = {
-        name: name,
-        namespace: namespace
-      }
-      // 获取 yaml 格式
+    // 获取所有 CronJobs
+    getCronJobs(data) {
       this.$store
-        .dispatch('cronJobs/getCronJobYamlByNameAndNamespace', cronJobDetails)
+        .dispatch('cronJobs/getAllCronJobs', data)
         .then((res) => {
-          console.log(res.data.message)
-          this.codeYaml = res.data
-          this.editDialogVisible = true // 打开编辑对话框
+          console.log(res.data)
+          this.pageSize = data.size
+          // this.cronJobs =res.data
+          this.cronJobsAmount = res.data.total
+          // this.cronJobsInCurrentPage = this.cronJobs.slice(0, this.pageSize)
+          this.cronJobsInCurrentPage =res.data.records
         })
         .catch((error) => {
-          throw error
+          console.log(error)
+          this.cronJobs = []
+          this.cronJobsAmount = 0
+          this.cronJobsInCurrentPage = []
         })
+      this.loading = false
     },
-    // 编辑器方法
-    onYamlCmReady(cm) {
-      setTimeout(() => {
-        cm.refresh()
-      }, 50)
-    },
-    onYamlCmCodeChange(newCode) {
-      this.codeYaml = newCode
-    },
-    // 点击确认按钮触发此修改 CronJob 事件
-    commitYamlChange() {
-      this.$confirm('确认修改？', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'info'
+
+    // 获取所有 CronJobs
+    loadfile(fileId,fileName) {
+      this.$axios({
+        url: "http://localhost:8060/files/download?fileId="+ fileId,
+        method: 'get',
+        headers: {
+          'token': window.sessionStorage.getItem('Token')
+        },
+        data: {
+
+        },
+        responseType: 'blob'
+      }).then((res) => {
+        console.log('下载模板', res)
+        console.log(window.sessionStorage.getItem('Token'))
+        const blob = new Blob([res.data]);
+        const objectUrl = URL.createObjectURL(blob)
+        console.log(objectUrl)
+        //window.location.href = objectUrl
+        const a = document.createElement('a')
+        a.style.display = 'none'
+        a.download = fileName // 自定义下载的文件名 【这个地方必须加,不然会跳转到页面，页面上是乱码】
+        a.href = objectUrl
+        a.click()
+
+        this.$message({
+          type: 'success',
+          message: '正在下载模板'
+        })
       })
-        .then(() => {
-          this.$store
-            .dispatch('common/changeResourceByYaml', this.codeYaml)
-            .then((res) => {
-              switch (res.code) {
-                case 1200:
-                  this.$message.success('修改成功')
-                  break
-                case 1201:
-                  this.$message.error('修改失败，请查看 yaml 文件')
-                  break
-                case 1202:
-                  this.$message.error('您的操作有误')
-                  break
-                default:
-                  this.$message.info('提交成功')
-                  break
-              }
-              this.editDialogVisible = false
-            })
-            .catch((error) => {
-              throw error
-            })
-        })
-        .catch(() => {
-          console.log('cancel')
-        })
     },
-    // 关闭修改框
-    handleClose: function() {
-      this.addYaml = ''
-      setTimeout(() => {
-        this.codemorror.refresh()
-      }, 1)
+
+    uploadFile(params) {
+     // debugger;
+      console.log(params)
+      const file = params.file;
+     // 使用FormData传参数和文件
+     var form = new FormData();
+     var self = this;
+     // 添加键值对
+     form.append("file", file);
+     form.append("fileType","images")
+     // 传给后台FormData， 此时form = {date: xx, file: xxx(FormData)}
+       this.$store
+        .dispatch('establish/createPodFromYamlFile', form)
+        .then((res) => {
+          console.log(res)
+          self.$refs.upload.clearFiles();
+
+          // switch (res.code) {
+          //   case 1200:
+          //     this.$message.success('创建成功')
+          //     // this.addDialogVisible = false;
+          //     break
+          //   case 1201:
+          //     this.$message.error('文件为空')
+          //     // this.addDialogVisible = false;
+          //     break
+          //   case 1202:
+          //     this.$message.error('创建失败，请查看云平台相关信息')
+          //     // this.addDialogVisible = false;
+          //     break
+          //   case 1203:
+          //     this.$message.error(
+          //       '创建失败，命名空间必须被指定，或已有重名资源'
+          //     )
+          //     break
+          //   default:
+          //     this.$message.info('创建失败')
+          //     break
+          // }
+        })
+        .catch(() => {})
     },
 
     /** 删除*/
     // 删除 CronJob
-    delCronJob(name, namespace) {
+    delCronJob(fileId) {
+      console.log("dele")
       this.$confirm('确认删除 CronJob？', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       })
         .then(() => {
-          const nameAndNamespace = {
-            name: name,
-            namespace: namespace
-          }
           this.$store
             .dispatch(
-              'cronJobs/deleteCronJobByNameAndNamespace',
-              nameAndNamespace
+              'cronJobs/deleteCronJobById',
+              fileId
             )
             .then((res) => {
-              console.log(res.data.message)
-              if (res.data.code === 1200) {
+              console.log(res)
+              if (res.success) {
                 this.$message.success('删除成功')
-                this.getCronJobs()
               } else {
                 this.$message.error('删除失败')
               }
@@ -390,11 +300,17 @@ export default {
     /** 分页*/
     // 分页事件
     handleCurrentChange(currentPage) {
-      this.currentPage = currentPage
-      this.cronJobsInCurrentPage = this.cronJobs.slice(
-        (this.currentPage - 1) * this.pageSize,
-        this.currentPage * this.pageSize
-      )
+      const data = {
+        current: currentPage,
+        size: "5",
+        fileName: this.searchInput
+      }
+      this.getCronJobs(data)
+      // this.currentPage = currentPage
+      // this.cronJobsInCurrentPage = this.cronJobs.slice(
+      //   (this.currentPage - 1) * this.pageSize,
+      //   this.currentPage * this.pageSize
+      // )
     }
   }
 }

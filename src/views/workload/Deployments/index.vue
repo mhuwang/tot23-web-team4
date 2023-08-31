@@ -1,39 +1,21 @@
-<!--
- * @Descripttion: your project
- * @version: 1.0
- * @Author: Rex Joush
- * @Date: 2021-03-17 15:26:16
- * @LastEditors: Rex Joush
- * @LastEditTime: 2022-10-29 22:21:02
--->
 <template>
   <div>
     <!-- 主体部分 -->
     <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <span>所有 部署</span>
+        <span>文档列表</span>
       </div>
       <el-row :gutter="20">
         <el-col :span="5">
           <!-- 搜索区域 -->
-          <el-select
-            v-model="value"
-            filterable
-            clearable
-            size="large"
-            style="width: 100%"
-            placeholder="请选择命名空间"
-            @change="selectChange"
-            @clear="clearSelect"
-            @focus="initNamespace"
-          >
-            <el-option
-              v-for="item in namespaces"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            />
-          </el-select>
+          <el-input
+            ref="documentname"
+            placeholder="文档名称"
+            name="documentname"
+            type="text"
+            tabindex="1"
+            auto-complete="on"
+          ></el-input>
           <!-- 搜索按钮
             <el-button
               slot="append"
@@ -53,6 +35,26 @@
             添加 Pod
           </el-button>
         </el-col> -->
+        <el-col :span="4">
+          <el-button
+            type="primary"
+            size="large"
+            @click="addDialogVisible = true"
+          >
+            搜索
+          </el-button>
+        </el-col>
+        <!-- 添加按钮 -->
+        <el-col :span="4">
+         <el-button
+            type="primary"
+            size="large"
+            icon="el-icon-plus"
+            @click="addDialogVisible = true"
+          >
+            上传
+          </el-button>
+        </el-col>
       </el-row>
       <el-table
         v-loading="loading"
@@ -225,6 +227,7 @@
         <el-button type="primary" @click="commitYamlChange">确 定</el-button>
       </span>
     </el-dialog>
+    <span>aaaa</span>
   </div>
 </template>
 

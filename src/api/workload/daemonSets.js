@@ -1,23 +1,15 @@
-/*
- * @Description: your project
- * @version: 1.0
- * @Author: zqy
- * @Date: 2021.03.29 16:18
- * @LastEditors: Rex Joush
- * @LastEditTime: 2022-10-30 19:05:16
- */
 import request from '@/utils/request'
 const baseUrl = require('../api').baseurl
 
-export function getAllDaemonSets(data) {
-  return request({
-    url: baseUrl + '/daemonSets/getAllDaemonSets',
-    method: 'get',
-    params: {
-      namespace: data
-    }
-  })
-}
+// export function getAllDaemonSets(data) {
+//   return request({
+//     url: baseUrl + '/daemonSets/getAllDaemonSets',
+//     method: 'get',
+//     params: {
+//       namespace: data
+//     }
+//   })
+// }
 export function getDaemonSetByNameAndNamespace(nameAndNamespace) {
   return request({
     url: baseUrl + '/daemonSets/getDaemonSetByNameAndNamespace',

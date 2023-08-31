@@ -1,11 +1,3 @@
-<!--
- * @Description: your project
- * @version: 1.0
- * @Author: Rex Joush
- * @Date: 2021-03-17 15:26:16
- * @LastEditors: Rex Joush
- * @LastEditTime: 2022-11-01 21:59:15
--->
 <template>
   <div>
     <el-card class="box-card">
@@ -884,7 +876,7 @@ export default {
       const yamlForm = new FormData()
       yamlForm.append('yaml', yamlFile)// 文件以表单形式提交 文件名 yaml 与后台@RequestParam中参数对应
       this.$store
-        .dispatch('establish/createPodFromYamlFile', yamlForm)
+        .dispatch('establish/createPodFromYamlFile', yamlForm,"img")
         .then((res) => {
           console.log(res)
           switch (res.code) {

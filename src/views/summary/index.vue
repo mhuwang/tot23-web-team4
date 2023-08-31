@@ -1,11 +1,3 @@
-<!--
- * @Description: your project
- * @version: 1.0
- * @Author: Rex Joush
- * @Date: 2021-03-17 15:26:16
- * @LastEditors: Rex Joush
- * @LastEditTime: 2021-05-11 09:54:09
--->
 <template>
   <div>
     <!-- 集群拓扑图 -->

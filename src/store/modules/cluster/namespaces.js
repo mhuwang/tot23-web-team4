@@ -1,11 +1,3 @@
-/*
- * @Descripttion: your project
- * @version: 1.0
- * @Author: Rex Joush
- * @Date: 2021-03-26 13:23:01
- * @LastEditors: Leo
- * @LastEditTime: 2021-04-15 13:28:52
- */
 import { getAllNamespaces, getAllNamespaceName, getNamespaceDetails, getNamespaceYamlByName, deleteNamespaceByName } from '@/api/cluster/namespaces'
 import { getToken } from '@/utils/auth'
 

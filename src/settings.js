@@ -1,6 +1,6 @@
 module.exports = {
 
-  title: '中国国家博物馆私有云管理平台',
+  title: '广联达网盘',
 
   /**
    * @type {boolean} true | false

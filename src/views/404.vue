@@ -1,11 +1,3 @@
-<!--
- * @Descripttion: your project
- * @version: 1.0
- * @Author: Rex Joush
- * @Date: 2021-03-10 15:03:17
- * @LastEditors: Rex Joush
- * @LastEditTime: 2021-03-19 16:09:40
--->
 <template>
   <div class="wscn-http404-container">
     <div class="wscn-http404">

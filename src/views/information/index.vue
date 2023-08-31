@@ -1,11 +1,3 @@
-<!--
- * @Descripttion: your project
- * @version: 1.0
- * @Author: Rex Joush
- * @Date: 2021-03-17 15:26:16
- * @LastEditors: Rex Joush
- * @LastEditTime: 2021-03-20 17:35:40
--->
 <template>
   <div>
     <!-- <h1>个人信息</h1>

@@ -1,11 +1,3 @@
-/*
- * @Description: your project
- * @version: 1.0
- * @Author: Rex Joush
- * @Date: 2021-03-25 20:41:52
- * @LastEditors: Rex Joush
- * @LastEditTime: 2021-04-13 19:50:33
- */
 import { getAllNodes, getNodeByName, getUsageRecentTwenty, getNodeYamlByName } from '@/api/cluster/nodes'
 import { getToken } from '@/utils/auth'
 

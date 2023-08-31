@@ -1,11 +1,3 @@
-<!--
- * @Description: your project
- * @version: 1.0
- * @Author: Rex Joush
- * @Date: 2021-03-30 20:30:24
- * @LastEditors: Rex Joush
- * @LastEditTime: 2022-10-30 19:45:25
--->
 <template>
   <dev>
     <el-divider

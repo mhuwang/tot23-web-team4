@@ -1,11 +1,3 @@
-/*
- * @Description: your project
- * @version: 1.0
- * @Author: Rex Joush
- * @Date: 2021-03-27 14:18:28
- * @LastEditors: Rex Joush
- * @LastEditTime: 2022-10-29 22:21:29
- */
 import { getAllDeployments, setReplica, getDeploymentByNameAndNamespace, getDeploymentYamlByNameAndNamespace, deleteDeploymentByNameAndNamespace, getDeploymentResources, getAllDeploymentsName } from '@/api/workload/deployments'
 import { getToken } from '@/utils/auth'
 

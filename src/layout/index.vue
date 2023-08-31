@@ -6,6 +6,9 @@
  * @LastEditors: Rex Joush
  * @LastEditTime: 2021-03-31 15:20:36
 -->
+
+glodonlog
+<!-- src="../assets/NationalMuseumofChina.png" -->
 <template>
   <div :class="classObj" class="app-wrapper">
     <el-container>
@@ -14,10 +17,11 @@
           <el-col :span="24">
             <img
               class="header-logo"
-              src="../assets/NationalMuseumofChina.png"
+              src="../assets/glodonlog1.png"
+              
               alt
             />
-            <span>智慧博物馆通用私有云管理平台</span>
+            <span>广联达网盘</span>
           </el-col>
           <el-col :span="4" :offset="10">
             <el-button type="primary" round @click="logout">退出</el-button>
@@ -70,7 +74,7 @@ export default {
     
   },
   created: function(){
-    this.$store.dispatch("namespaces/getAllNamespaceName");
+    // this.$store.dispatch("namespaces/getAllNamespaceName");
   },
   methods: {
     // 退出登录

@@ -1,11 +1,3 @@
-/*
- * @Description: your project
- * @version: 1.0
- * @Author: Rex Joush
- * @Date: 2021-03-10 15:03:17
- * @LastEditors: Rex Joush
- * @LastEditTime: 2022-10-30 10:25:29
- */
 import Vue from 'vue'
 
 import 'normalize.css/normalize.css' // A modern alternative to CSS resets
@@ -74,6 +66,7 @@ Vue.prototype.$api = api
 Vue.prototype.$echarts = echarts
 Vue.config.productionTip = false
 Vue.prototype.beautify = beautify.js
+Vue.prototype.$axios = axios
 // Vue.prototype.YAML = json2yaml
 Vue.prototype.YAML = jsYaml
 

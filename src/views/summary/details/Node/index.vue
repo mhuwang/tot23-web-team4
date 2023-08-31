@@ -1,11 +1,3 @@
-<!--
- * @Description: your project
- * @version: 1.0
- * @Author: Rex Joush
- * @Date: 2021-03-25 22:13:37
- * @LastEditors: Rex Joush
- * @LastEditTime: 2021-05-11 09:59:37
--->
 <template>
   <div>
     <el-divider content-position="left"

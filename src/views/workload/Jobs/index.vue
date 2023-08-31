@@ -1,51 +1,21 @@
-<!--
- * @Descripttion: your project
- * @version: 1.0
- * @Author: Rex Joush
- * @Date: 2021-03-17 15:26:16
-<<<<<<< HEAD
- * @LastEditors: Rex Joush
- * @LastEditTime: 2022-10-30 19:13:09
-=======
- * @LastEditors: zqy
-<<<<<<< HEAD
- * @LastEditTime: 2021-05-08 09:59:42
-=======
- * @LastEditTime: 2021-04-27 22:04:50
->>>>>>> 00560973b5f944cbe14c2a03f5ac850fca7e696c
->>>>>>> ca60ba2b48cd0eb57de5b3c006d4075b03702fb1
--->
-<!--<template>
-  <h1>Jobs</h1>
-</template>-->
 <template>
   <div>
     <!-- Job 主体部分 -->
     <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <span>所有 任务</span>
+        <span>音频列表</span>
       </div>
       <el-row :gutter="20">
         <el-col :span="5">
           <!-- 搜索区域 -->
-          <el-select
-            v-model="value"
-            filterable
-            clearable
-            size="large"
-            style="width: 100%"
-            placeholder="请选择命名空间"
-            @change="selectChange"
-            @clear="clearSelect"
-            @focus="initNamespace"
-          >
-            <el-option
-              v-for="item in namespaces"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            />
-          </el-select>
+          <el-input
+            ref="audioname"
+            placeholder="音频名称"
+            name="audioname"
+            type="text"
+            tabindex="1"
+            auto-complete="on"
+          ></el-input>
           <!-- 搜索按钮
             <el-button
               slot="append"
@@ -65,6 +35,26 @@
             添加 Pod
           </el-button>
         </el-col> -->
+        <el-col :span="4">
+          <el-button
+            type="primary"
+            size="large"
+            @click="addDialogVisible = true"
+          >
+            搜索
+          </el-button>
+        </el-col>
+        <!-- 添加按钮 -->
+        <el-col :span="4">
+         <el-button
+            type="primary"
+            size="large"
+            icon="el-icon-plus"
+            @click="addDialogVisible = true"
+          >
+            上传
+          </el-button>
+        </el-col>
       </el-row>
       <el-table
         v-loading="loading"

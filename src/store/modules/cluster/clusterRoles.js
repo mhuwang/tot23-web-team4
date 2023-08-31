@@ -1,11 +1,3 @@
-/*
- * @Description: your project
- * @version: 1.0
- * @Author: Rex Joush
- * @Date: 2021-03-27 13:46:48
- * @LastEditors: Leo
- * @LastEditTime: 2021-04-15 20:47:00
- */
 import { getAllClusterRoles, getClusterRoleDetails, getClusterRoleYamlByName, delClusterRoleByName } from '@/api/cluster/clusterRoles'
 import { getToken } from '@/utils/auth'
 

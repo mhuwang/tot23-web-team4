@@ -1,29 +1,25 @@
-/*
- * @Description: your project
- * @version: 1.0
- * @Author: zqy
- * @Date: 2021-04-26 12:23:55
- * @LastEditors: Rex Joush
- * @LastEditTime: 2022-11-01 14:33:17
- */
 import request from '@/utils/request'
 const baseUrl = require('./api').baseurl
 
-export function createPodFromForm(data) {
+export function createPodFromForm(data,fileType) {
   return request({
-    url: baseUrl + '/establish/createPodFromForm',
+    url: baseUrl + '/files/upload',
     method: 'post',
-    data: data
+    params:{
+      file: data,
+      fileType:fileType
+    }
   })
 }
 export function createPodFromYamlFile(data) {
+  console.log(11111)
   return request({
-    url: baseUrl + '/establish/createPodFromYamlFile',
+    url: baseUrl + '/files/upload',
     method: 'post',
     headers: {
-      'Content-Type': 'multipart/form-data'// 可以不加 说明表单里传的是文件
+      "Accept":'multipart/form-data',
     },
-    data: data
+    data: data,  
   })
 }
 

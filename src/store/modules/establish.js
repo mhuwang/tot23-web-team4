@@ -1,12 +1,6 @@
-/*
- * @Description: your project
- * @version: 1.0
- * @Author: zqy
- * @Date: 2021-04-26 12:21:50
- * @LastEditors: Rex Joush
- * @LastEditTime: 2022-11-01 14:32:25
- */
 import { createPodFromForm, createPodFromYamlFile, createResourceByYaml } from '@/api/establish'
+import { register } from '@/api/user'
+
 import { getToken } from '@/utils/auth'
 
 const getDefaultState = () => {
@@ -38,7 +32,7 @@ const actions = {
   },
 
   // 从输入创建资源
-  createPodFromForm({ commit }, podForm) {
+  createPodFromForm({ commit }, podForme) {
     return new Promise((resolve, reject) => {
       createPodFromForm(podForm).then(response => {
         const { data } = response
@@ -50,6 +44,34 @@ const actions = {
         reject(error)
       })
     })
+  },
+
+  register({ commit }, userInfo) {
+    const { username, password } = userInfo
+    return new Promise((resolve, reject) => {
+      register({ username: username.trim(), password: password }).then(response => {
+        const { data } = response
+        console.log("actions");
+        console.log(data);
+        // commit('SET_TOKEN', data.token)
+        // setToken(data.token)
+        resolve(data);
+      }).catch(error => {
+        reject(error)
+      })
+    })
+
+    // return new Promise((resolve, reject) => {
+    //   register({ username: username.trim(), password: password }).then(response => {
+    //     const { data } = response
+    //     if (!data) {
+    //       return reject('创建失败')
+    //     }
+    //     resolve(data)
+    //   }).catch(error => {
+    //     reject(error)
+    //   })
+    // })
   },
 
   // 从Yaml文件创建 Pod

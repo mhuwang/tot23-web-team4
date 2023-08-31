@@ -1,12 +1,4 @@
-/*
- * @Descripttion: your project
- * @version: 1.0
- * @Author: Rex Joush
- * @Date: 2021-03-19 16:14:56
- * @LastEditors: Rex Joush
- * @LastEditTime: 2021-03-22 10:38:13
- */
-import { login, logout, getInfo, getUsers } from '@/api/user'
+import { login, logout, getInfo, getUsers, register } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import { resetRouter } from '@/router'
 
@@ -52,7 +44,35 @@ const actions = {
       })
     })
   },
+  //注册
+  register({ commit }, userInfo) {
+    const { username, password } = userInfo
+    return new Promise((resolve, reject) => {
+      register({ username: username.trim(), password: password }).then(response => {
+        const { data } = response
+        console.log("1777");
+        console.log(data);
+        // commit('SET_TOKEN', data.token)
+        // setToken(data.token)
+        // resolve(data);
+      }).catch(error => {
+        reject(error)
+      })
+    })
 
+    // return new Promise((resolve, reject) => {
+    //   register({ username: username.trim(), password: password }).then(response => {
+    //     console.log(response)
+    //     const { data } = response
+    //     if (!data) {
+    //       return reject('创建失败')
+    //     }
+    //     resolve(data)
+    //   }).catch(error => {
+    //     reject(error)
+    //   })
+    // })
+  },
   // get user info
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {

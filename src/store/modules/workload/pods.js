@@ -1,11 +1,3 @@
-/*
- * @Description: your project
- * @version: 1.0
- * @Author: Rex Joush
- * @Date: 2021-03-22 17:20:12
- * @LastEditors: zqy
- * @LastEditTime: 2021-04-24 13:03:11
- */
 import {
   getAllPods,
   getPodsByNode,

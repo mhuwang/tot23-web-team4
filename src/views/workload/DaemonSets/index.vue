@@ -1,42 +1,21 @@
-<!--
- * @Descripttion: your project
- * @version: 1.0
- * @Author: Rex Joush
- * @Date: 2021-03-17 15:26:16
- * @LastEditors: Rex Joush
- * @LastEditTime: 2022-10-30 19:04:33
--->
-<!--<template>-->
-<!--  <h1>Daemon Sets</h1>-->
-<!--</template>-->
 <template>
   <div>
     <!-- 主体部分 -->
     <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <span>所有 守护进程集</span>
+        <span>视频列表</span>
       </div>
       <el-row :gutter="20">
         <el-col :span="5">
           <!-- 搜索区域 -->
-          <el-select
-            v-model="value"
-            filterable
-            clearable
-            size="large"
-            style="width: 100%"
-            placeholder="请选择命名空间"
-            @change="selectChange"
-            @clear="clearSelect"
-            @focus="initNamespace"
-          >
-            <el-option
-              v-for="item in namespaces"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            />
-          </el-select>
+          <el-input
+            ref="videoname"
+            placeholder="视频列表"
+            name="videoname"
+            type="text"
+            tabindex="1"
+            auto-complete="on"
+          ></el-input>
           <!-- 搜索按钮
             <el-button
               slot="append"
@@ -56,6 +35,26 @@
             添加 Pod
           </el-button>
         </el-col> -->
+        <el-col :span="4">
+          <el-button
+            type="primary"
+            size="large"
+            @click="addDialogVisible = true"
+          >
+            搜索
+          </el-button>
+        </el-col>
+        <!-- 添加按钮 -->
+        <el-col :span="4">
+         <el-button
+            type="primary"
+            size="large"
+            icon="el-icon-plus"
+            @click="addDialogVisible = true"
+          >
+            上传
+          </el-button>
+        </el-col>
       </el-row>
       <el-table
         v-loading="loading"
@@ -291,11 +290,30 @@ export default {
       },
       /** 添加框部分*/
       addDialogVisible: false, // 添加框详情
-      addYaml: '' // 添加框的 yaml 数据
+      addYaml: '' ,// 添加框的 yaml 数据
+      videoname:''
     }
   },
 
   computed: {
+    //搜索
+    getVideoname(){
+      const pictureSelect = {
+        videoname: this,
+        types: ''
+      }
+      this.$store
+        .dispatch('daemonSets/getVideoname',pictureSelect)
+        .then((res) => {
+          console.log(res.data.message)
+
+        })
+        .catch((error) => {
+          console.log(error)
+        
+        })
+      this.loading = false
+    },
     /** 日志部分*/
     podNames() {
       const names = []
@@ -316,7 +334,7 @@ export default {
   },
 
   created() {
-    this.getDaemonSets()
+    // this.getDaemonSets()
   },
 
   methods: {

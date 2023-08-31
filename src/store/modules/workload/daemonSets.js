@@ -1,11 +1,3 @@
-/*
- * @Description: your project
- * @version: 1.0
- * @Author: zqy
- * @Date: 2021.03.29 16:25
- * @LastEditors: Rex Joush
- * @LastEditTime: 2022-10-30 19:05:26
- */
 import {
   getAllDaemonSets,
   getDaemonSetByNameAndNamespace,
